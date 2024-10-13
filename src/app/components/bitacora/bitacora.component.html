@@ -1,0 +1,103 @@
+<div class="container d-flex justify-content-center align-items-center dashboard-container">
+  <div class="w-100 mt-5">
+    <div class="dashboard-header text-center mb-4 fw-bold">
+      <h1>Bitacora</h1>
+    </div>
+
+    <!-- Card Row -->
+    <div class="row g-4 justify-content-center">
+      <!-- Bitácora Card -->
+      <div class="">
+        <div class="card text-center h-100">
+          <div class="card-body">
+
+            <form [formGroup]="formulario" (ngSubmit)="onSubmit()">
+              <select class="form-select form-select-lg mb-3" formControlName="empleado"
+                aria-label="Large select example">
+                <!-- Opción por defecto con un valor vacío -->
+                <option value="" disabled selected>Seleccione un empleado</option>
+
+                <option *ngFor="let registro of registros" [value]="registro.id">
+                  {{ registro.nombre }} {{ registro.primerApellido }} {{ registro.segundoApellido }}
+                </option>
+              </select>
+
+              <!-- Mostrar un mensaje de error si no se selecciona un valor -->
+              <div
+                *ngIf="formulario.get('empleado')?.invalid && formulario.get('empleado')?.touched">
+                <small style="color: red;">Selecciona un empleado.</small>
+              </div>
+
+              <select class="form-select form-select-lg mb-3" formControlName="herramienta"
+                aria-label="Large select example">
+                <!-- Opción por defecto con un valor vacío -->
+                <option value="" disabled selected>Seleccione una herramienta</option>
+
+                <option *ngFor="let registro of products" [value]="registro.id">
+                  {{ registro.nombre }}
+                </option>
+              </select>
+
+              <!-- Mostrar un mensaje de error si no se selecciona un valor -->
+              <div
+                *ngIf="formulario.get('herramienta')?.invalid && formulario.get('herramienta')?.touched">
+                <small style="color: red;">Selecciona una herramienta.</small>
+              </div>
+
+              <button class="btn btn-success" type="submit" [disabled]="formulario.invalid">Enviar</button>
+            </form>
+
+
+
+            <div class="table-responsive mt-2">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th scope="col">Nombre</th>
+                    <th scope="col">Apellidos</th>
+                    <th scope="col">Herramienta</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Editar</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>Mark</td>
+                    <td>Otto</td>
+                    <td>Multimetro</td>
+                    <td><i class="bi bi-check2-circle success"></i></td>
+                    <td><i class="bi bi-pencil-square edit"></i></td>
+                  </tr>
+                  <tr>
+                    <td>Jacob</td>
+                    <td>Thornton</td>
+                    <td>Pinzas de corte</td>
+                    <td><i class="bi bi-x-circle error"></i></td>
+                    <td><i class="bi bi-pencil-square edit"></i></td>
+                  </tr>
+                  <tr>
+                    <td>Mauricio</td>
+                    <td>López Asencio</td>
+                    <td>Stilson</td>
+                    <td><i class="bi bi-x-circle error"></i></td>
+                    <td><i class="bi bi-pencil-square edit"></i></td>
+                  </tr>
+                  <tr>
+                    <td>Mirhell Dianey</td>
+                    <td>Mendoza Hernandez</td>
+                    <td>Martillo</td>
+                    <td><i class="bi bi-check2-circle success"></i></td>
+                    <td><i class="bi bi-pencil-square edit"></i></td>
+                  </tr>
+
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+</div>
