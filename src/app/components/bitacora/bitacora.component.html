@@ -54,16 +54,16 @@
                 <thead>
                   <tr>
                     <th scope="col">Nombre</th>
-                    <th scope="col">Apellidos</th>
+                    <th scope="col">Fecha</th>
                     <th scope="col">Herramienta</th>
                     <th scope="col">Status</th>
                     <th scope="col">Editar</th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr *ngFor="let bitacora of bitacora">
+                  <tr *ngFor="let bitacora of bitacora | paginate: { itemsPerPage: itemsPerPage, currentPage: p }">
                     <td>{{ bitacora.nombreEmpleado }}</td>
-                    <td>{{ bitacora.nombreEmpleado.split(' ').slice(1).join(' ') }}</td> <!-- Suponiendo que el nombre completo está en un solo campo -->
+                    <td>{{ bitacora.fecha}}</td>
                     <td>{{ bitacora.nombreHerramienta }}</td>
                     <td>
                       <i [ngClass]="bitacora.estatus ? 'bi bi-check2-circle success' : 'bi bi-x-circle error'"></i>
@@ -74,7 +74,10 @@
                   </tr>
                 </tbody>
               </table>
+              <pagination-controls (pageChange)="p = $event"></pagination-controls> <!-- Añade controles de paginación -->
             </div>
+            
+            
           </div>
         </div>
 

@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { BitacoraService } from 'src/app/services/bitacora.service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-bitacora',
@@ -8,6 +9,11 @@ import { BitacoraService } from 'src/app/services/bitacora.service';
   styleUrls: ['./bitacora.component.css'],
 })
 export class BitacoraComponent implements OnInit {
+
+  bitacorapg = []; // Asegúrate de que esta propiedad tenga los datos que necesitas
+  p: number = 1; // Página actual
+  itemsPerPage: number = 5;
+
   registros: any[] = [];
   products: any[] = [];
   bitacora: any[] = [];
@@ -27,6 +33,16 @@ export class BitacoraComponent implements OnInit {
   }
 
   loadRegistros(): void {
+     // Mostrar el SweetAlert con loader
+     Swal.fire({
+      title: 'Cargando...',
+      text: 'Por favor, espere.',
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading(); // Muestra el loader
+      }
+    });
+
     this.bitacoraService.getEmpleados().subscribe(
       (data) => {
         this.registros = data;
@@ -47,12 +63,16 @@ export class BitacoraComponent implements OnInit {
       }
     );
 
-    
+
   }
   getbitacora(): void {
     this.bitacoraService.getbitacora().subscribe(
       (data) => {
-        this.bitacora = data;
+        this.bitacora = data.sort((a, b) => {
+          return (a.estatus === false && b.estatus === true) ? -1 : (a.estatus === true && b.estatus === false) ? 1 : 0;
+        });
+         // Oculta el loader al finalizar la carga
+         Swal.close();
         console.log('bitacora:', this.bitacora);
       },
       (error) => {
@@ -60,21 +80,31 @@ export class BitacoraComponent implements OnInit {
       }
     );
 
-    
+
   }
 
   onSubmit() {
-   if (this.formulario.valid) {
+    if (this.formulario.valid) {
       // Enviar datos al servicio
       this.bitacoraService.postAsignar(this.formulario.value).subscribe(
         (response) => {
-          alert('regsitro exitoso');
+          
+          Swal.fire({
+            title: "¡Registro exitoso!",
+            text: "",
+            icon: "success"
+          });
+
           this.getbitacora();
           console.log('Datos enviados correctamente', response);
-          this.formulario.reset(); // Reiniciar el formulario después de enviar
-          this.loadRegistros(); // Opcional: recargar registros si es necesario
+          this.formulario.reset();
         },
         (error) => {
+          Swal.fire({
+            icon: "error",
+            title: "Error",
+            text: "error!",
+          });
           console.error('Error al enviar datos', error);
         }
       );

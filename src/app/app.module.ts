@@ -8,6 +8,7 @@ import { AppComponent } from './app.component';
 import { BitacoraComponent } from './components/bitacora/bitacora.component';
 import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { HerramientaComponent } from './components/herramienta/herramienta.component';
+import { NgxPaginationModule } from 'ngx-pagination';
 
 @NgModule({
   declarations: [
@@ -21,7 +22,8 @@ import { HerramientaComponent } from './components/herramienta/herramienta.compo
     AppRoutingModule,
     ReactiveFormsModule,
     FormsModule,
-    HttpClientModule
+    HttpClientModule,
+    NgxPaginationModule 
   ],
   providers: [],
   bootstrap: [AppComponent]
