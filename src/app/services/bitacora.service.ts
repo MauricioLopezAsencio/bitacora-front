@@ -13,8 +13,17 @@ export class BitacoraService {
   getEmpleados(): Observable<any[]> {
     return this.http.get<any>(`${Constants.baseUrl}empleados`);
   }
+
   getHerramienta(): Observable<any[]> {
     return this.http.get<any>(`${Constants.baseUrl}products`);
+  }
+  
+  getbitacora(): Observable<any[]> {
+    return this.http.get<any>(`${Constants.baseUrl}bitacora`);
+  }
+
+  postAsignar(dto: any): Observable<any> {
+    return this.http.post<any>(`${Constants.baseUrl}asignar`, dto);
   }
 }
 

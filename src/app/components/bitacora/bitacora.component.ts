@@ -10,18 +10,20 @@ import { BitacoraService } from 'src/app/services/bitacora.service';
 export class BitacoraComponent implements OnInit {
   registros: any[] = [];
   products: any[] = [];
+  bitacora: any[] = [];
   selectedRegistro: any;
   formulario: FormGroup;
 
   constructor(private bitacoraService: BitacoraService, private fb: FormBuilder) {
     this.formulario = this.fb.group({
-      empleado: ['', Validators.required], // Validators.required marca el campo como obligatorio
-      herramienta: ['', Validators.required], // Validators.required marca el campo como obligatorio
+      empleadoId: ['', Validators.required], // Validators.required marca el campo como obligatorio
+      herramientaId: ['', Validators.required], // Validators.required marca el campo como obligatorio
     });
   }
 
   ngOnInit(): void {
     this.loadRegistros();
+    this.getbitacora();
   }
 
   loadRegistros(): void {
@@ -34,6 +36,7 @@ export class BitacoraComponent implements OnInit {
         console.error('Error al cargar registros', error);
       }
     );
+
     this.bitacoraService.getHerramienta().subscribe(
       (data) => {
         this.products = data;
@@ -43,14 +46,43 @@ export class BitacoraComponent implements OnInit {
         console.error('Error al cargar registros', error);
       }
     );
+
+    
   }
+  getbitacora(): void {
+    this.bitacoraService.getbitacora().subscribe(
+      (data) => {
+        this.bitacora = data;
+        console.log('bitacora:', this.bitacora);
+      },
+      (error) => {
+        console.error('Error al cargar registros', error);
+      }
+    );
+
+    
+  }
+
   onSubmit() {
-    if (this.formulario.valid) {
-      console.log('Formulario enviado', this.formulario.value);
+   if (this.formulario.valid) {
+      // Enviar datos al servicio
+      this.bitacoraService.postAsignar(this.formulario.value).subscribe(
+        (response) => {
+          alert('regsitro exitoso');
+          this.getbitacora();
+          console.log('Datos enviados correctamente', response);
+          this.formulario.reset(); // Reiniciar el formulario después de enviar
+          this.loadRegistros(); // Opcional: recargar registros si es necesario
+        },
+        (error) => {
+          console.error('Error al enviar datos', error);
+        }
+      );
     } else {
       console.log('Formulario inválido');
     }
   }
+
   onSelectRegistro(event: Event): void {
     const selectElement = event.target as HTMLSelectElement;
     this.selectedRegistro = this.registros[selectElement.selectedIndex]; // Obtén el registro seleccionado

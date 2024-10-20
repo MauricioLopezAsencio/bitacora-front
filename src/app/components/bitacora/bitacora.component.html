@@ -12,7 +12,7 @@
           <div class="card-body">
 
             <form [formGroup]="formulario" (ngSubmit)="onSubmit()">
-              <select class="form-select form-select-lg mb-3" formControlName="empleado"
+              <select class="form-select form-select-lg mb-3" formControlName="empleadoId"
                 aria-label="Large select example">
                 <!-- Opción por defecto con un valor vacío -->
                 <option value="" disabled selected>Seleccione un empleado</option>
@@ -24,11 +24,11 @@
 
               <!-- Mostrar un mensaje de error si no se selecciona un valor -->
               <div
-                *ngIf="formulario.get('empleado')?.invalid && formulario.get('empleado')?.touched">
+                *ngIf="formulario.get('empleadoId')?.invalid && formulario.get('empleadoId')?.touched">
                 <small style="color: red;">Selecciona un empleado.</small>
               </div>
 
-              <select class="form-select form-select-lg mb-3" formControlName="herramienta"
+              <select class="form-select form-select-lg mb-3" formControlName="herramientaId"
                 aria-label="Large select example">
                 <!-- Opción por defecto con un valor vacío -->
                 <option value="" disabled selected>Seleccione una herramienta</option>
@@ -40,7 +40,7 @@
 
               <!-- Mostrar un mensaje de error si no se selecciona un valor -->
               <div
-                *ngIf="formulario.get('herramienta')?.invalid && formulario.get('herramienta')?.touched">
+                *ngIf="formulario.get('herramientaId')?.invalid && formulario.get('herramientaId')?.touched">
                 <small style="color: red;">Selecciona una herramienta.</small>
               </div>
 
@@ -61,35 +61,17 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr>
-                    <td>Mark</td>
-                    <td>Otto</td>
-                    <td>Multimetro</td>
-                    <td><i class="bi bi-check2-circle success"></i></td>
-                    <td><i class="bi bi-pencil-square edit"></i></td>
+                  <tr *ngFor="let bitacora of bitacora">
+                    <td>{{ bitacora.nombreEmpleado }}</td>
+                    <td>{{ bitacora.nombreEmpleado.split(' ').slice(1).join(' ') }}</td> <!-- Suponiendo que el nombre completo está en un solo campo -->
+                    <td>{{ bitacora.nombreHerramienta }}</td>
+                    <td>
+                      <i [ngClass]="bitacora.estatus ? 'bi bi-check2-circle success' : 'bi bi-x-circle error'"></i>
+                    </td>
+                    <td>
+                      <i class="bi bi-pencil-square edit"></i>
+                    </td>
                   </tr>
-                  <tr>
-                    <td>Jacob</td>
-                    <td>Thornton</td>
-                    <td>Pinzas de corte</td>
-                    <td><i class="bi bi-x-circle error"></i></td>
-                    <td><i class="bi bi-pencil-square edit"></i></td>
-                  </tr>
-                  <tr>
-                    <td>Mauricio</td>
-                    <td>López Asencio</td>
-                    <td>Stilson</td>
-                    <td><i class="bi bi-x-circle error"></i></td>
-                    <td><i class="bi bi-pencil-square edit"></i></td>
-                  </tr>
-                  <tr>
-                    <td>Mirhell Dianey</td>
-                    <td>Mendoza Hernandez</td>
-                    <td>Martillo</td>
-                    <td><i class="bi bi-check2-circle success"></i></td>
-                    <td><i class="bi bi-pencil-square edit"></i></td>
-                  </tr>
-
                 </tbody>
               </table>
             </div>
