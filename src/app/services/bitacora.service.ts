@@ -17,13 +17,16 @@ export class BitacoraService {
   getHerramienta(): Observable<any[]> {
     return this.http.get<any>(`${Constants.baseUrl}products`);
   }
-  
+
   getbitacora(): Observable<any[]> {
     return this.http.get<any>(`${Constants.baseUrl}bitacora`);
   }
 
   postAsignar(dto: any): Observable<any> {
     return this.http.post<any>(`${Constants.baseUrl}asignar`, dto);
+  }
+  postactualizar(dto: any): Observable<any> {
+    return this.http.put<any>(`${Constants.baseUrl}actualizar`, dto);
   }
 }
 

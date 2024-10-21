@@ -23,8 +23,7 @@
               </select>
 
               <!-- Mostrar un mensaje de error si no se selecciona un valor -->
-              <div
-                *ngIf="formulario.get('empleadoId')?.invalid && formulario.get('empleadoId')?.touched">
+              <div *ngIf="formulario.get('empleadoId')?.invalid && formulario.get('empleadoId')?.touched">
                 <small style="color: red;">Selecciona un empleado.</small>
               </div>
 
@@ -39,8 +38,7 @@
               </select>
 
               <!-- Mostrar un mensaje de error si no se selecciona un valor -->
-              <div
-                *ngIf="formulario.get('herramientaId')?.invalid && formulario.get('herramientaId')?.touched">
+              <div *ngIf="formulario.get('herramientaId')?.invalid && formulario.get('herramientaId')?.touched">
                 <small style="color: red;">Selecciona una herramienta.</small>
               </div>
 
@@ -69,15 +67,18 @@
                       <i [ngClass]="bitacora.estatus ? 'bi bi-check2-circle success' : 'bi bi-x-circle error'"></i>
                     </td>
                     <td>
-                      <i class="bi bi-pencil-square edit"></i>
+                      <button type="button" class="btn btn-outline-secondary" (click)="toggleEstatus(bitacora)">
+                        <i class="bi bi-pencil-square edit"></i>
+                      </button>
                     </td>
                   </tr>
                 </tbody>
               </table>
-              <pagination-controls (pageChange)="p = $event"></pagination-controls> <!-- Añade controles de paginación -->
+              <pagination-controls (pageChange)="p = $event"></pagination-controls>
+              <!-- Añade controles de paginación -->
             </div>
-            
-            
+
+
           </div>
         </div>
 

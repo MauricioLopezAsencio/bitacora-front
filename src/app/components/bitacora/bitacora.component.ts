@@ -17,13 +17,20 @@ export class BitacoraComponent implements OnInit {
   registros: any[] = [];
   products: any[] = [];
   bitacora: any[] = [];
+  selectedBitacora: any = null;
+
   selectedRegistro: any;
   formulario: FormGroup;
+  formularioEdit: FormGroup;
 
   constructor(private bitacoraService: BitacoraService, private fb: FormBuilder) {
     this.formulario = this.fb.group({
       empleadoId: ['', Validators.required], // Validators.required marca el campo como obligatorio
       herramientaId: ['', Validators.required], // Validators.required marca el campo como obligatorio
+    });
+
+    this.formularioEdit = this.fb.group({
+      estatus: ['', Validators.required] // Solo estatus
     });
   }
 
@@ -33,8 +40,8 @@ export class BitacoraComponent implements OnInit {
   }
 
   loadRegistros(): void {
-     // Mostrar el SweetAlert con loader
-     Swal.fire({
+    // Mostrar el SweetAlert con loader
+    Swal.fire({
       title: 'Cargando...',
       text: 'Por favor, espere.',
       allowOutsideClick: false,
@@ -71,8 +78,8 @@ export class BitacoraComponent implements OnInit {
         this.bitacora = data.sort((a, b) => {
           return (a.estatus === false && b.estatus === true) ? -1 : (a.estatus === true && b.estatus === false) ? 1 : 0;
         });
-         // Oculta el loader al finalizar la carga
-         Swal.close();
+        // Oculta el loader al finalizar la carga
+        Swal.close();
         console.log('bitacora:', this.bitacora);
       },
       (error) => {
@@ -88,7 +95,7 @@ export class BitacoraComponent implements OnInit {
       // Enviar datos al servicio
       this.bitacoraService.postAsignar(this.formulario.value).subscribe(
         (response) => {
-          
+
           Swal.fire({
             title: "¡Registro exitoso!",
             text: "",
@@ -113,9 +120,48 @@ export class BitacoraComponent implements OnInit {
     }
   }
 
+  // Método para seleccionar el registro para editar
+  toggleEstatus(bitacora: any) {
+  
+    this.selectedBitacora = bitacora;
+
+    const nuevoEstatus = !bitacora.estatus; // Cambia el estatus
+    const actualizarEstatusDto: any = {
+      id: bitacora.id,
+      estatus: true,
+      nombreEmpleado: bitacora.nombreEmpleado,
+      nombreHerramienta: bitacora.nombreHerramienta
+    };
+
+    // Imprimir el registro seleccionado en la consola
+    console.log('Registro seleccionado:', nuevoEstatus);
+
+    this.bitacoraService.postactualizar(actualizarEstatusDto).subscribe(
+      (response) => {
+        // Actualiza el estatus en el objeto existente
+        bitacora.estatus = response.estatus;
+        console.log('Estatus actualizado:', response);
+        Swal.close();
+        this.getbitacora();
+
+      },
+      (error) => {
+        this.getbitacora();
+        Swal.fire({
+          title: "¡Registro actualizado exitosomente!",
+          text: "",
+          icon: "success"
+        });
+      }
+    );
+
+  }
+
   onSelectRegistro(event: Event): void {
     const selectElement = event.target as HTMLSelectElement;
     this.selectedRegistro = this.registros[selectElement.selectedIndex]; // Obtén el registro seleccionado
     console.log('Registro seleccionado:', this.selectedRegistro);
   }
+
+
 }
