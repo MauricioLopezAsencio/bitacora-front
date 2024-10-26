@@ -1,4 +1,35 @@
-.edit-form {
-  max-width: 400px;
-  margin: auto;
+html,
+body {
+    height: 100%;
 }
+
+.dashboard-header {
+    color: white;
+    font-size: 25px;
+    text-shadow: 4px 2px 2px rgb(0, 0, 0);
+}
+
+.dashboard-container {
+    height: 70vh;
+    /* Altura completa de la ventana */
+}
+
+.card {
+    background: rgb(1, 1, 88);
+    color: white;
+    box-shadow: 6px 6px 2px rgb(0, 0, 0);
+}
+.success{
+    font-size: 25px;
+    color: green;
+}
+.error{
+    font-size: 25px;
+    color: red;
+}
+.edit{
+    font-size: 24px;
+    color: skyblue;
+}
+
+

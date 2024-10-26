@@ -1,1 +1,70 @@
-<p>herramienta works!</p>
+<div class="container d-flex justify-content-center align-items-center dashboard-container mt-5">
+    <div class="w-100 mt-5">
+        <div class="dashboard-header text-center mb-4 fw-bold mt-5">
+            <h1>Herramientas</h1>
+        </div>
+
+        <!-- Card Row -->
+        <div class="row g-4 justify-content-center">
+            <!-- Bitácora Card -->
+            <div class="">
+                <div class="card text-center h-100">
+                    <div class="card-body">
+
+                        <form [formGroup]="formulario" (ngSubmit)="onSubmit()">
+                            <input class="form-control form-control-lg mb-3" formControlName="name"
+                                 placeholder="Ingresa el nombre de la herramienta" />
+
+                            <!-- Mostrar un mensaje de error si no se selecciona un valor -->
+                            <div *ngIf="formulario.get('name')?.invalid && formulario.get('name')?.touched">
+                                <small style="color: red;">Ingresa el nombre de la herramienta.</small>
+                            </div>
+
+                            <button class="btn btn-success" type="submit"
+                                [disabled]="formulario.invalid">Enviar</button>
+                        </form>
+
+
+
+                        <div class="table-responsive mt-2">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Id</th>
+                                        <th scope="col">Nombre</th>
+                                        <th scope="col">Status</th>
+                                        <th scope="col">Editar</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr
+                                        *ngFor="let herramienta of products | paginate: { itemsPerPage: itemsPerPage, currentPage: p }">
+
+                                        <td>{{ herramienta.id }}</td>
+                                        <td>{{ herramienta.nombre }}</td>
+                                        <td>
+                                            <i
+                                                [ngClass]="herramienta.estatus ? 'bi bi-check2-circle success' : 'bi bi-x-circle error'"></i>
+                                        </td>
+                                        <td>
+                                            <button type="button" class="btn btn-outline-secondary"
+                                                (click)="toggleEstatus(herramienta)">
+                                                <i class="bi bi-pencil-square edit"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <pagination-controls (pageChange)="p = $event"></pagination-controls>
+                            <!-- Añade controles de paginación -->
+                        </div>
+
+
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</div>

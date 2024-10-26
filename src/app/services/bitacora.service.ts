@@ -17,6 +17,10 @@ export class BitacoraService {
   getHerramienta(): Observable<any[]> {
     return this.http.get<any>(`${Constants.baseUrl}products`);
   }
+  
+  productsActivos(): Observable<any[]> {
+    return this.http.get<any>(`${Constants.baseUrl}productsActivos`);
+  }
 
   getbitacora(): Observable<any[]> {
     return this.http.get<any>(`${Constants.baseUrl}bitacora`);
@@ -25,8 +29,17 @@ export class BitacoraService {
   postAsignar(dto: any): Observable<any> {
     return this.http.post<any>(`${Constants.baseUrl}asignar`, dto);
   }
+
+  saveHerramienta(dto: any): Observable<any> {
+    return this.http.post<any>(`${Constants.baseUrl}saveHerramienta`, dto);
+  }
+
   postactualizar(dto: any): Observable<any> {
     return this.http.put<any>(`${Constants.baseUrl}actualizar`, dto);
+  }
+
+  inactivarHerramienta(id: number): Observable<any> {
+    return this.http.put(`${Constants.baseUrl}inactivarHerramienta/${id}`, {});
   }
 }
 

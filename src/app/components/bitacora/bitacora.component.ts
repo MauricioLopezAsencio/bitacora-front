@@ -60,7 +60,7 @@ export class BitacoraComponent implements OnInit {
       }
     );
 
-    this.bitacoraService.getHerramienta().subscribe(
+    this.bitacoraService.productsActivos().subscribe(
       (data) => {
         this.products = data;
         console.log('Registros:', this.products);

@@ -1,2 +1,18 @@
 /* You can add global styles to this file, and also import other style files */
 @import "~bootstrap/dist/css/bootstrap.css";
+
+body {
+    background-image: url('assets/backgroundtools.png');
+    background-size: cover;
+    /* La imagen cubre todo el área */
+    background-repeat: no-repeat;
+    /* Evita que la imagen se repita */
+    background-position: center;
+    /* Centra la imagen */
+    background-attachment: fixed;
+    /* Mantiene la imagen fija en desplazamientos */
+    min-height: 100vh;
+    /* Asegura que el fondo cubra al menos toda la altura visible */
+    margin: 0;
+    padding: 0;
+}
