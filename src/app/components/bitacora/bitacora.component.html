@@ -18,7 +18,7 @@
                 <option value="" disabled selected>Seleccione un empleado</option>
 
                 <option *ngFor="let registro of registros" [value]="registro.id">
-                  {{ registro.nombre }} {{ registro.primerApellido }} {{ registro.segundoApellido }}
+                  {{ registro.nombre }}
                 </option>
               </select>
 
