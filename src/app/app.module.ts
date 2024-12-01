@@ -1,14 +1,17 @@
-import { NgModule } from '@angular/core';
-import { BrowserModule } from '@angular/platform-browser';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { HttpClientModule } from '@angular/common/http';
+import { NgModule } from "@angular/core";
+import { AppComponent } from "./app.component";
+import { BitacoraComponent } from "./components/bitacora/bitacora.component";
+import { HerramientaComponent } from "./components/herramienta/herramienta.component";
+import { DashboardComponent } from "./components/dashboard/dashboard.component";
+import { BrowserModule } from "@angular/platform-browser";
+import { AppRoutingModule } from "./app-routing.module";
+import { FormsModule, ReactiveFormsModule } from "@angular/forms";
+import { HttpClientModule } from "@angular/common/http";
+import { NgxPaginationModule } from "ngx-pagination";
+import { DropdownModule } from 'primeng/dropdown';
+import { MultiSelectModule } from 'primeng/multiselect';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
-import { AppRoutingModule } from './app-routing.module';
-import { AppComponent } from './app.component';
-import { BitacoraComponent } from './components/bitacora/bitacora.component';
-import { DashboardComponent } from './components/dashboard/dashboard.component';
-import { HerramientaComponent } from './components/herramienta/herramienta.component';
-import { NgxPaginationModule } from 'ngx-pagination';
 
 @NgModule({
   declarations: [
@@ -23,7 +26,10 @@ import { NgxPaginationModule } from 'ngx-pagination';
     ReactiveFormsModule,
     FormsModule,
     HttpClientModule,
-    NgxPaginationModule 
+    NgxPaginationModule,
+    DropdownModule,
+    MultiSelectModule,
+    BrowserAnimationsModule
   ],
   providers: [],
   bootstrap: [AppComponent]

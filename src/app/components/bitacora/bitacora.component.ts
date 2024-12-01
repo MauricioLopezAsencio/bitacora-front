@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { BitacoraService } from 'src/app/services/bitacora.service';
 import Swal from 'sweetalert2';
@@ -19,11 +19,13 @@ export class BitacoraComponent implements OnInit {
   bitacora: any[] = [];
   selectedBitacora: any = null;
 
+  selectedCities!: any[];
+
   selectedRegistro: any;
   formulario: FormGroup;
   formularioEdit: FormGroup;
 
-  constructor(private bitacoraService: BitacoraService, private fb: FormBuilder) {
+  constructor(private bitacoraService: BitacoraService, private fb: FormBuilder,private cdr: ChangeDetectorRef) {
     this.formulario = this.fb.group({
       empleadoId: ['', Validators.required], // Validators.required marca el campo como obligatorio
       herramientaId: ['', Validators.required], // Validators.required marca el campo como obligatorio
@@ -52,7 +54,10 @@ export class BitacoraComponent implements OnInit {
 
     this.bitacoraService.getEmpleados().subscribe(
       (data) => {
-        this.registros = data;
+        this.registros = data.map((empleado) => ({
+          id: empleado.id,
+          nombre: empleado.nombre,
+        }));
         console.log('Registros:', this.registros);
       },
       (error) => {
@@ -62,7 +67,10 @@ export class BitacoraComponent implements OnInit {
 
     this.bitacoraService.productsActivos().subscribe(
       (data) => {
-        this.products = data;
+        this.products = data.map((product) => ({
+          herramientaId: product.id,
+          nombre: product.nombre,
+        }));
         console.log('Registros:', this.products);
       },
       (error) => {
@@ -91,6 +99,7 @@ export class BitacoraComponent implements OnInit {
   }
 
   onSubmit() {
+    console.log("Formulario:", this.formulario.value);
     if (this.formulario.valid) {
       // Enviar datos al servicio
       this.bitacoraService.postAsignar(this.formulario.value).subscribe(
@@ -146,12 +155,13 @@ export class BitacoraComponent implements OnInit {
 
       },
       (error) => {
-        this.getbitacora();
         Swal.fire({
           title: "¡Registro actualizado exitosomente!",
           text: "",
           icon: "success"
         });
+        
+        this.getbitacora();
       }
     );
 

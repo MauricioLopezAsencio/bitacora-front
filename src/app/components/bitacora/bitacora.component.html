@@ -11,40 +11,51 @@
         <div class="card text-center h-100">
           <div class="card-body">
 
-            <form [formGroup]="formulario" (ngSubmit)="onSubmit()">
-              <select class="form-select form-select-lg mb-3" formControlName="empleadoId"
-                aria-label="Large select example">
-                <!-- Opción por defecto con un valor vacío -->
-                <option value="" disabled selected>Seleccione un empleado</option>
 
-                <option *ngFor="let registro of registros" [value]="registro.id">
-                  {{ registro.nombre }}
-                </option>
-              </select>
+            <div class="row">
+              <form [formGroup]="formulario" (ngSubmit)="onSubmit()">
 
-              <!-- Mostrar un mensaje de error si no se selecciona un valor -->
-              <div *ngIf="formulario.get('empleadoId')?.invalid && formulario.get('empleadoId')?.touched">
-                <small style="color: red;">Selecciona un empleado.</small>
-              </div>
+                <div class="col-12">
+                  <!-- Dropdown de empleado -->
+                  <p-dropdown [options]="registros" optionLabel="nombre" optionValue="id"
+                    placeholder="=== Selecciona empleado ===" formControlName="empleadoId" filter="true"
+                    filterPlaceholder="Buscar empleado" [style]="{ 'width': '87%', 'border': 'none' }">
+                    <ng-template let-item pTemplate="item">
+                      <div class="item-content">
+                        {{ item.nombre }}
+                      </div>
+                    </ng-template>
+                  </p-dropdown>
 
-              <select class="form-select form-select-lg mb-3" formControlName="herramientaId"
-                aria-label="Large select example">
-                <!-- Opción por defecto con un valor vacío -->
-                <option value="" disabled selected>Seleccione una herramienta</option>
+                  <!-- Mensaje de error -->
+                  <div *ngIf="formulario.get('empleadoId')?.invalid && formulario.get('empleadoId')?.touched">
+                    <small style="color: red;">Selecciona un empleado.</small>
+                  </div>
+                </div>
+<br>
+                <div class="col-12">
+                  <!-- Dropdown de herramienta -->
+                  <p-dropdown [options]="products" optionLabel="nombre" optionValue="herramientaId"
+                    placeholder="=== Selecciona herramienta ===" formControlName="herramientaId" filter="true"
+                    filterPlaceholder="Buscar herramienta" [style]="{ 'width': '87%', 'border': 'none' }">
+                    <ng-template let-item pTemplate="item">
+                      <div class="item-content">
+                        {{ item.nombre }}
+                      </div>
+                    </ng-template>
+                  </p-dropdown>
 
-                <option *ngFor="let registro of products" [value]="registro.id">
-                  {{ registro.nombre }}
-                </option>
-              </select>
+                  <!-- Mensaje de error -->
+                  <div *ngIf="formulario.get('herramientaId')?.invalid && formulario.get('herramientaId')?.touched">
+                    <small style="color: red;">Selecciona una herramienta.</small>
+                  </div>
+                </div>
 
-              <!-- Mostrar un mensaje de error si no se selecciona un valor -->
-              <div *ngIf="formulario.get('herramientaId')?.invalid && formulario.get('herramientaId')?.touched">
-                <small style="color: red;">Selecciona una herramienta.</small>
-              </div>
-
-              <button class="btn btn-success" type="submit" [disabled]="formulario.invalid">Enviar</button>
-            </form>
-
+                <br>
+                <!-- Botón para enviar -->
+                <button class="btn btn-success" type="submit" [disabled]="formulario.invalid">Enviar</button>
+              </form>
+            </div>
 
 
             <div class="table-responsive mt-2">
