@@ -19,17 +19,44 @@ body {
     color: white;
     box-shadow: 6px 6px 2px rgb(0, 0, 0);
 }
-.success{
+
+.success {
     font-size: 25px;
     color: green;
 }
-.error{
+
+.error {
     font-size: 25px;
     color: red;
 }
-.edit{
+
+.edit {
     font-size: 24px;
     color: skyblue;
 }
 
+.hidden {
+    display: none;
+}
 
+.custom-date-input {
+    border: none;
+    font-weight: bold;
+    outline: none;
+    padding-left: 15px;
+    font-size: 20px;
+    text-align: left;
+}
+
+
+.custom-date-input {
+    margin-left: 20px;
+
+}
+
+.item-content {
+    white-space: normal;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    max-width: 100%;
+}
