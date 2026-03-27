@@ -1,5 +1,6 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { finalize } from 'rxjs/operators';
 import { BitacoraService } from 'src/app/services/bitacora.service';
 import Swal from 'sweetalert2';
 
@@ -81,21 +82,19 @@ export class BitacoraComponent implements OnInit {
 
   }
   getbitacora(): void {
-    this.bitacoraService.getbitacora().subscribe(
+    this.bitacoraService.getbitacora().pipe(
+      finalize(() => Swal.close())
+    ).subscribe(
       (data) => {
-        this.bitacora = data.sort((a, b) => {
+        this.bitacora = (data ?? []).sort((a: any, b: any) => {
           return (a.estatus === false && b.estatus === true) ? -1 : (a.estatus === true && b.estatus === false) ? 1 : 0;
         });
-        // Oculta el loader al finalizar la carga
-        Swal.close();
         console.log('bitacora:', this.bitacora);
       },
       (error) => {
         console.error('Error al cargar registros', error);
       }
     );
-
-
   }
 
   onSubmit() {
@@ -145,25 +144,24 @@ export class BitacoraComponent implements OnInit {
     // Imprimir el registro seleccionado en la consola
     console.log('Registro seleccionado:', nuevoEstatus);
 
-    this.bitacoraService.postactualizar(actualizarEstatusDto).subscribe(
-      (response) => {
-        // Actualiza el estatus en el objeto existente
-        bitacora.estatus = response.estatus;
-        console.log('Estatus actualizado:', response);
-        Swal.close();
-        this.getbitacora();
-
-      },
-      (error) => {
+    this.bitacoraService.postactualizar(actualizarEstatusDto).subscribe({
+      next: (response) => {
         Swal.fire({
-          title: "¡Registro actualizado exitosomente!",
-          text: "",
-          icon: "success"
+          title: response?.message ?? '¡Registro actualizado!',
+          icon: 'success',
+          timer: 2000,
+          showConfirmButton: false
         });
-        
         this.getbitacora();
+      },
+      error: (err) => {
+        Swal.fire({
+          title: 'No se pudo actualizar',
+          text: err?.error?.message ?? 'Ocurrió un error inesperado.',
+          icon: 'error'
+        });
       }
-    );
+    });
 
   }
 

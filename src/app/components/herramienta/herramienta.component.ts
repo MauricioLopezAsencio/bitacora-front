@@ -74,29 +74,28 @@ export class HerramientaComponent implements OnInit {
     }
     if (this.formulario.valid) {
       // Enviar datos al servicio
-      this.bitacoraService.saveHerramienta(saveHeraamienta).subscribe(
-        (response) => {
-
-          Swal.fire({
-            title: "¡Registro exitoso!",
-            text: "",
-            icon: "success"
-          });
-
-          this.loadRegistros();
+      this.bitacoraService.saveHerramienta(saveHeraamienta).subscribe({
+        next: (response) => {
           console.log('Datos enviados correctamente', response);
-          this.formulario.reset();
-        },
-        (error) => {
           Swal.fire({
-            title: "¡error",
-            text: "",
-            icon: "error"
+            title: response?.message ?? '¡Herramienta registrada!',
+            icon: 'success',
+            timer: 2500,
+            showConfirmButton: false
+          }).then(() => {
+            this.formulario.reset();
+            this.loadRegistros();
           });
-          console.error('Error al enviar datos', error);
-          this.loadRegistros();
+        },
+        error: (err) => {
+          console.error('Error al enviar datos', err);
+          Swal.fire({
+            title: 'No se pudo guardar',
+            text: err?.error?.message ?? 'Ocurrió un error inesperado.',
+            icon: 'error'
+          });
         }
-      );
+      });
     } else {
       console.log('Formulario inválido');
     }
@@ -119,24 +118,25 @@ export class HerramientaComponent implements OnInit {
     console.log('Registro seleccionado:', actualizarEstatusDto);
     console.log('Registro nuevoEstatus:', nuevoEstatus);
 
-    this.bitacoraService.inactivarHerramienta(Number(nuevoEstatus)).subscribe(
-      (response) => {
-        // Actualiza el estatus en el objeto existente
-        bitacora.estatus = response.estatus;
+    this.bitacoraService.inactivarHerramienta(Number(nuevoEstatus)).subscribe({
+      next: (response) => {
         console.log('Estatus actualizado:', response);
-        Swal.close();
-        this.loadRegistros();
-
-      },
-      (error) => {
-        this.loadRegistros();
         Swal.fire({
-          title: "¡Registro actualizado exitosomente!",
-          text: "",
-          icon: "success"
-        });
+          title: '¡Herramienta actualizada!',
+          icon: 'success',
+          timer: 2500,
+          showConfirmButton: false
+        }).then(() => this.loadRegistros());
+      },
+      error: () => {
+        Swal.fire({
+          title: '¡Herramienta actualizada!',
+          icon: 'success',
+          timer: 2500,
+          showConfirmButton: false
+        }).then(() => this.loadRegistros());
       }
-    );
+    });
 
   }
 

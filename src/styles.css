@@ -10,11 +10,14 @@
   --color-danger:         #e53935;
   --color-warning:        #fb8c00;
 
-  /* Superficies glass */
-  --glass-bg:             rgba(255, 255, 255, 0.10);
-  --glass-bg-strong:      rgba(255, 255, 255, 0.15);
-  --glass-border:         rgba(255, 255, 255, 0.20);
-  --glass-shadow:         0 8px 32px rgba(0, 0, 0, 0.40);
+  /* Color secundario (mismo tono que navbar/footer) */
+  --color-secondary:      rgb(15, 20, 70);
+
+  /* Superficies glass — usan el azul secundario como base */
+  --glass-bg:             rgba(15, 20, 70, 0.72);
+  --glass-bg-strong:      rgba(15, 20, 70, 0.88);
+  --glass-border:         rgba(66, 165, 245, 0.22);
+  --glass-shadow:         0 8px 32px rgba(0, 0, 0, 0.45);
 
   /* Navbar */
   --navbar-bg:            rgba(15, 20, 70, 0.85);
@@ -98,7 +101,7 @@ body {
 }
 
 .modern-table thead tr {
-  background: rgba(66, 165, 245, 0.20);
+  background: rgba(15, 20, 70, 0.95);
 }
 
 .modern-table thead th {
@@ -117,7 +120,7 @@ body {
 }
 
 .modern-table tbody tr:hover {
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(15, 20, 70, 0.90);
 }
 
 .modern-table tbody td {
