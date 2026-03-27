@@ -1,7 +1,102 @@
-footer{
-    
-    margin-top: 5%;
+/* ============================================================
+   NAVBAR
+   ============================================================ */
+.app-navbar {
+  background: var(--navbar-bg);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--navbar-border);
+  padding: 0.55rem 0;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.35);
 }
-.footer-copyright{
-    color: white;
+
+/* Brand */
+.brand-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-decoration: none;
+  color: #ffffff !important;
+}
+
+.brand-icon {
+  font-size: 1.4rem;
+  color: var(--color-accent);
+}
+
+.brand-text {
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: #ffffff;
+}
+
+/* Nav links */
+.nav-item-link {
+  color: rgba(255, 255, 255, 0.75) !important;
+  font-size: 0.92rem;
+  font-weight: 500;
+  border-radius: var(--radius-sm);
+  padding: 0.4rem 0.85rem !important;
+  transition: color var(--transition-fast), background var(--transition-fast);
+}
+
+.nav-item-link:hover {
+  color: #ffffff !important;
+  background: rgba(255, 255, 255, 0.10);
+}
+
+.nav-active {
+  color: var(--color-accent) !important;
+  background: rgba(66, 165, 245, 0.15);
+}
+
+/* Mobile collapsed menu */
+@media (max-width: 767.98px) {
+  .navbar-collapse {
+    background: rgba(15, 20, 70, 0.95);
+    border-radius: var(--radius-md);
+    padding: 0.5rem 0.75rem;
+    margin-top: 0.5rem;
+    border: 1px solid var(--navbar-border);
+  }
+
+  .nav-item-link {
+    padding: 0.55rem 0.75rem !important;
+  }
+}
+
+/* ============================================================
+   MAIN CONTENT
+   ============================================================ */
+.main-content {
+  min-height: calc(100vh - 56px - 52px);
+}
+
+/* ============================================================
+   FOOTER
+   ============================================================ */
+.app-footer {
+  background: rgba(15, 20, 70, 0.70);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-top: 1px solid var(--navbar-border);
+  padding: 0.85rem 1rem;
+}
+
+.footer-inner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  color: rgba(255, 255, 255, 0.65);
+  font-size: 0.85rem;
+}
+
+.footer-icon {
+  color: var(--color-accent);
+  font-size: 0.9rem;
 }

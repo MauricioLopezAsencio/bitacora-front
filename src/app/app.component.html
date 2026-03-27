@@ -1,31 +1,53 @@
-<div>
-  <nav class="navbar navbar-expand navbar-dark bg-dark">
-    <a href="" class="navbar-brand">HOME</a>
-    <div class="navbar-nav mr-auto">
-      <li class="nav-item">
-        <a routerLink="" class="nav-link">Dashboard</a>
-      </li>
-      <li class="nav-item">
-        <a routerLink="bitacora" class="nav-link">Bitacora</a>
-      </li>
-      <li class="nav-item">
-        <a routerLink="herramienta" class="nav-link">Herramienta</a>
-      </li>
+<nav class="navbar navbar-expand-md navbar-dark app-navbar">
+  <div class="container-fluid px-3 px-md-4">
+
+    <!-- Logo / Brand -->
+    <a routerLink="" class="navbar-brand brand-logo">
+      <i class="bi bi-tools brand-icon"></i>
+      <span class="brand-text">Bitácora</span>
+    </a>
+
+    <!-- Hamburger -->
+    <button class="navbar-toggler border-0" type="button"
+            data-bs-toggle="collapse" data-bs-target="#navMenu"
+            aria-controls="navMenu" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <!-- Links -->
+    <div class="collapse navbar-collapse" id="navMenu">
+      <ul class="navbar-nav ms-auto gap-md-1">
+        <li class="nav-item">
+          <a routerLink="" routerLinkActive="nav-active" [routerLinkActiveOptions]="{exact:true}"
+             class="nav-link nav-item-link">
+            <i class="bi bi-house-door me-1"></i>Dashboard
+          </a>
+        </li>
+        <li class="nav-item">
+          <a routerLink="bitacora" routerLinkActive="nav-active"
+             class="nav-link nav-item-link">
+            <i class="bi bi-card-checklist me-1"></i>Bitácora
+          </a>
+        </li>
+        <li class="nav-item">
+          <a routerLink="herramienta" routerLinkActive="nav-active"
+             class="nav-link nav-item-link">
+            <i class="bi bi-wrench me-1"></i>Herramienta
+          </a>
+        </li>
+      </ul>
     </div>
-  </nav>
 
-  <div class="container mt-3">
-    <router-outlet></router-outlet>
   </div>
-</div>
-<!-- Footer -->
-<footer class="page-footer font-small blue mt-5">
+</nav>
 
-  <!-- Copyright -->
-  <div class="footer-copyright text-center py-5">© 2024 Copyright:
-    <a > Mauricio López Asencio</a>
+<main class="main-content container-fluid px-3 px-md-4 py-4">
+  <router-outlet></router-outlet>
+</main>
+
+<footer class="app-footer">
+  <div class="footer-inner">
+    <i class="bi bi-tools footer-icon"></i>
+    <span>© 2024 Mauricio López Asencio</span>
   </div>
-  <!-- Copyright -->
-
 </footer>
-<!-- Footer -->

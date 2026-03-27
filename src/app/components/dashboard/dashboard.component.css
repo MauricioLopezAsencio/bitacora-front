@@ -1,35 +1,95 @@
-html,
-body {
-    height: 100%;
+/* ============================================================
+   DASHBOARD
+   ============================================================ */
+.dashboard-wrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: calc(100vh - 56px - 52px - 3rem);
+  padding: 2rem 0;
 }
 
-.my-large-icon {
-    font-size: 40px;
-    /* Puedes ajustar el tamaño como desees */
+/* ---- Cards ---- */
+.dash-card-link {
+  display: block;
+  text-decoration: none;
+  outline: none;
+  height: 100%;
 }
 
-.dashboard-header {
-    color: white;
-    font-size: 25px;
-    text-shadow: 4px 2px 2px rgb(0, 0, 0);
+.dash-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 2.25rem 1.75rem 1.75rem;
+  height: 100%;
+  transition: transform var(--transition-base), box-shadow var(--transition-base),
+              background var(--transition-base);
+  cursor: pointer;
 }
 
-.dashboard-container {
-    height: 70vh;
-    /* Altura completa de la ventana */
+.dash-card:hover {
+  transform: translateY(-6px);
+  background: var(--glass-bg-strong);
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.55), 0 0 0 1px rgba(66, 165, 245, 0.35);
 }
 
-.card {
-    font-size: 18px;
-    background: rgb(1, 1, 88);
-    color: white;
-    box-shadow: 6px 6px 2px rgb(0, 0, 0);
+/* Icon */
+.dash-card-icon {
+  width: 5rem;
+  height: 5rem;
+  border-radius: 50%;
+  background: rgba(66, 165, 245, 0.15);
+  border: 1px solid rgba(66, 165, 245, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.25rem;
+  transition: background var(--transition-base);
 }
 
-.card:hover {
-    transform: scale(1.05);
-    background: rgb(0, 0, 170);
+.dash-card:hover .dash-card-icon {
+  background: rgba(66, 165, 245, 0.28);
 }
-a {
-    outline: none;
+
+.dash-card-icon i {
+  font-size: 2.2rem;
+  color: var(--color-accent);
+}
+
+/* Text */
+.dash-card-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin-bottom: 0.5rem;
+}
+
+.dash-card-desc {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.68);
+  margin-bottom: 1.25rem;
+  flex: 1;
+}
+
+.dash-card-cta {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--color-accent);
+  letter-spacing: 0.03em;
+  display: flex;
+  align-items: center;
+}
+
+/* ---- Responsive ---- */
+@media (max-width: 575.98px) {
+  .dashboard-wrapper {
+    min-height: auto;
+    padding: 1rem 0;
   }
+
+  .dash-card {
+    padding: 1.75rem 1.25rem 1.25rem;
+  }
+}

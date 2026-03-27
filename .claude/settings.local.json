@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mvn spring-boot:run:*)",
+      "Bash(mvn dependency:tree:*)",
+      "Bash(mvn dependency:build-classpath:*)",
+      "Bash(jar tf:*)",
+      "Bash(netstat:*)",
+      "Bash(taskkill:*)",
+      "Bash(cmd:*)",
+      "Bash(xargs grep -l \"EnableJdbcHttpSession\\\\|SessionRepository\\\\|@EnableSpringHttpSession\")",
+      "mcp__ide__getDiagnostics",
+      "Bash(ls:*)",
+      "Bash(./mvnw compile:*)",
+      "Bash(find /d/casystems/VALIA/VALIA-CORE/src/main/java -name *Rest*.java -o -name *Api*.java)"
+    ]
+  }
+}

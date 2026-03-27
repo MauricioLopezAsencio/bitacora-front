@@ -1,100 +1,116 @@
-<div class="container d-flex justify-content-center align-items-center dashboard-container mt-5">
-  <div class="w-100 mt-5">
-    <div class="dashboard-header text-center mb-4 fw-bold mt-5">
-      <h1>Bitacora</h1>
+<div class="page-wrapper">
+
+  <!-- Header -->
+  <div class="text-center mb-4">
+    <h1 class="page-title">
+      <i class="bi bi-card-checklist me-2"></i>Bitácora
+    </h1>
+  </div>
+
+  <div class="glass-card p-0 overflow-hidden">
+
+    <!-- Sección formulario -->
+    <div class="form-section">
+      <h6 class="section-label">
+        <i class="bi bi-plus-circle me-1"></i>Nuevo registro
+      </h6>
+
+      <form [formGroup]="formulario" (ngSubmit)="onSubmit()">
+        <div class="row g-3 align-items-end">
+
+          <!-- Empleado -->
+          <div class="col-12 col-md-5">
+            <label class="form-label-modern">Empleado</label>
+            <p-dropdown
+              [options]="registros"
+              optionLabel="nombre"
+              optionValue="id"
+              placeholder="Selecciona empleado"
+              formControlName="empleadoId"
+              filter="true"
+              filterPlaceholder="Buscar empleado"
+              styleClass="dropdown-modern"
+              [style]="{'width':'100%'}">
+              <ng-template let-item pTemplate="item">
+                <div class="item-content">{{ item.nombre }}</div>
+              </ng-template>
+            </p-dropdown>
+            <div *ngIf="formulario.get('empleadoId')?.invalid && formulario.get('empleadoId')?.touched">
+              <small class="field-error">Selecciona un empleado.</small>
+            </div>
+          </div>
+
+          <!-- Herramienta -->
+          <div class="col-12 col-md-5">
+            <label class="form-label-modern">Herramienta</label>
+            <p-dropdown
+              [options]="products"
+              optionLabel="nombre"
+              optionValue="herramientaId"
+              placeholder="Selecciona herramienta"
+              formControlName="herramientaId"
+              filter="true"
+              filterPlaceholder="Buscar herramienta"
+              styleClass="dropdown-modern"
+              [style]="{'width':'100%'}">
+              <ng-template let-item pTemplate="item">
+                <div class="item-content">{{ item.nombre }}</div>
+              </ng-template>
+            </p-dropdown>
+            <div *ngIf="formulario.get('herramientaId')?.invalid && formulario.get('herramientaId')?.touched">
+              <small class="field-error">Selecciona una herramienta.</small>
+            </div>
+          </div>
+
+          <!-- Botón -->
+          <div class="col-12 col-md-2 d-flex">
+            <button class="btn btn-submit w-100" type="submit" [disabled]="formulario.invalid">
+              <i class="bi bi-send me-1"></i>Enviar
+            </button>
+          </div>
+
+        </div>
+      </form>
     </div>
 
-    <!-- Card Row -->
-    <div class="row g-4 justify-content-center">
-      <!-- Bitácora Card -->
-      <div class="">
-        <div class="card text-center h-100">
-          <div class="card-body">
-
-
-            <div class="row">
-              <form [formGroup]="formulario" (ngSubmit)="onSubmit()">
-
-                <div class="col-12">
-                  <!-- Dropdown de empleado -->
-                  <p-dropdown [options]="registros" optionLabel="nombre" optionValue="id"
-                    placeholder="=== Selecciona empleado ===" formControlName="empleadoId" filter="true"
-                    filterPlaceholder="Buscar empleado" [style]="{ 'width': '87%', 'border': 'none' }">
-                    <ng-template let-item pTemplate="item">
-                      <div class="item-content">
-                        {{ item.nombre }}
-                      </div>
-                    </ng-template>
-                  </p-dropdown>
-
-                  <!-- Mensaje de error -->
-                  <div *ngIf="formulario.get('empleadoId')?.invalid && formulario.get('empleadoId')?.touched">
-                    <small style="color: red;">Selecciona un empleado.</small>
-                  </div>
-                </div>
-<br>
-                <div class="col-12">
-                  <!-- Dropdown de herramienta -->
-                  <p-dropdown [options]="products" optionLabel="nombre" optionValue="herramientaId"
-                    placeholder="=== Selecciona herramienta ===" formControlName="herramientaId" filter="true"
-                    filterPlaceholder="Buscar herramienta" [style]="{ 'width': '87%', 'border': 'none' }">
-                    <ng-template let-item pTemplate="item">
-                      <div class="item-content">
-                        {{ item.nombre }}
-                      </div>
-                    </ng-template>
-                  </p-dropdown>
-
-                  <!-- Mensaje de error -->
-                  <div *ngIf="formulario.get('herramientaId')?.invalid && formulario.get('herramientaId')?.touched">
-                    <small style="color: red;">Selecciona una herramienta.</small>
-                  </div>
-                </div>
-
-                <br>
-                <!-- Botón para enviar -->
-                <button class="btn btn-success" type="submit" [disabled]="formulario.invalid">Enviar</button>
-              </form>
-            </div>
-
-
-            <div class="table-responsive mt-2">
-              <table class="table">
-                <thead>
-                  <tr>
-                    <th scope="col">Nombre</th>
-                    <th scope="col">Fecha</th>
-                    <th scope="col">Herramienta</th>
-                    <th scope="col">Status</th>
-                    <th scope="col">Editar</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr *ngFor="let bitacora of bitacora | paginate: { itemsPerPage: itemsPerPage, currentPage: p }">
-                    <td>{{ bitacora.nombreEmpleado }}</td>
-                    <td>{{ bitacora.fecha}}</td>
-                    <td>{{ bitacora.nombreHerramienta }}</td>
-                    <td>
-                      <i [ngClass]="bitacora.estatus ? 'bi bi-check2-circle success' : 'bi bi-x-circle error'"></i>
-                    </td>
-                    <td>
-                      <button type="button" class="btn btn-outline-secondary" (click)="toggleEstatus(bitacora)">
-                        <i class="bi bi-pencil-square edit"></i>
-                      </button>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-              <pagination-controls (pageChange)="p = $event"></pagination-controls>
-              <!-- Añade controles de paginación -->
-            </div>
-
-
-          </div>
-        </div>
-
+    <!-- Sección tabla -->
+    <div class="table-section">
+      <div class="table-responsive">
+        <table class="modern-table">
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Fecha</th>
+              <th>Herramienta</th>
+              <th class="text-center">Estado</th>
+              <th class="text-center">Acción</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of bitacora | paginate: { itemsPerPage: itemsPerPage, currentPage: p }">
+              <td>{{ item.nombreEmpleado }}</td>
+              <td>{{ item.fecha }}</td>
+              <td>{{ item.nombreHerramienta }}</td>
+              <td class="text-center">
+                <span [ngClass]="item.estatus ? 'status-badge active' : 'status-badge inactive'">
+                  <i [class]="item.estatus ? 'bi bi-check-circle-fill' : 'bi bi-x-circle-fill'"></i>
+                  {{ item.estatus ? 'Activo' : 'Inactivo' }}
+                </span>
+              </td>
+              <td class="text-center">
+                <button class="btn-edit" type="button" (click)="toggleEstatus(item)" title="Cambiar estado">
+                  <i class="bi bi-pencil-square"></i>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
 
+      <div class="pagination-wrapper">
+        <pagination-controls (pageChange)="p = $event"></pagination-controls>
+      </div>
     </div>
+
   </div>
 </div>

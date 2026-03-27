@@ -1,35 +1,87 @@
-html,
-body {
-    height: 100%;
+/* ============================================================
+   HERRAMIENTA
+   ============================================================ */
+.page-wrapper {
+  max-width: 1100px;
+  margin: 0 auto;
 }
 
-.dashboard-header {
-    color: white;
-    font-size: 25px;
-    text-shadow: 4px 2px 2px rgb(0, 0, 0);
+/* Etiqueta de sección */
+.section-label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--color-accent);
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  margin-bottom: 1rem;
 }
 
-.dashboard-container {
-    height: 70vh;
-    /* Altura completa de la ventana */
+/* Tabla */
+.table-section {
+  padding: 0 0.25rem 1.25rem;
 }
 
-.card {
-    background: rgb(1, 1, 88);
-    color: white;
-    box-shadow: 6px 6px 2px rgb(0, 0, 0);
-}
-.success{
-    font-size: 25px;
-    color: green;
-}
-.error{
-    font-size: 25px;
-    color: red;
-}
-.edit{
-    font-size: 24px;
-    color: skyblue;
+.id-col {
+  width: 4rem;
+  color: rgba(255, 255, 255, 0.50);
+  font-size: 0.8rem;
 }
 
+.pagination-wrapper {
+  display: flex;
+  justify-content: center;
+  padding: 0 1rem;
+}
 
+/* Input moderno */
+.form-control-modern {
+  background: rgba(255, 255, 255, 0.10) !important;
+  border: 1px solid var(--glass-border) !important;
+  color: #ffffff !important;
+  border-radius: var(--radius-sm) !important;
+  padding: 0.55rem 0.85rem;
+  font-size: 0.92rem;
+  transition: border-color var(--transition-fast), background var(--transition-fast);
+}
+
+.form-control-modern::placeholder {
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.form-control-modern:focus {
+  background: rgba(255, 255, 255, 0.16) !important;
+  border-color: var(--color-accent) !important;
+  box-shadow: 0 0 0 0.2rem rgba(66, 165, 245, 0.25) !important;
+  color: #ffffff !important;
+  outline: none;
+}
+
+/* Botón enviar */
+.btn-submit {
+  background: linear-gradient(135deg, #1565c0, #1976d2);
+  color: #ffffff;
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 0.55rem 1rem;
+  font-size: 0.88rem;
+  font-weight: 600;
+  transition: opacity var(--transition-fast), transform var(--transition-fast);
+}
+
+.btn-submit:hover:not(:disabled) {
+  opacity: 0.88;
+  transform: translateY(-1px);
+  color: #ffffff;
+}
+
+.btn-submit:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* ---- Responsive ---- */
+@media (max-width: 575.98px) {
+  .page-wrapper {
+    padding: 0;
+  }
+}

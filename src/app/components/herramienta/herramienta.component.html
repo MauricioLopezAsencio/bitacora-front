@@ -1,70 +1,82 @@
-<div class="container d-flex justify-content-center align-items-center dashboard-container mt-5">
-    <div class="w-100 mt-5">
-        <div class="dashboard-header text-center mb-4 fw-bold mt-5">
-            <h1>Herramientas</h1>
-        </div>
+<div class="page-wrapper">
 
-        <!-- Card Row -->
-        <div class="row g-4 justify-content-center">
-            <!-- Bitácora Card -->
-            <div class="">
-                <div class="card text-center h-100">
-                    <div class="card-body">
+  <!-- Header -->
+  <div class="text-center mb-4">
+    <h1 class="page-title">
+      <i class="bi bi-wrench-adjustable me-2"></i>Herramientas
+    </h1>
+  </div>
 
-                        <form [formGroup]="formulario" (ngSubmit)="onSubmit()">
-                            <input class="form-control form-control-lg mb-3" formControlName="name"
-                                 placeholder="Ingresa el nombre de la herramienta" />
+  <div class="glass-card p-0 overflow-hidden">
 
-                            <!-- Mostrar un mensaje de error si no se selecciona un valor -->
-                            <div *ngIf="formulario.get('name')?.invalid && formulario.get('name')?.touched">
-                                <small style="color: red;">Ingresa el nombre de la herramienta.</small>
-                            </div>
+    <!-- Sección formulario -->
+    <div class="form-section">
+      <h6 class="section-label">
+        <i class="bi bi-plus-circle me-1"></i>Nueva herramienta
+      </h6>
 
-                            <button class="btn btn-success" type="submit"
-                                [disabled]="formulario.invalid">Enviar</button>
-                        </form>
+      <form [formGroup]="formulario" (ngSubmit)="onSubmit()">
+        <div class="row g-3 align-items-end">
 
-
-
-                        <div class="table-responsive mt-2">
-                            <table class="table">
-                                <thead>
-                                    <tr>
-                                        <th scope="col">Id</th>
-                                        <th scope="col">Nombre</th>
-                                        <th scope="col">Status</th>
-                                        <th scope="col">Editar</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr
-                                        *ngFor="let herramienta of products | paginate: { itemsPerPage: itemsPerPage, currentPage: p }">
-
-                                        <td>{{ herramienta.id }}</td>
-                                        <td>{{ herramienta.nombre }}</td>
-                                        <td>
-                                            <i
-                                                [ngClass]="herramienta.estatus ? 'bi bi-check2-circle success' : 'bi bi-x-circle error'"></i>
-                                        </td>
-                                        <td>
-                                            <button type="button" class="btn btn-outline-secondary"
-                                                (click)="toggleEstatus(herramienta)">
-                                                <i class="bi bi-pencil-square edit"></i>
-                                            </button>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            <pagination-controls (pageChange)="p = $event"></pagination-controls>
-                            <!-- Añade controles de paginación -->
-                        </div>
-
-
-                    </div>
-                </div>
-
+          <!-- Nombre -->
+          <div class="col-12 col-md-9">
+            <label class="form-label-modern">Nombre de la herramienta</label>
+            <input
+              class="form-control form-control-modern"
+              formControlName="name"
+              placeholder="Ej. Taladro, Martillo, etc." />
+            <div *ngIf="formulario.get('name')?.invalid && formulario.get('name')?.touched">
+              <small class="field-error">Ingresa el nombre de la herramienta.</small>
             </div>
+          </div>
+
+          <!-- Botón -->
+          <div class="col-12 col-md-3 d-flex">
+            <button class="btn btn-submit w-100" type="submit" [disabled]="formulario.invalid">
+              <i class="bi bi-send me-1"></i>Enviar
+            </button>
+          </div>
 
         </div>
+      </form>
     </div>
+
+    <!-- Sección tabla -->
+    <div class="table-section">
+      <div class="table-responsive">
+        <table class="modern-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Nombre</th>
+              <th class="text-center">Estado</th>
+              <th class="text-center">Acción</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let herramienta of products | paginate: { itemsPerPage: itemsPerPage, currentPage: p }">
+              <td class="id-col">{{ herramienta.id }}</td>
+              <td>{{ herramienta.nombre }}</td>
+              <td class="text-center">
+                <span [ngClass]="herramienta.estatus ? 'status-badge active' : 'status-badge inactive'">
+                  <i [class]="herramienta.estatus ? 'bi bi-check-circle-fill' : 'bi bi-x-circle-fill'"></i>
+                  {{ herramienta.estatus ? 'Activo' : 'Inactivo' }}
+                </span>
+              </td>
+              <td class="text-center">
+                <button class="btn-edit" type="button" (click)="toggleEstatus(herramienta)" title="Cambiar estado">
+                  <i class="bi bi-pencil-square"></i>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="pagination-wrapper">
+        <pagination-controls (pageChange)="p = $event"></pagination-controls>
+      </div>
+    </div>
+
+  </div>
 </div>
