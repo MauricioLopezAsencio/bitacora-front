@@ -19,7 +19,7 @@
         <div class="row g-3 align-items-end">
 
           <!-- Nombre -->
-          <div class="col-12 col-md-9">
+          <div class="col-12 col-md-6">
             <label class="form-label-modern">Nombre de la herramienta</label>
             <input
               class="form-control form-control-modern"
@@ -27,6 +27,21 @@
               placeholder="Ej. Taladro, Martillo, etc." />
             <div *ngIf="formulario.get('name')?.invalid && formulario.get('name')?.touched">
               <small class="field-error">Ingresa el nombre de la herramienta.</small>
+            </div>
+          </div>
+
+          <!-- Cantidad Total -->
+          <div class="col-12 col-md-3">
+            <label class="form-label-modern">Cantidad total</label>
+            <input
+              type="number"
+              min="1"
+              step="1"
+              class="form-control form-control-modern"
+              formControlName="cantidadTotal"
+              placeholder="Ej. 5" />
+            <div *ngIf="formulario.get('cantidadTotal')?.invalid && formulario.get('cantidadTotal')?.touched">
+              <small class="field-error">Ingresa un entero mayor a 0.</small>
             </div>
           </div>
 
@@ -41,6 +56,22 @@
       </form>
     </div>
 
+    <!-- Buscador -->
+    <div class="search-section">
+      <div class="search-wrapper">
+        <i class="bi bi-search search-icon"></i>
+        <input
+          type="text"
+          class="search-input"
+          [(ngModel)]="searchTerm"
+          (ngModelChange)="p = 1"
+          placeholder="Buscar por nombre o ID..." />
+        <button *ngIf="searchTerm" class="search-clear" (click)="searchTerm=''; p=1" title="Limpiar">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+    </div>
+
     <!-- Sección tabla -->
     <div class="table-section">
       <div class="table-responsive">
@@ -49,17 +80,25 @@
             <tr>
               <th>#</th>
               <th>Nombre</th>
+              <th class="text-center">Total</th>
+              <th class="text-center">Disponibles</th>
               <th class="text-center">Estado</th>
               <th class="text-center">Acción</th>
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let herramienta of products | paginate: { itemsPerPage: itemsPerPage, currentPage: p }">
+            <tr *ngFor="let herramienta of filteredProducts | paginate: { itemsPerPage: itemsPerPage, currentPage: p }">
               <td class="id-col">{{ herramienta.id }}</td>
               <td>{{ herramienta.nombre }}</td>
+              <td class="text-center qty-col">{{ herramienta.cantidadTotal ?? '—' }}</td>
+              <td class="text-center">
+                <span [ngClass]="(herramienta.cantidadDisponible ?? 0) > 0 ? 'status-badge active' : 'status-badge inactive'">
+                  <i [class]="(herramienta.cantidadDisponible ?? 0) > 0 ? 'bi bi-check-circle-fill' : 'bi bi-x-circle-fill'"></i>
+                  {{ herramienta.cantidadDisponible ?? 0 }}
+                </span>
+              </td>
               <td class="text-center">
                 <span [ngClass]="herramienta.estatus ? 'status-badge active' : 'status-badge inactive'">
-                  <i [class]="herramienta.estatus ? 'bi bi-check-circle-fill' : 'bi bi-x-circle-fill'"></i>
                   {{ herramienta.estatus ? 'Activo' : 'Inactivo' }}
                 </span>
               </td>
@@ -74,7 +113,7 @@
       </div>
 
       <div class="pagination-wrapper">
-        <pagination-controls (pageChange)="p = $event"></pagination-controls>
+        <pagination-controls (pageChange)="p = $event" previousLabel="" nextLabel=""></pagination-controls>
       </div>
     </div>
 

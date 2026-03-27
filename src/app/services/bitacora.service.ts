@@ -2,6 +2,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { Constants } from '../utils/Constants';
 
 @Injectable({
@@ -11,7 +12,9 @@ export class BitacoraService {
   constructor(private http: HttpClient) { }
 
   getEmpleados(): Observable<any[]> {
-    return this.http.get<any>(`${Constants.baseUrl}empleados`);
+    return this.http.get<any>(`${Constants.baseUrl}empleados`).pipe(
+      map((res: any) => Array.isArray(res) ? res : (res?.data ?? []))
+    );
   }
 
   getHerramienta(): Observable<any[]> {
@@ -19,7 +22,11 @@ export class BitacoraService {
   }
   
   productsActivos(): Observable<any[]> {
-    return this.http.get<any>(`${Constants.baseUrl}productsActivos`);
+    return this.http.get<any[]>(`${Constants.baseUrl}productsActivos`);
+  }
+
+  getDashboard(): Observable<any> {
+    return this.http.get<any>(`${Constants.baseUrl}dashboard`);
   }
 
   getbitacora(): Observable<any[]> {
@@ -40,6 +47,19 @@ export class BitacoraService {
 
   inactivarHerramienta(id: number): Observable<any> {
     return this.http.put(`${Constants.baseUrl}inactivarHerramienta/${id}`, {});
+  }
+
+  // ---------- Empleados ----------
+  saveEmpleado(dto: { nombre: string; nomina: number }): Observable<any> {
+    return this.http.post(`${Constants.baseUrl}empleados`, dto);
+  }
+
+  actualizarEmpleado(id: number, dto: { nombre: string; nomina: number }): Observable<any> {
+    return this.http.put(`${Constants.baseUrl}empleados/${id}`, dto);
+  }
+
+  eliminarEmpleado(id: number): Observable<any> {
+    return this.http.delete(`${Constants.baseUrl}empleados/${id}`);
   }
 }
 

@@ -78,6 +78,39 @@
   overflow-wrap: break-word;
 }
 
+/* Fila prestada */
+:host ::ng-deep .row-prestado td {
+  background: rgba(251, 140, 0, 0.06);
+}
+
+/* Badge prestado */
+:host ::ng-deep .status-badge.prestado {
+  background: rgba(251, 140, 0, 0.22);
+  color: #ffcc80;
+  border: 1px solid rgba(251, 140, 0, 0.40);
+}
+
+/* Botón devolver */
+.btn-devolver {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(251, 140, 0, 0.50);
+  background: rgba(251, 140, 0, 0.14);
+  color: #ffcc80;
+  font-size: 1rem;
+  transition: background var(--transition-fast), transform var(--transition-fast);
+  cursor: pointer;
+}
+
+.btn-devolver:hover {
+  background: rgba(251, 140, 0, 0.28);
+  transform: scale(1.10);
+}
+
 /* ---- Responsive ---- */
 @media (max-width: 575.98px) {
   .page-wrapper {

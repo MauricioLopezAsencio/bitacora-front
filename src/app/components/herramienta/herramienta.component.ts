@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { finalize } from 'rxjs/operators';
 import { BitacoraService } from 'src/app/services/bitacora.service';
 import Swal from 'sweetalert2';
 
@@ -10,12 +11,22 @@ import Swal from 'sweetalert2';
 })
 export class HerramientaComponent implements OnInit {
 
-  bitacorapg = []; // Asegúrate de que esta propiedad tenga los datos que necesitas
-  p: number = 1; // Página actual
+  bitacorapg = [];
+  p: number = 1;
   itemsPerPage: number = 5;
+  searchTerm: string = '';
 
   registros: any[] = [];
   products: any[] = [];
+
+  get filteredProducts(): any[] {
+    if (!this.searchTerm.trim()) return this.products;
+    const term = this.searchTerm.toLowerCase();
+    return this.products.filter(h =>
+      h.nombre?.toLowerCase().includes(term) ||
+      String(h.id).includes(term)
+    );
+  }
   bitacora: any[] = [];
   selectedBitacora: any = null;
 
@@ -25,7 +36,8 @@ export class HerramientaComponent implements OnInit {
 
   constructor(private bitacoraService: BitacoraService, private fb: FormBuilder) {
     this.formulario = this.fb.group({
-      name: ['', Validators.required]// Validators.required marca el campo como obligatorio
+      name:           ['', Validators.required],
+      cantidadTotal:  [null, [Validators.required, Validators.min(1), Validators.pattern('^[0-9]+$')]]
     });
 
     this.formularioEdit = this.fb.group({
@@ -38,29 +50,24 @@ export class HerramientaComponent implements OnInit {
   }
 
   loadRegistros(): void {
-    // Mostrar el SweetAlert con loader
     Swal.fire({
-      title: 'Cargando...',
-      text: 'Por favor, espere.',
+      html: '<i class="bi bi-gear-fill swal-gear"></i><p class="swal-loading-text">Cargando...<br><small>Por favor, espere.</small></p>',
+      showConfirmButton: false,
       allowOutsideClick: false,
       didOpen: () => {
-        Swal.showLoading(); // Muestra el loader
+        this.bitacoraService.getHerramienta().pipe(
+          finalize(() => setTimeout(() => Swal.close(), 700))
+        ).subscribe({
+          next: (data) => {
+            this.products = data;
+            console.log('Registros:', this.products);
+          },
+          error: (error) => {
+            console.error('Error al cargar registros', error);
+          }
+        });
       }
     });
-
-    this.bitacoraService.getHerramienta().subscribe(
-      (data) => {
-        this.products = data;
-        console.log('Registros:', this.products);
-        Swal.close();
-      },
-      (error) => {
-        console.error('Error al cargar registros', error);
-        Swal.close();
-      }
-    );
-
-
   }
 
 
@@ -68,9 +75,10 @@ export class HerramientaComponent implements OnInit {
     console.log('Submit:', this.formulario.value)
 
     const saveHeraamienta: any = {
-      nombre: this.formulario.get('name')?.value,
-      categoria:'GENERICO',
-      estatus: true
+      nombre:         this.formulario.get('name')?.value,
+      cantidadTotal:  Number(this.formulario.get('cantidadTotal')?.value),
+      categoria:      'GENERICO',
+      estatus:        true
     }
     if (this.formulario.valid) {
       // Enviar datos al servicio

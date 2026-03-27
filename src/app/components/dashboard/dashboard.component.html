@@ -1,40 +1,104 @@
 <div class="dashboard-wrapper">
 
-  <div class="text-center mb-5">
+  <!-- Header -->
+  <div class="text-center mb-4">
     <h1 class="page-title">Panel de Control</h1>
     <p class="page-subtitle">Selecciona un módulo para comenzar</p>
   </div>
 
+  <!-- KPI Cards — Herramientas -->
+  <div class="row g-3 justify-content-center mb-4">
+    <div class="col-6 col-md-4">
+      <div class="kpi-card glass-card">
+        <div class="kpi-icon kpi-icon--total"><i class="bi bi-boxes"></i></div>
+        <div class="kpi-value">{{ kpi.totalUnidades }}</div>
+        <div class="kpi-label">Total unidades</div>
+      </div>
+    </div>
+    <div class="col-6 col-md-4">
+      <div class="kpi-card glass-card">
+        <div class="kpi-icon kpi-icon--disponible"><i class="bi bi-check-circle"></i></div>
+        <div class="kpi-value">{{ kpi.unidadesDisponibles }}</div>
+        <div class="kpi-label">Disponibles</div>
+      </div>
+    </div>
+    <div class="col-6 col-md-4">
+      <div class="kpi-card glass-card">
+        <div class="kpi-icon kpi-icon--prestado"><i class="bi bi-arrow-right-circle"></i></div>
+        <div class="kpi-value">{{ kpi.unidadesPrestadas }}</div>
+        <div class="kpi-label">Prestadas</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Préstamos Activos -->
+  <div class="row justify-content-center mb-5" *ngIf="prestamosActivos.length > 0">
+    <div class="col-12 col-lg-10">
+      <div class="glass-card chart-card">
+        <div class="chart-header">
+          <span class="section-label"><i class="bi bi-clock-history me-1"></i>Préstamos activos</span>
+        </div>
+        <div class="table-responsive">
+          <table class="semaforo-table">
+            <thead>
+              <tr>
+                <th></th>
+                <th>Empleado</th>
+                <th>Herramienta</th>
+                <th class="text-end">Días prestado</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let p of prestamosActivos | paginate: { id: 'prestamos', itemsPerPage: 3, currentPage: pPrestamos }">
+                <td>
+                  <span class="alerta-dot" [style.background-color]="alertaColor(p.alerta)"></span>
+                </td>
+                <td>{{ p.nombreEmpleado }}</td>
+                <td>{{ p.nombreHerramienta }}</td>
+                <td class="text-end dias-col">{{ p.diasPrestado }} día{{ p.diasPrestado !== 1 ? 's' : '' }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="pagination-wrapper text-center">
+          <pagination-controls id="prestamos" (pageChange)="pPrestamos = $event" previousLabel="" nextLabel=""></pagination-controls>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Nav Cards -->
   <div class="row g-4 justify-content-center">
 
-    <!-- Bitácora -->
     <div class="col-12 col-sm-6 col-lg-4">
       <a routerLink="/bitacora" class="dash-card-link">
         <div class="dash-card glass-card">
-          <div class="dash-card-icon">
-            <i class="bi bi-card-checklist"></i>
-          </div>
+          <div class="dash-card-icon"><i class="bi bi-card-checklist"></i></div>
           <h5 class="dash-card-title">Bitácora</h5>
           <p class="dash-card-desc">Consulta y administra las bitácoras del sistema.</p>
-          <span class="dash-card-cta">
-            Ir al módulo <i class="bi bi-arrow-right ms-1"></i>
-          </span>
+          <span class="dash-card-cta">Ir al módulo <i class="bi bi-arrow-right ms-1"></i></span>
         </div>
       </a>
     </div>
 
-    <!-- Herramienta -->
     <div class="col-12 col-sm-6 col-lg-4">
       <a routerLink="/herramienta" class="dash-card-link">
         <div class="dash-card glass-card">
-          <div class="dash-card-icon">
-            <i class="bi bi-wrench-adjustable"></i>
-          </div>
+          <div class="dash-card-icon"><i class="bi bi-wrench-adjustable"></i></div>
           <h5 class="dash-card-title">Herramienta</h5>
           <p class="dash-card-desc">Accede y gestiona las herramientas disponibles.</p>
-          <span class="dash-card-cta">
-            Ir al módulo <i class="bi bi-arrow-right ms-1"></i>
-          </span>
+          <span class="dash-card-cta">Ir al módulo <i class="bi bi-arrow-right ms-1"></i></span>
+        </div>
+      </a>
+    </div>
+
+    <div class="col-12 col-sm-6 col-lg-4">
+      <a routerLink="/empleado" class="dash-card-link">
+        <div class="dash-card glass-card">
+          <div class="dash-card-icon"><i class="bi bi-people"></i></div>
+          <h5 class="dash-card-title">Empleados</h5>
+          <p class="dash-card-desc">Registra y administra el catálogo de empleados.</p>
+          <span class="dash-card-cta">Ir al módulo <i class="bi bi-arrow-right ms-1"></i></span>
         </div>
       </a>
     </div>

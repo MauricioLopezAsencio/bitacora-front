@@ -1,0 +1,112 @@
+<div class="page-wrapper">
+
+  <!-- Header -->
+  <div class="text-center mb-4">
+    <h1 class="page-title">
+      <i class="bi bi-people me-2"></i>Empleados
+    </h1>
+  </div>
+
+  <div class="glass-card p-0 overflow-hidden">
+
+    <!-- Sección formulario -->
+    <div class="form-section">
+      <h6 class="section-label">
+        <i class="bi bi-person-plus me-1"></i>Nuevo empleado
+      </h6>
+
+      <form [formGroup]="formulario" (ngSubmit)="onSubmit()">
+        <div class="row g-3 align-items-end">
+
+          <!-- Nombre -->
+          <div class="col-12 col-md-6">
+            <label class="form-label-modern">Nombre completo</label>
+            <input
+              class="form-control form-control-modern"
+              formControlName="nombre"
+              placeholder="Ej. JUAN PÉREZ GARCÍA" />
+            <div *ngIf="formulario.get('nombre')?.invalid && formulario.get('nombre')?.touched">
+              <small class="field-error">Ingresa el nombre (mín. 2 caracteres).</small>
+            </div>
+          </div>
+
+          <!-- Nómina -->
+          <div class="col-12 col-md-3">
+            <label class="form-label-modern">Nómina</label>
+            <input
+              type="number"
+              class="form-control form-control-modern"
+              formControlName="nomina"
+              placeholder="Ej. 100001" />
+            <div *ngIf="formulario.get('nomina')?.invalid && formulario.get('nomina')?.touched">
+              <small class="field-error">Ingresa un número de nómina válido.</small>
+            </div>
+          </div>
+
+          <!-- Botón -->
+          <div class="col-12 col-md-3 d-flex">
+            <button class="btn btn-submit w-100" type="submit" [disabled]="formulario.invalid">
+              <i class="bi bi-send me-1"></i>Enviar
+            </button>
+          </div>
+
+        </div>
+      </form>
+    </div>
+
+    <!-- Buscador -->
+    <div class="search-section">
+      <div class="search-wrapper">
+        <i class="bi bi-search search-icon"></i>
+        <input
+          type="text"
+          class="search-input"
+          [(ngModel)]="searchTerm"
+          (ngModelChange)="p = 1"
+          placeholder="Buscar por nombre, nómina o ID..." />
+        <button *ngIf="searchTerm" class="search-clear" (click)="searchTerm=''; p=1" title="Limpiar">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Sección tabla -->
+    <div class="table-section">
+      <div class="table-responsive">
+        <table class="modern-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Nombre</th>
+              <th class="text-center">Nómina</th>
+              <th class="text-center">Editar</th>
+              <th class="text-center">Eliminar</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let empleado of filteredEmpleados | paginate: { itemsPerPage: itemsPerPage, currentPage: p }">
+              <td class="id-col">{{ empleado.id }}</td>
+              <td>{{ empleado.nombre }}</td>
+              <td class="text-center nomina-col">{{ empleado.nomina }}</td>
+              <td class="text-center">
+                <button class="btn-edit" type="button" (click)="editar(empleado)" title="Editar empleado">
+                  <i class="bi bi-pencil-square"></i>
+                </button>
+              </td>
+              <td class="text-center">
+                <button class="btn-delete" type="button" (click)="eliminar(empleado)" title="Eliminar empleado">
+                  <i class="bi bi-trash3"></i>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="pagination-wrapper">
+        <pagination-controls (pageChange)="p = $event" previousLabel="" nextLabel=""></pagination-controls>
+      </div>
+    </div>
+
+  </div>
+</div>

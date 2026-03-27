@@ -11,13 +11,24 @@ import Swal from 'sweetalert2';
 })
 export class BitacoraComponent implements OnInit {
 
-  bitacorapg = []; // Asegúrate de que esta propiedad tenga los datos que necesitas
-  p: number = 1; // Página actual
+  bitacorapg = [];
+  p: number = 1;
   itemsPerPage: number = 5;
+  searchTerm: string = '';
 
   registros: any[] = [];
   products: any[] = [];
   bitacora: any[] = [];
+
+  get filteredBitacora(): any[] {
+    if (!this.searchTerm.trim()) return this.bitacora;
+    const term = this.searchTerm.toLowerCase();
+    return this.bitacora.filter(b =>
+      b.nombreEmpleado?.toLowerCase().includes(term) ||
+      b.nombreHerramienta?.toLowerCase().includes(term) ||
+      b.fecha?.toLowerCase().includes(term)
+    );
+  }
   selectedBitacora: any = null;
 
   selectedCities!: any[];
@@ -45,12 +56,9 @@ export class BitacoraComponent implements OnInit {
   loadRegistros(): void {
     // Mostrar el SweetAlert con loader
     Swal.fire({
-      title: 'Cargando...',
-      text: 'Por favor, espere.',
-      allowOutsideClick: false,
-      didOpen: () => {
-        Swal.showLoading(); // Muestra el loader
-      }
+      html: '<i class="bi bi-gear-fill swal-gear"></i><p class="swal-loading-text">Cargando...<br><small>Por favor, espere.</small></p>',
+      showConfirmButton: false,
+      allowOutsideClick: false
     });
 
     this.bitacoraService.getEmpleados().subscribe(
@@ -83,7 +91,7 @@ export class BitacoraComponent implements OnInit {
   }
   getbitacora(): void {
     this.bitacoraService.getbitacora().pipe(
-      finalize(() => Swal.close())
+      finalize(() => setTimeout(() => Swal.close(), 700))
     ).subscribe(
       (data) => {
         this.bitacora = (data ?? []).sort((a: any, b: any) => {
@@ -116,9 +124,9 @@ export class BitacoraComponent implements OnInit {
         },
         (error) => {
           Swal.fire({
-            icon: "error",
-            title: "Error",
-            text: "error!",
+            icon: 'error',
+            title: 'No se pudo asignar',
+            text: error?.error?.message ?? 'Ocurrió un error inesperado.'
           });
           console.error('Error al enviar datos', error);
         }

@@ -73,6 +73,22 @@
       </form>
     </div>
 
+    <!-- Buscador -->
+    <div class="search-section">
+      <div class="search-wrapper">
+        <i class="bi bi-search search-icon"></i>
+        <input
+          type="text"
+          class="search-input"
+          [(ngModel)]="searchTerm"
+          (ngModelChange)="p = 1"
+          placeholder="Buscar por empleado, herramienta o fecha..." />
+        <button *ngIf="searchTerm" class="search-clear" (click)="searchTerm=''; p=1" title="Limpiar">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+    </div>
+
     <!-- Sección tabla -->
     <div class="table-section">
       <div class="table-responsive">
@@ -87,19 +103,22 @@
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let item of bitacora | paginate: { itemsPerPage: itemsPerPage, currentPage: p }">
+            <tr *ngFor="let item of filteredBitacora | paginate: { itemsPerPage: itemsPerPage, currentPage: p }"
+                [class.row-prestado]="!item.estatus">
               <td>{{ item.nombreEmpleado }}</td>
               <td>{{ item.fecha }}</td>
               <td>{{ item.nombreHerramienta }}</td>
               <td class="text-center">
-                <span [ngClass]="item.estatus ? 'status-badge active' : 'status-badge inactive'">
-                  <i [class]="item.estatus ? 'bi bi-check-circle-fill' : 'bi bi-x-circle-fill'"></i>
-                  {{ item.estatus ? 'Activo' : 'Inactivo' }}
+                <span [ngClass]="item.estatus ? 'status-badge active' : 'status-badge prestado'">
+                  <i [class]="item.estatus ? 'bi bi-check-circle-fill' : 'bi bi-arrow-left-circle-fill'"></i>
+                  {{ item.estatus ? 'Devuelto' : 'Prestado' }}
                 </span>
               </td>
               <td class="text-center">
-                <button class="btn-edit" type="button" (click)="toggleEstatus(item)" title="Cambiar estado">
-                  <i class="bi bi-pencil-square"></i>
+                <button *ngIf="!item.estatus"
+                        class="btn-devolver" type="button"
+                        (click)="toggleEstatus(item)" title="Registrar devolución">
+                  <i class="bi bi-arrow-return-left"></i>
                 </button>
               </td>
             </tr>
@@ -108,7 +127,7 @@
       </div>
 
       <div class="pagination-wrapper">
-        <pagination-controls (pageChange)="p = $event"></pagination-controls>
+        <pagination-controls (pageChange)="p = $event" previousLabel="" nextLabel=""></pagination-controls>
       </div>
     </div>
 
