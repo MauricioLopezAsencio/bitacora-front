@@ -100,7 +100,7 @@ export class BitacoraComponent implements OnInit {
   }
   getbitacora(): void {
     this.bitacoraService.getbitacora().pipe(
-      finalize(() => setTimeout(() => Swal.close(), 700))
+      finalize(() => setTimeout(() => Swal.close(), 150))
     ).subscribe(
       (data) => {
         this.bitacora = (data ?? []).sort((a: any, b: any) => {
@@ -117,19 +117,31 @@ export class BitacoraComponent implements OnInit {
   onSubmit() {
     console.log("Formulario:", this.formulario.value);
     if (this.formulario.valid) {
-      // Enviar datos al servicio
+      Swal.fire({
+        html: '<i class="bi bi-gear-fill swal-gear"></i><p class="swal-loading-text">Guardando registro...<br><small>Por favor, espere.</small></p>',
+        showConfirmButton: false,
+        allowOutsideClick: false
+      });
+
       this.bitacoraService.postAsignar(this.formulario.value).subscribe(
         (response) => {
-
-          Swal.fire({
-            title: "¡Registro exitoso!",
-            text: "",
-            icon: "success"
-          });
-
-          this.getbitacora();
-          console.log('Datos enviados correctamente', response);
           this.formulario.reset();
+          this.bitacoraService.getbitacora().pipe(
+            finalize(() => setTimeout(() => {
+              Swal.fire({
+                title: response?.message ?? '¡Registro exitoso!',
+                icon: 'success',
+                timer: 2000,
+                showConfirmButton: false
+              });
+            }, 150))
+          ).subscribe((data) => {
+            this.bitacora = (data ?? []).sort((a: any, b: any) =>
+              (a.estatus === false && b.estatus === true) ? -1 :
+              (a.estatus === true  && b.estatus === false) ? 1 : 0
+            );
+          });
+          console.log('Datos enviados correctamente', response);
         },
         (error) => {
           Swal.fire({
@@ -177,7 +189,7 @@ export class BitacoraComponent implements OnInit {
               timer: 2000,
               showConfirmButton: false
             });
-          }, 400))
+          }, 150))
         ).subscribe((data) => {
           this.bitacora = (data ?? []).sort((a: any, b: any) =>
             (a.estatus === false && b.estatus === true) ? -1 :
