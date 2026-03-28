@@ -20,7 +20,7 @@ export class BitacoraService {
   getHerramienta(): Observable<any[]> {
     return this.http.get<any>(`${Constants.baseUrl}products`);
   }
-  
+
   productsActivos(): Observable<any[]> {
     return this.http.get<any[]>(`${Constants.baseUrl}productsActivos`);
   }

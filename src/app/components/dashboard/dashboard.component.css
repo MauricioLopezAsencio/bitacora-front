@@ -179,36 +179,45 @@
   align-items: center;
 }
 
-/* ---- Semáforo préstamos ---- */
+/* ---- Semáforo préstamos — alineado con modern-table ---- */
 .semaforo-table {
   width: 100%;
-  border-collapse: collapse;
-  font-size: 0.9rem;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: var(--font-size-sm);
+  color: #ffffff;
 }
 
 .semaforo-table thead tr {
-  border-bottom: 1px solid rgba(255,255,255,0.12);
+  background: rgba(15, 20, 70, 0.95);
 }
 
-.semaforo-table th {
-  padding: 0.5rem 0.75rem;
+.semaforo-table thead th {
+  padding: 0.75rem 1rem;
   font-size: 0.72rem;
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
-  color: rgba(255,255,255,0.5);
+  letter-spacing: 0.05em;
+  color: rgba(255, 255, 255, 0.75);
+  border-bottom: 1px solid var(--glass-border);
+  white-space: nowrap;
 }
 
-.semaforo-table td {
-  padding: 0.6rem 0.75rem;
-  color: rgba(255,255,255,0.88);
-  border-bottom: 1px solid rgba(255,255,255,0.05);
+.semaforo-table tbody td {
+  padding: 0.7rem 1rem;
+  color: rgba(255, 255, 255, 0.88);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  vertical-align: middle;
 }
 
 .semaforo-table tbody tr:last-child td { border-bottom: none; }
 
+.semaforo-table tbody tr {
+  transition: background var(--transition-fast);
+}
+
 .semaforo-table tbody tr:hover td {
-  background: rgba(255,255,255,0.04);
+  background: rgba(15, 20, 70, 0.90);
 }
 
 .alerta-dot {
@@ -230,7 +239,69 @@
   white-space: nowrap;
 }
 
-/* ---- Responsive ---- */
+/* ---- Turno badges ---- */
+.turno-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.18rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.turno-badge.dia {
+  background: rgba(255, 179, 0, 0.18);
+  color: #ffe082;
+  border: 1px solid rgba(255, 179, 0, 0.42);
+}
+
+.turno-badge.noche {
+  background: rgba(103, 58, 183, 0.20);
+  color: #ce93d8;
+  border: 1px solid rgba(103, 58, 183, 0.42);
+}
+
+/* ---- Estado del turno chips ---- */
+.turno-estado-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.28rem;
+  padding: 0.18rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.turno-estado-chip.activo {
+  background: rgba(34, 197, 94, 0.16);
+  color: #86efac;
+  border: 1px solid rgba(34, 197, 94, 0.35);
+}
+
+.turno-estado-chip.finalizado {
+  background: rgba(239, 68, 68, 0.18);
+  color: #fca5a5;
+  border: 1px solid rgba(239, 68, 68, 0.40);
+  animation: chip-pulse 2s ease-in-out infinite;
+}
+
+@keyframes chip-pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.55; }
+}
+
+/* Fila crítica: turno finalizado pero semáforo aún verde */
+.row-critico td {
+  background: rgba(239, 68, 68, 0.06) !important;
+}
+
+.row-critico {
+  border-left: 2px solid rgba(239, 68, 68, 0.55);
+}
+
 @media (max-width: 575.98px) {
   .kpi-value { font-size: 1.6rem; }
   .chart-body { height: 220px; }

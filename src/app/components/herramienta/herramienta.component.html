@@ -88,21 +88,21 @@
           </thead>
           <tbody>
             <tr *ngFor="let herramienta of filteredProducts | paginate: { itemsPerPage: itemsPerPage, currentPage: p }">
-              <td class="id-col">{{ herramienta.id }}</td>
-              <td>{{ herramienta.nombre }}</td>
-              <td class="text-center qty-col">{{ herramienta.cantidadTotal ?? '—' }}</td>
-              <td class="text-center">
+              <td data-label="#" class="id-col">{{ herramienta.id }}</td>
+              <td data-label="Nombre">{{ herramienta.nombre }}</td>
+              <td data-label="Total" class="text-center qty-col">{{ herramienta.cantidadTotal ?? '—' }}</td>
+              <td data-label="Disponibles" class="text-center">
                 <span [ngClass]="(herramienta.cantidadDisponible ?? 0) > 0 ? 'status-badge active' : 'status-badge inactive'">
                   <i [class]="(herramienta.cantidadDisponible ?? 0) > 0 ? 'bi bi-check-circle-fill' : 'bi bi-x-circle-fill'"></i>
                   {{ herramienta.cantidadDisponible ?? 0 }}
                 </span>
               </td>
-              <td class="text-center">
+              <td data-label="Estado" class="text-center">
                 <span [ngClass]="herramienta.estatus ? 'status-badge active' : 'status-badge inactive'">
                   {{ herramienta.estatus ? 'Activo' : 'Inactivo' }}
                 </span>
               </td>
-              <td class="text-center">
+              <td data-label="Acción" class="text-center">
                 <button class="btn-edit" type="button" (click)="toggleEstatus(herramienta)" title="Cambiar estado">
                   <i class="bi bi-pencil-square"></i>
                 </button>

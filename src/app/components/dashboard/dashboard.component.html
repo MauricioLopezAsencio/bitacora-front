@@ -45,17 +45,31 @@
                 <th></th>
                 <th>Empleado</th>
                 <th>Herramienta</th>
+                <th class="text-center">Turno</th>
+                <th class="text-center">Estado turno</th>
                 <th class="text-end">Días prestado</th>
               </tr>
             </thead>
             <tbody>
-              <tr *ngFor="let p of prestamosActivos | paginate: { id: 'prestamos', itemsPerPage: 3, currentPage: pPrestamos }">
-                <td>
+              <tr *ngFor="let p of prestamosActivos | paginate: { id: 'prestamos', itemsPerPage: 3, currentPage: pPrestamos }"
+                  [class.row-critico]="!p.turnoActivo && p.alerta?.toUpperCase() === 'VERDE'">
+                <td data-label="">
                   <span class="alerta-dot" [style.background-color]="alertaColor(p.alerta)"></span>
                 </td>
-                <td>{{ p.nombreEmpleado }}</td>
-                <td>{{ p.nombreHerramienta }}</td>
-                <td class="text-end dias-col">{{ p.diasPrestado }} día{{ p.diasPrestado !== 1 ? 's' : '' }}</td>
+                <td data-label="Empleado">{{ p.nombreEmpleado }}</td>
+                <td data-label="Herramienta">{{ p.nombreHerramienta }}</td>
+                <td data-label="Turno" class="text-center">
+                  <span [ngClass]="p.turno === 'DIA' ? 'turno-badge dia' : 'turno-badge noche'">
+                    {{ p.turno === 'DIA' ? '☀️ DIA' : '🌙 NOCHE' }}
+                  </span>
+                </td>
+                <td data-label="Estado turno" class="text-center">
+                  <span [ngClass]="p.turnoActivo ? 'turno-estado-chip activo' : 'turno-estado-chip finalizado'">
+                    <i [class]="p.turnoActivo ? 'bi bi-play-circle-fill' : 'bi bi-exclamation-triangle-fill'"></i>
+                    {{ p.turnoActivo ? 'Turno en curso' : 'Turno finalizado' }}
+                  </span>
+                </td>
+                <td data-label="Días" class="text-end dias-col">{{ p.diasPrestado }} día{{ p.diasPrestado !== 1 ? 's' : '' }}</td>
               </tr>
             </tbody>
           </table>

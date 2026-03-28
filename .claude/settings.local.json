@@ -12,7 +12,9 @@
       "mcp__ide__getDiagnostics",
       "Bash(ls:*)",
       "Bash(./mvnw compile:*)",
-      "Bash(find /d/casystems/VALIA/VALIA-CORE/src/main/java -name *Rest*.java -o -name *Api*.java)"
+      "Bash(find /d/casystems/VALIA/VALIA-CORE/src/main/java -name *Rest*.java -o -name *Api*.java)",
+      "Bash(find /c/Users/mlopez/IdeaProjects/personal/bt-front -name *model* -o -name *interface*)",
+      "Bash(grep -E \"\\\\.\\(ts\\)$\")"
     ]
   }
 }

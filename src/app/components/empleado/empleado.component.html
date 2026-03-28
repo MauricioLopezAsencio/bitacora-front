@@ -85,15 +85,15 @@
           </thead>
           <tbody>
             <tr *ngFor="let empleado of filteredEmpleados | paginate: { itemsPerPage: itemsPerPage, currentPage: p }">
-              <td class="id-col">{{ empleado.id }}</td>
-              <td>{{ empleado.nombre }}</td>
-              <td class="text-center nomina-col">{{ empleado.nomina }}</td>
-              <td class="text-center">
+              <td data-label="#" class="id-col">{{ empleado.id }}</td>
+              <td data-label="Nombre">{{ empleado.nombre }}</td>
+              <td data-label="Nómina" class="text-center nomina-col">{{ empleado.nomina }}</td>
+              <td data-label="Editar" class="text-center">
                 <button class="btn-edit" type="button" (click)="editar(empleado)" title="Editar empleado">
                   <i class="bi bi-pencil-square"></i>
                 </button>
               </td>
-              <td class="text-center">
+              <td data-label="Eliminar" class="text-center">
                 <button class="btn-delete" type="button" (click)="eliminar(empleado)" title="Eliminar empleado">
                   <i class="bi bi-trash3"></i>
                 </button>

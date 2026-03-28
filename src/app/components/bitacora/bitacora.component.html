@@ -19,7 +19,7 @@
         <div class="row g-3 align-items-end">
 
           <!-- Empleado -->
-          <div class="col-12 col-md-5">
+          <div class="col-12 col-lg-4">
             <label class="form-label-modern">Empleado</label>
             <p-dropdown
               [options]="registros"
@@ -41,7 +41,7 @@
           </div>
 
           <!-- Herramienta -->
-          <div class="col-12 col-md-5">
+          <div class="col-12 col-lg-4">
             <label class="form-label-modern">Herramienta</label>
             <p-dropdown
               [options]="products"
@@ -62,8 +62,18 @@
             </div>
           </div>
 
+          <!-- Turno toggle -->
+          <div class="col-6 col-lg-2">
+            <label class="form-label-modern">Turno</label>
+            <div class="turno-switch" (click)="toggleTurno()">
+              <div class="turno-switch-slider" [class.noche]="formulario.get('turno')?.value === 'NOCHE'"></div>
+              <span class="turno-switch-opt" [class.active]="formulario.get('turno')?.value === 'DIA'">☀️ DIA</span>
+              <span class="turno-switch-opt" [class.active]="formulario.get('turno')?.value === 'NOCHE'">🌙 NOCHE</span>
+            </div>
+          </div>
+
           <!-- Botón -->
-          <div class="col-12 col-md-2 d-flex">
+          <div class="col-6 col-lg-2 d-flex">
             <button class="btn btn-submit w-100" type="submit" [disabled]="formulario.invalid">
               <i class="bi bi-send me-1"></i>Enviar
             </button>
@@ -73,7 +83,7 @@
       </form>
     </div>
 
-    <!-- Buscador -->
+    <!-- Buscador y filtro turno -->
     <div class="search-section">
       <div class="search-wrapper">
         <i class="bi bi-search search-icon"></i>
@@ -87,6 +97,17 @@
           <i class="bi bi-x-lg"></i>
         </button>
       </div>
+      <div class="turno-filter mt-2">
+        <button class="btn-turno-filter" [class.active]="filtroTurno === ''" (click)="filtroTurno=''; p=1">
+          Todos
+        </button>
+        <button class="btn-turno-filter dia" [class.active]="filtroTurno === 'DIA'" (click)="filtroTurno='DIA'; p=1">
+          ☀️ DIA
+        </button>
+        <button class="btn-turno-filter noche" [class.active]="filtroTurno === 'NOCHE'" (click)="filtroTurno='NOCHE'; p=1">
+          🌙 NOCHE
+        </button>
+      </div>
     </div>
 
     <!-- Sección tabla -->
@@ -98,23 +119,37 @@
               <th>Nombre</th>
               <th>Fecha</th>
               <th>Herramienta</th>
+              <th class="text-center">Turno</th>
               <th class="text-center">Estado</th>
               <th class="text-center">Acción</th>
             </tr>
           </thead>
           <tbody>
             <tr *ngFor="let item of filteredBitacora | paginate: { itemsPerPage: itemsPerPage, currentPage: p }"
-                [class.row-prestado]="!item.estatus">
-              <td>{{ item.nombreEmpleado }}</td>
-              <td>{{ item.fecha }}</td>
-              <td>{{ item.nombreHerramienta }}</td>
-              <td class="text-center">
-                <span [ngClass]="item.estatus ? 'status-badge active' : 'status-badge prestado'">
-                  <i [class]="item.estatus ? 'bi bi-check-circle-fill' : 'bi bi-arrow-left-circle-fill'"></i>
-                  {{ item.estatus ? 'Devuelto' : 'Prestado' }}
+                [class.row-prestado]="!item.estatus && !esTurnoVencido(item.fecha, item.turno)"
+                [class.row-vencido]="!item.estatus && esTurnoVencido(item.fecha, item.turno)">
+              <td data-label="Nombre">{{ item.nombreEmpleado }}</td>
+              <td data-label="Herramienta">{{ item.nombreHerramienta }}</td>
+              <td data-label="Fecha">{{ item.fecha }}</td>
+              <td data-label="Turno" class="text-center">
+                <span [ngClass]="item.turno === 'DIA' ? 'turno-badge dia' : 'turno-badge noche'">
+                  {{ item.turno === 'DIA' ? '☀️ DIA' : '🌙 NOCHE' }}
                 </span>
               </td>
-              <td class="text-center">
+              <td data-label="Estado" class="text-center">
+                <div class="estado-cell">
+                  <span [ngClass]="item.estatus ? 'status-badge active' : 'status-badge prestado'">
+                    <i [class]="item.estatus ? 'bi bi-check-circle-fill' : 'bi bi-arrow-left-circle-fill'"></i>
+                    {{ item.estatus ? 'Devuelto' : 'Prestado' }}
+                  </span>
+                  <span *ngIf="!item.estatus"
+                        [ngClass]="esTurnoVencido(item.fecha, item.turno) ? 'turno-vencido-badge' : 'turno-activo-badge'">
+                    <i [class]="esTurnoVencido(item.fecha, item.turno) ? 'bi bi-exclamation-triangle-fill' : 'bi bi-clock'"></i>
+                    {{ esTurnoVencido(item.fecha, item.turno) ? 'Turno finalizado' : 'Turno activo' }}
+                  </span>
+                </div>
+              </td>
+              <td data-label="Acción" class="text-center">
                 <button *ngIf="!item.estatus"
                         class="btn-devolver" type="button"
                         (click)="toggleEstatus(item)" title="Registrar devolución">

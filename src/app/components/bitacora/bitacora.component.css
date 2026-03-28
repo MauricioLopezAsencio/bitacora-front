@@ -90,6 +90,55 @@
   border: 1px solid rgba(251, 140, 0, 0.40);
 }
 
+/* Fila con turno vencido */
+:host ::ng-deep .row-vencido td {
+  background: rgba(229, 57, 53, 0.05);
+}
+
+/* Celda estado — apila los badges verticalmente */
+.estado-cell {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+/* Badge turno activo */
+.turno-activo-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.13rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.68rem;
+  font-weight: 600;
+  background: rgba(0, 200, 150, 0.14);
+  color: #80cbc4;
+  border: 1px solid rgba(0, 200, 150, 0.32);
+  white-space: nowrap;
+}
+
+/* Badge turno finalizado */
+.turno-vencido-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.13rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.68rem;
+  font-weight: 600;
+  background: rgba(229, 57, 53, 0.18);
+  color: #ef9a9a;
+  border: 1px solid rgba(229, 57, 53, 0.38);
+  white-space: nowrap;
+  animation: pulse-vencido 2.2s ease-in-out infinite;
+}
+
+@keyframes pulse-vencido {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.55; }
+}
+
 /* Botón devolver */
 .btn-devolver {
   display: inline-flex;
@@ -111,9 +160,126 @@
   transform: scale(1.10);
 }
 
+/* ---- Turno badges ---- */
+.turno-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.22rem 0.65rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.turno-badge.dia {
+  background: rgba(255, 179, 0, 0.20);
+  color: #ffe082;
+  border: 1px solid rgba(255, 179, 0, 0.45);
+}
+
+.turno-badge.noche {
+  background: rgba(103, 58, 183, 0.22);
+  color: #ce93d8;
+  border: 1px solid rgba(103, 58, 183, 0.45);
+}
+
+/* ---- Turno toggle switch ---- */
+.turno-switch {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 999px;
+  padding: 3px;
+  cursor: pointer;
+  user-select: none;
+  width: 100%;
+  min-height: 2.2rem;
+}
+
+.turno-switch-slider {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: calc(50% - 3px);
+  bottom: 3px;
+  border-radius: 999px;
+  background: rgba(255, 179, 0, 0.22);
+  border: 1px solid rgba(255, 179, 0, 0.55);
+  box-shadow: 0 0 12px rgba(255, 179, 0, 0.18);
+  transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1),
+              background 0.28s ease,
+              border-color 0.28s ease,
+              box-shadow 0.28s ease;
+  pointer-events: none;
+}
+
+.turno-switch-slider.noche {
+  transform: translateX(100%);
+  background: rgba(103, 58, 183, 0.28);
+  border-color: rgba(149, 117, 205, 0.65);
+  box-shadow: 0 0 12px rgba(149, 117, 205, 0.22);
+}
+
+.turno-switch-opt {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  text-align: center;
+  padding: 0.28rem 0.25rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.35);
+  transition: color 0.28s ease;
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+.turno-switch-opt.active {
+  color: #ffffff;
+}
+
+/* ---- Filtro turno ---- */
+.turno-filter {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.btn-turno-filter {
+  padding: 0.22rem 0.75rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.18);
+  background: rgba(255,255,255,0.07);
+  color: rgba(255,255,255,0.65);
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+
+.btn-turno-filter.active,
+.btn-turno-filter:hover {
+  background: rgba(255,255,255,0.15);
+  color: #fff;
+  border-color: rgba(255,255,255,0.40);
+}
+
+.btn-turno-filter.dia.active {
+  background: rgba(255, 179, 0, 0.20);
+  color: #ffe082;
+  border-color: rgba(255, 179, 0, 0.45);
+}
+
+.btn-turno-filter.noche.active {
+  background: rgba(103, 58, 183, 0.22);
+  color: #ce93d8;
+  border-color: rgba(103, 58, 183, 0.45);
+}
+
 /* ---- Responsive ---- */
 @media (max-width: 575.98px) {
-  .page-wrapper {
-    padding: 0;
-  }
+  .page-wrapper { padding: 0; }
 }

@@ -58,11 +58,11 @@ export class HerramientaComponent implements OnInit {
         this.bitacoraService.getHerramienta().pipe(
           finalize(() => setTimeout(() => Swal.close(), 700))
         ).subscribe({
-          next: (data) => {
+          next: (data: any[]) => {
             this.products = data;
             console.log('Registros:', this.products);
           },
-          error: (error) => {
+          error: (error: any) => {
             console.error('Error al cargar registros', error);
           }
         });

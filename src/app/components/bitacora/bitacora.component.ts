@@ -21,13 +21,19 @@ export class BitacoraComponent implements OnInit {
   bitacora: any[] = [];
 
   get filteredBitacora(): any[] {
-    if (!this.searchTerm.trim()) return this.bitacora;
-    const term = this.searchTerm.toLowerCase();
-    return this.bitacora.filter(b =>
-      b.nombreEmpleado?.toLowerCase().includes(term) ||
-      b.nombreHerramienta?.toLowerCase().includes(term) ||
-      b.fecha?.toLowerCase().includes(term)
-    );
+    let result = this.bitacora;
+    if (this.searchTerm.trim()) {
+      const term = this.searchTerm.toLowerCase();
+      result = result.filter(b =>
+        b.nombreEmpleado?.toLowerCase().includes(term) ||
+        b.nombreHerramienta?.toLowerCase().includes(term) ||
+        b.fecha?.toLowerCase().includes(term)
+      );
+    }
+    if (this.filtroTurno) {
+      result = result.filter(b => b.turno === this.filtroTurno);
+    }
+    return result;
   }
   selectedBitacora: any = null;
 
@@ -37,10 +43,13 @@ export class BitacoraComponent implements OnInit {
   formulario: FormGroup;
   formularioEdit: FormGroup;
 
+  filtroTurno: string = '';
+
   constructor(private bitacoraService: BitacoraService, private fb: FormBuilder,private cdr: ChangeDetectorRef) {
     this.formulario = this.fb.group({
-      empleadoId: ['', Validators.required], // Validators.required marca el campo como obligatorio
-      herramientaId: ['', Validators.required], // Validators.required marca el campo como obligatorio
+      empleadoId: ['', Validators.required],
+      herramientaId: ['', Validators.required],
+      turno: ['DIA', Validators.required],
     });
 
     this.formularioEdit = this.fb.group({
@@ -152,15 +161,29 @@ export class BitacoraComponent implements OnInit {
     // Imprimir el registro seleccionado en la consola
     console.log('Registro seleccionado:', nuevoEstatus);
 
+    Swal.fire({
+      html: '<i class="bi bi-gear-fill swal-gear"></i><p class="swal-loading-text">Procesando devolución...<br><small>Por favor, espere.</small></p>',
+      showConfirmButton: false,
+      allowOutsideClick: false
+    });
+
     this.bitacoraService.postactualizar(actualizarEstatusDto).subscribe({
       next: (response) => {
-        Swal.fire({
-          title: response?.message ?? '¡Registro actualizado!',
-          icon: 'success',
-          timer: 2000,
-          showConfirmButton: false
+        this.bitacoraService.getbitacora().pipe(
+          finalize(() => setTimeout(() => {
+            Swal.fire({
+              title: response?.message ?? '¡Registro actualizado!',
+              icon: 'success',
+              timer: 2000,
+              showConfirmButton: false
+            });
+          }, 400))
+        ).subscribe((data) => {
+          this.bitacora = (data ?? []).sort((a: any, b: any) =>
+            (a.estatus === false && b.estatus === true) ? -1 :
+            (a.estatus === true  && b.estatus === false) ? 1 : 0
+          );
         });
-        this.getbitacora();
       },
       error: (err) => {
         Swal.fire({
@@ -171,6 +194,24 @@ export class BitacoraComponent implements OnInit {
       }
     });
 
+  }
+
+  toggleTurno(): void {
+    const actual = this.formulario.get('turno')?.value;
+    this.formulario.get('turno')?.setValue(actual === 'DIA' ? 'NOCHE' : 'DIA');
+  }
+
+  /**
+   * Devuelve true cuando ya pasaron 12 h desde el inicio del turno.
+   * DIA  → inicia 06:00, finaliza 18:00
+   * NOCHE → inicia 18:00, finaliza 06:00 del día siguiente
+   */
+  esTurnoVencido(fecha: string, turno: string): boolean {
+    if (!fecha) return false;
+    const base = new Date(fecha + 'T00:00:00');
+    base.setHours(turno === 'DIA' ? 6 : 18, 0, 0, 0);
+    const fin = new Date(base.getTime() + 12 * 60 * 60 * 1000);
+    return new Date() > fin;
   }
 
   onSelectRegistro(event: Event): void {
