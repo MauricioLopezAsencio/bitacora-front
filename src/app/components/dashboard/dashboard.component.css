@@ -251,13 +251,19 @@
   white-space: nowrap;
 }
 
-.turno-badge.dia {
+.turno-badge.matutino {
   background: rgba(255, 179, 0, 0.18);
   color: #ffe082;
   border: 1px solid rgba(255, 179, 0, 0.42);
 }
 
-.turno-badge.noche {
+.turno-badge.vespertino {
+  background: rgba(251, 100, 0, 0.20);
+  color: #ffb74d;
+  border: 1px solid rgba(251, 100, 0, 0.45);
+}
+
+.turno-badge.nocturno {
   background: rgba(103, 58, 183, 0.20);
   color: #ce93d8;
   border: 1px solid rgba(103, 58, 183, 0.42);
@@ -293,7 +299,7 @@
   50%       { opacity: 0.55; }
 }
 
-/* Fila crítica: turno finalizado pero semáforo aún verde */
+/* Fila con turno vencido (turnoActivo === false) */
 .row-critico td {
   background: rgba(239, 68, 68, 0.06) !important;
 }

@@ -40,11 +40,38 @@ export class DashboardComponent implements OnInit {
 
   alertaColor(alerta: string): string {
     const map: Record<string, string> = {
-      VERDE:    '#22c55e',
-      AMARILLO: '#eab308',
-      ROJO:     '#ef4444'
+      VERDE:    '#34d399',
+      AMARILLO: '#fb923c',
+      ROJO:     '#f87171',
     };
-    return map[alerta?.toUpperCase()] ?? '#94a3b8';
+    return map[alerta?.toUpperCase()] ?? '#f87171';
+  }
+
+  alertaTooltip(alerta: string): string {
+    const map: Record<string, string> = {
+      VERDE:    'Primera mitad del turno',
+      AMARILLO: 'Segunda mitad del turno',
+      ROJO:     'Turno fuera de horario o día anterior',
+    };
+    return map[alerta?.toUpperCase()] ?? '';
+  }
+
+  getTurnoBadgeClass(turno: string): string {
+    const map: Record<string, string> = {
+      'MATUTINO':  'turno-badge matutino',
+      'VESPERTINO':'turno-badge vespertino',
+      'NOCTURNO':  'turno-badge nocturno',
+    };
+    return map[turno] ?? 'turno-badge matutino';
+  }
+
+  getTurnoLabel(turno: string): string {
+    const map: Record<string, string> = {
+      'MATUTINO':  '☀️ MATUTINO',
+      'VESPERTINO':'🌅 VESPERTINO',
+      'NOCTURNO':  '🌙 NOCTURNO',
+    };
+    return map[turno] ?? turno;
   }
 
 }

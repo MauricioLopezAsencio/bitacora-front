@@ -172,73 +172,22 @@
   white-space: nowrap;
 }
 
-.turno-badge.dia {
+.turno-badge.matutino {
   background: rgba(255, 179, 0, 0.20);
   color: #ffe082;
   border: 1px solid rgba(255, 179, 0, 0.45);
 }
 
-.turno-badge.noche {
+.turno-badge.vespertino {
+  background: rgba(251, 100, 0, 0.22);
+  color: #ffb74d;
+  border: 1px solid rgba(251, 100, 0, 0.48);
+}
+
+.turno-badge.nocturno {
   background: rgba(103, 58, 183, 0.22);
   color: #ce93d8;
   border: 1px solid rgba(103, 58, 183, 0.45);
-}
-
-/* ---- Turno toggle switch ---- */
-.turno-switch {
-  position: relative;
-  display: flex;
-  align-items: center;
-  background: rgba(255, 255, 255, 0.07);
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  border-radius: 999px;
-  padding: 3px;
-  cursor: pointer;
-  user-select: none;
-  width: 100%;
-  min-height: 2.2rem;
-}
-
-.turno-switch-slider {
-  position: absolute;
-  top: 3px;
-  left: 3px;
-  width: calc(50% - 3px);
-  bottom: 3px;
-  border-radius: 999px;
-  background: rgba(255, 179, 0, 0.22);
-  border: 1px solid rgba(255, 179, 0, 0.55);
-  box-shadow: 0 0 12px rgba(255, 179, 0, 0.18);
-  transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1),
-              background 0.28s ease,
-              border-color 0.28s ease,
-              box-shadow 0.28s ease;
-  pointer-events: none;
-}
-
-.turno-switch-slider.noche {
-  transform: translateX(100%);
-  background: rgba(103, 58, 183, 0.28);
-  border-color: rgba(149, 117, 205, 0.65);
-  box-shadow: 0 0 12px rgba(149, 117, 205, 0.22);
-}
-
-.turno-switch-opt {
-  position: relative;
-  z-index: 1;
-  flex: 1;
-  text-align: center;
-  padding: 0.28rem 0.25rem;
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: rgba(255, 255, 255, 0.35);
-  transition: color 0.28s ease;
-  white-space: nowrap;
-  pointer-events: none;
-}
-
-.turno-switch-opt.active {
-  color: #ffffff;
 }
 
 /* ---- Filtro turno ---- */
@@ -267,13 +216,19 @@
   border-color: rgba(255,255,255,0.40);
 }
 
-.btn-turno-filter.dia.active {
+.btn-turno-filter.matutino.active {
   background: rgba(255, 179, 0, 0.20);
   color: #ffe082;
   border-color: rgba(255, 179, 0, 0.45);
 }
 
-.btn-turno-filter.noche.active {
+.btn-turno-filter.vespertino.active {
+  background: rgba(251, 100, 0, 0.22);
+  color: #ffb74d;
+  border-color: rgba(251, 100, 0, 0.48);
+}
+
+.btn-turno-filter.nocturno.active {
   background: rgba(103, 58, 183, 0.22);
   color: #ce93d8;
   border-color: rgba(103, 58, 183, 0.45);

@@ -45,11 +45,17 @@ export class BitacoraComponent implements OnInit {
 
   filtroTurno: string = '';
 
+  turnoOptions = [
+    { label: '☀️ MATUTINO', value: 'MATUTINO' },
+    { label: '🌅 VESPERTINO', value: 'VESPERTINO' },
+    { label: '🌙 NOCTURNO', value: 'NOCTURNO' },
+  ];
+
   constructor(private bitacoraService: BitacoraService, private fb: FormBuilder,private cdr: ChangeDetectorRef) {
     this.formulario = this.fb.group({
       empleadoId: ['', Validators.required],
       herramientaId: ['', Validators.required],
-      turno: ['DIA', Validators.required],
+      turno: ['MATUTINO', Validators.required],
     });
 
     this.formularioEdit = this.fb.group({
@@ -208,21 +214,39 @@ export class BitacoraComponent implements OnInit {
 
   }
 
-  toggleTurno(): void {
-    const actual = this.formulario.get('turno')?.value;
-    this.formulario.get('turno')?.setValue(actual === 'DIA' ? 'NOCHE' : 'DIA');
+  getTurnoBadgeClass(turno: string): string {
+    const map: Record<string, string> = {
+      'MATUTINO':  'turno-badge matutino',
+      'VESPERTINO':'turno-badge vespertino',
+      'NOCTURNO':  'turno-badge nocturno',
+    };
+    return map[turno] ?? 'turno-badge matutino';
+  }
+
+  getTurnoLabel(turno: string): string {
+    const map: Record<string, string> = {
+      'MATUTINO':  '☀️ MATUTINO',
+      'VESPERTINO':'🌅 VESPERTINO',
+      'NOCTURNO':  '🌙 NOCTURNO',
+    };
+    return map[turno] ?? turno;
   }
 
   /**
-   * Devuelve true cuando ya pasaron 12 h desde el inicio del turno.
-   * DIA  → inicia 06:00, finaliza 18:00
-   * NOCHE → inicia 18:00, finaliza 06:00 del día siguiente
+   * Devuelve true cuando ya pasaron 8 h desde el inicio del turno.
+   * MATUTINO  → inicia 06:00, finaliza 14:00
+   * VESPERTINO → inicia 14:00, finaliza 22:00
+   * NOCTURNO  → inicia 22:00, finaliza 06:00 del día siguiente
    */
   esTurnoVencido(fecha: string, turno: string): boolean {
     if (!fecha) return false;
     const base = new Date(fecha + 'T00:00:00');
-    base.setHours(turno === 'DIA' ? 6 : 18, 0, 0, 0);
-    const fin = new Date(base.getTime() + 12 * 60 * 60 * 1000);
+    let startHour: number;
+    if (turno === 'MATUTINO') startHour = 6;
+    else if (turno === 'VESPERTINO') startHour = 14;
+    else startHour = 22; // NOCTURNO
+    base.setHours(startHour, 0, 0, 0);
+    const fin = new Date(base.getTime() + 8 * 60 * 60 * 1000);
     return new Date() > fin;
   }
 

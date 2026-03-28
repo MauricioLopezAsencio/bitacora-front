@@ -62,14 +62,18 @@
             </div>
           </div>
 
-          <!-- Turno toggle -->
+          <!-- Turno selector -->
           <div class="col-6 col-lg-2">
             <label class="form-label-modern">Turno</label>
-            <div class="turno-switch" (click)="toggleTurno()">
-              <div class="turno-switch-slider" [class.noche]="formulario.get('turno')?.value === 'NOCHE'"></div>
-              <span class="turno-switch-opt" [class.active]="formulario.get('turno')?.value === 'DIA'">☀️ DIA</span>
-              <span class="turno-switch-opt" [class.active]="formulario.get('turno')?.value === 'NOCHE'">🌙 NOCHE</span>
-            </div>
+            <p-dropdown
+              [options]="turnoOptions"
+              optionLabel="label"
+              optionValue="value"
+              placeholder="Selecciona turno"
+              formControlName="turno"
+              styleClass="dropdown-modern"
+              [style]="{'width':'100%'}">
+            </p-dropdown>
           </div>
 
           <!-- Botón -->
@@ -101,11 +105,14 @@
         <button class="btn-turno-filter" [class.active]="filtroTurno === ''" (click)="filtroTurno=''; p=1">
           Todos
         </button>
-        <button class="btn-turno-filter dia" [class.active]="filtroTurno === 'DIA'" (click)="filtroTurno='DIA'; p=1">
-          ☀️ DIA
+        <button class="btn-turno-filter matutino" [class.active]="filtroTurno === 'MATUTINO'" (click)="filtroTurno='MATUTINO'; p=1">
+          ☀️ MATUTINO
         </button>
-        <button class="btn-turno-filter noche" [class.active]="filtroTurno === 'NOCHE'" (click)="filtroTurno='NOCHE'; p=1">
-          🌙 NOCHE
+        <button class="btn-turno-filter vespertino" [class.active]="filtroTurno === 'VESPERTINO'" (click)="filtroTurno='VESPERTINO'; p=1">
+          🌅 VESPERTINO
+        </button>
+        <button class="btn-turno-filter nocturno" [class.active]="filtroTurno === 'NOCTURNO'" (click)="filtroTurno='NOCTURNO'; p=1">
+          🌙 NOCTURNO
         </button>
       </div>
     </div>
@@ -132,8 +139,8 @@
               <td data-label="Herramienta">{{ item.nombreHerramienta }}</td>
               <td data-label="Fecha">{{ item.fecha }}</td>
               <td data-label="Turno" class="text-center">
-                <span [ngClass]="item.turno === 'DIA' ? 'turno-badge dia' : 'turno-badge noche'">
-                  {{ item.turno === 'DIA' ? '☀️ DIA' : '🌙 NOCHE' }}
+                <span [ngClass]="getTurnoBadgeClass(item.turno)">
+                  {{ getTurnoLabel(item.turno) }}
                 </span>
               </td>
               <td data-label="Estado" class="text-center">

@@ -52,15 +52,17 @@
             </thead>
             <tbody>
               <tr *ngFor="let p of prestamosActivos | paginate: { id: 'prestamos', itemsPerPage: 3, currentPage: pPrestamos }"
-                  [class.row-critico]="!p.turnoActivo && p.alerta?.toUpperCase() === 'VERDE'">
+                  [class.row-critico]="!p.turnoActivo">
                 <td data-label="">
-                  <span class="alerta-dot" [style.background-color]="alertaColor(p.alerta)"></span>
+                  <span class="alerta-dot"
+                        [style.background-color]="alertaColor(p.alerta)"
+                        [title]="alertaTooltip(p.alerta)"></span>
                 </td>
                 <td data-label="Empleado">{{ p.nombreEmpleado }}</td>
                 <td data-label="Herramienta">{{ p.nombreHerramienta }}</td>
                 <td data-label="Turno" class="text-center">
-                  <span [ngClass]="p.turno === 'DIA' ? 'turno-badge dia' : 'turno-badge noche'">
-                    {{ p.turno === 'DIA' ? '☀️ DIA' : '🌙 NOCHE' }}
+                  <span [ngClass]="getTurnoBadgeClass(p.turno)">
+                    {{ getTurnoLabel(p.turno) }}
                   </span>
                 </td>
                 <td data-label="Estado turno" class="text-center">

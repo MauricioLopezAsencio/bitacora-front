@@ -449,6 +449,94 @@ pagination-controls ::ng-deep .ngx-pagination li.disabled span {
 }
 
 /* ============================================================
+   PRIMENG DROPDOWN PANEL — glass dark theme
+   El panel se monta en el body, por eso van aquí y no en el componente
+   ============================================================ */
+.p-dropdown-panel {
+  background: rgba(15, 20, 70, 0.96) !important;
+  border: 1px solid rgba(66, 165, 245, 0.28) !important;
+  border-radius: var(--radius-md) !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.55) !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  overflow: hidden;
+}
+
+.p-dropdown-panel .p-dropdown-items-wrapper {
+  background: transparent !important;
+}
+
+.p-dropdown-panel .p-dropdown-items {
+  padding: 0.25rem 0 !important;
+  background: transparent !important;
+}
+
+.p-dropdown-panel .p-dropdown-item {
+  color: rgba(255, 255, 255, 0.85) !important;
+  background: transparent !important;
+  padding: 0.55rem 1rem !important;
+  font-size: 0.9rem !important;
+  transition: background var(--transition-fast), color var(--transition-fast) !important;
+}
+
+.p-dropdown-panel .p-dropdown-item:hover,
+.p-dropdown-panel .p-dropdown-item.p-focus {
+  background: rgba(66, 165, 245, 0.14) !important;
+  color: #ffffff !important;
+}
+
+.p-dropdown-panel .p-dropdown-item.p-highlight {
+  background: rgba(66, 165, 245, 0.22) !important;
+  color: var(--color-accent) !important;
+  font-weight: 600 !important;
+}
+
+/* Header del panel (contiene el buscador) */
+.p-dropdown-panel .p-dropdown-header {
+  background: rgba(15, 20, 70, 0.96) !important;
+  border-bottom: 1px solid rgba(66, 165, 245, 0.18) !important;
+  padding: 0.4rem 0.5rem !important;
+  margin: 0 !important;
+}
+
+/* Filtro dentro del panel */
+.p-dropdown-panel .p-dropdown-filter-container {
+  padding: 0.4rem 0.5rem !important;
+  border-bottom: 1px solid rgba(66, 165, 245, 0.18) !important;
+  background: transparent !important;
+}
+
+.p-dropdown-panel .p-dropdown-filter-container .p-dropdown-filter-icon {
+  color: rgba(255, 255, 255, 0.45) !important;
+}
+
+/* Cubre .p-dropdown-filter y también .p-inputtext que PrimeNG añade al mismo input */
+.p-dropdown-panel .p-dropdown-filter,
+.p-dropdown-panel .p-inputtext {
+  background: rgba(15, 20, 70, 0.80) !important;
+  border: 1px solid rgba(66, 165, 245, 0.30) !important;
+  border-radius: var(--radius-sm) !important;
+  color: #ffffff !important;
+  font-size: 0.88rem !important;
+  padding: 0.38rem 0.65rem !important;
+  width: 100% !important;
+  box-shadow: none !important;
+}
+
+.p-dropdown-panel .p-dropdown-filter::placeholder,
+.p-dropdown-panel .p-inputtext::placeholder {
+  color: rgba(255, 255, 255, 0.40) !important;
+}
+
+.p-dropdown-panel .p-dropdown-filter:focus,
+.p-dropdown-panel .p-inputtext:focus {
+  background: rgba(15, 20, 70, 0.92) !important;
+  border-color: var(--color-accent) !important;
+  box-shadow: 0 0 0 0.15rem rgba(66, 165, 245, 0.22) !important;
+  outline: none !important;
+}
+
+/* ============================================================
    RESPONSIVE HELPERS
    ============================================================ */
 @media (max-width: 575.98px) {
