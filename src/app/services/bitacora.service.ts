@@ -30,7 +30,9 @@ export class BitacoraService {
   }
 
   getbitacora(): Observable<any[]> {
-    return this.http.get<any>(`${Constants.baseUrl}bitacora`);
+    return this.http.get<any>(`${Constants.baseUrl}bitacora`).pipe(
+      map((res: any) => Array.isArray(res) ? res : (res?.data ?? []))
+    );
   }
 
   postAsignar(dto: any): Observable<any> {
