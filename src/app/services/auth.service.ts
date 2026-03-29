@@ -4,21 +4,57 @@ import { Router } from '@angular/router';
 import { Observable, tap } from 'rxjs';
 import { Constants } from '../utils/Constants';
 
+export interface AuthData {
+  token: string;
+  username: string;
+  expiresAt: string; // ISO-8601
+}
+
+export interface ApiResponse<T> {
+  status: number;
+  message: string;
+  data: T;
+}
+
 @Injectable({ providedIn: 'root' })
 export class AuthService {
 
-  private readonly TOKEN_KEY    = 'bt_token';
-  private readonly USERNAME_KEY = 'bt_username';
+  private readonly TOKEN_KEY      = 'bt_token';
+  private readonly USERNAME_KEY   = 'bt_username';
+  private readonly EXPIRES_AT_KEY = 'bt_expires_at';
 
   constructor(private http: HttpClient, private router: Router) {}
 
-  login(user: string, password: string): Observable<any> {
-    return this.http.post<any>(`${Constants.baseUrl}auth/login`, { user, password }).pipe(
+  login(user: string, password: string): Observable<ApiResponse<AuthData>> {
+    return this.http.post<ApiResponse<AuthData>>(
+      `${Constants.baseUrl}auth/login`,
+      { user, password }
+    ).pipe(
       tap(res => {
-        const data = res?.data ?? res;
+        const data = res?.data ?? (res as any);
         if (data?.token) {
-          localStorage.setItem(this.TOKEN_KEY,    data.token);
-          localStorage.setItem(this.USERNAME_KEY, data.username ?? user);
+          localStorage.setItem(this.TOKEN_KEY,      data.token);
+          localStorage.setItem(this.USERNAME_KEY,   data.username ?? user);
+          if (data.expiresAt) {
+            localStorage.setItem(this.EXPIRES_AT_KEY, data.expiresAt);
+          }
+        }
+      })
+    );
+  }
+
+  refresh(): Observable<ApiResponse<AuthData>> {
+    return this.http.post<ApiResponse<AuthData>>(
+      `${Constants.baseUrl}auth/refresh`,
+      {}
+    ).pipe(
+      tap(res => {
+        const data = res?.data ?? (res as any);
+        if (data?.token) {
+          localStorage.setItem(this.TOKEN_KEY, data.token);
+          if (data.expiresAt) {
+            localStorage.setItem(this.EXPIRES_AT_KEY, data.expiresAt);
+          }
         }
       })
     );
@@ -27,6 +63,7 @@ export class AuthService {
   logout(): void {
     localStorage.removeItem(this.TOKEN_KEY);
     localStorage.removeItem(this.USERNAME_KEY);
+    localStorage.removeItem(this.EXPIRES_AT_KEY);
     this.router.navigate(['/login']);
   }
 
@@ -38,7 +75,19 @@ export class AuthService {
     return localStorage.getItem(this.USERNAME_KEY);
   }
 
-  isAuthenticated(): boolean {
+  isLoggedIn(): boolean {
     return !!this.getToken();
+  }
+
+  /** @deprecated use isLoggedIn() */
+  isAuthenticated(): boolean {
+    return this.isLoggedIn();
+  }
+
+  minutosParaExpirar(): number {
+    const raw = localStorage.getItem(this.EXPIRES_AT_KEY);
+    if (!raw) return Infinity;
+    const diff = new Date(raw).getTime() - Date.now();
+    return diff > 0 ? Math.floor(diff / 60_000) : 0;
   }
 }

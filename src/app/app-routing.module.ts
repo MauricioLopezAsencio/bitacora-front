@@ -5,14 +5,14 @@ import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { EmpleadoComponent } from './components/empleado/empleado.component';
 import { HerramientaComponent } from './components/herramienta/herramienta.component';
 import { LoginComponent } from './components/login/login.component';
-import { AuthGuard } from './guards/auth.guard';
+import { authGuard } from './guards/auth.guard';
 
 const routes: Routes = [
   { path: 'login', component: LoginComponent },
-  { path: '',          component: DashboardComponent,  canActivate: [AuthGuard] },
-  { path: 'herramienta', component: HerramientaComponent, canActivate: [AuthGuard] },
-  { path: 'bitacora',    component: BitacoraComponent,    canActivate: [AuthGuard] },
-  { path: 'empleado',    component: EmpleadoComponent,    canActivate: [AuthGuard] },
+  { path: '',            component: DashboardComponent,    canActivate: [authGuard] },
+  { path: 'herramienta', component: HerramientaComponent,  canActivate: [authGuard] },
+  { path: 'bitacora',    component: BitacoraComponent,      canActivate: [authGuard] },
+  { path: 'empleado',    component: EmpleadoComponent,      canActivate: [authGuard] },
   { path: '**', redirectTo: '' }
 ];
 
