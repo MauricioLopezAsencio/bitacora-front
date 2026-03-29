@@ -51,11 +51,25 @@ export class BitacoraComponent implements OnInit {
     { label: '🌙 NOCTURNO', value: 'NOCTURNO' },
   ];
 
+  private getTurnoActual(): string {
+    const hourMX = parseInt(
+      new Intl.DateTimeFormat('es-MX', {
+        timeZone: 'America/Mexico_City',
+        hour: 'numeric',
+        hour12: false,
+      }).format(new Date()),
+      10
+    );
+    if (hourMX >= 6 && hourMX < 14) return 'MATUTINO';
+    if (hourMX >= 14 && hourMX < 22) return 'VESPERTINO';
+    return 'NOCTURNO';
+  }
+
   constructor(private bitacoraService: BitacoraService, private fb: FormBuilder,private cdr: ChangeDetectorRef) {
     this.formulario = this.fb.group({
       empleadoId: ['', Validators.required],
       herramientaId: ['', Validators.required],
-      turno: ['MATUTINO', Validators.required],
+      turno: [this.getTurnoActual(), Validators.required],
     });
 
     this.formularioEdit = this.fb.group({
