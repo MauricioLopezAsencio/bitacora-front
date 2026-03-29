@@ -4,6 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Constants } from '../utils/Constants';
+import { HerramientaRequestDto, HerramientaResponseDto } from '../models/herramienta.model';
 
 @Injectable({
   providedIn: 'root'
@@ -17,8 +18,33 @@ export class BitacoraService {
     );
   }
 
-  getHerramienta(): Observable<any[]> {
-    return this.http.get<any>(`${Constants.baseUrl}products`);
+  // ---------- Herramientas ----------
+  getHerramienta(): Observable<HerramientaResponseDto[]> {
+    return this.http.get<any>(`${Constants.baseUrl}herramientas`).pipe(
+      map((res: any) => Array.isArray(res) ? res : (res?.data ?? []))
+    );
+  }
+
+  getHerramientaById(id: number): Observable<HerramientaResponseDto> {
+    return this.http.get<any>(`${Constants.baseUrl}herramientas/${id}`).pipe(
+      map((res: any) => res?.data ?? res)
+    );
+  }
+
+  saveHerramienta(dto: HerramientaRequestDto): Observable<any> {
+    return this.http.post<any>(`${Constants.baseUrl}herramientas`, dto);
+  }
+
+  updateHerramienta(id: number, dto: HerramientaRequestDto): Observable<any> {
+    return this.http.put<any>(`${Constants.baseUrl}herramientas/${id}`, dto);
+  }
+
+  deleteHerramienta(id: number): Observable<any> {
+    return this.http.delete<any>(`${Constants.baseUrl}herramientas/${id}`);
+  }
+
+  toggleEstatusHerramienta(id: number): Observable<any> {
+    return this.http.put(`${Constants.baseUrl}herramientas/${id}/toggle-estatus`, {});
   }
 
   productsActivos(): Observable<any[]> {
@@ -39,16 +65,8 @@ export class BitacoraService {
     return this.http.post<any>(`${Constants.baseUrl}asignar`, dto);
   }
 
-  saveHerramienta(dto: any): Observable<any> {
-    return this.http.post<any>(`${Constants.baseUrl}saveHerramienta`, dto);
-  }
-
   postactualizar(dto: any): Observable<any> {
     return this.http.put<any>(`${Constants.baseUrl}actualizar`, dto);
-  }
-
-  inactivarHerramienta(id: number): Observable<any> {
-    return this.http.put(`${Constants.baseUrl}inactivarHerramienta/${id}`, {});
   }
 
   // ---------- Empleados ----------

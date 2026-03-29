@@ -23,11 +23,12 @@
             <label class="form-label-modern">Nombre de la herramienta</label>
             <input
               class="form-control form-control-modern"
-              formControlName="name"
+              formControlName="nombre"
               placeholder="Ej. Taladro, Martillo, etc." />
-            <div *ngIf="formulario.get('name')?.invalid && formulario.get('name')?.touched">
-              <small class="field-error">Ingresa el nombre de la herramienta.</small>
-            </div>
+            <small class="field-error"
+              *ngIf="(formulario.get('nombre')?.invalid && formulario.get('nombre')?.touched) || createErrors['nombre']">
+              {{ createErrors['nombre'] || 'Ingresa el nombre de la herramienta.' }}
+            </small>
           </div>
 
           <!-- Cantidad Total -->
@@ -40,9 +41,10 @@
               class="form-control form-control-modern"
               formControlName="cantidadTotal"
               placeholder="Ej. 5" />
-            <div *ngIf="formulario.get('cantidadTotal')?.invalid && formulario.get('cantidadTotal')?.touched">
-              <small class="field-error">Ingresa un entero mayor a 0.</small>
-            </div>
+            <small class="field-error"
+              *ngIf="(formulario.get('cantidadTotal')?.invalid && formulario.get('cantidadTotal')?.touched) || createErrors['cantidadTotal']">
+              {{ createErrors['cantidadTotal'] || 'Ingresa un entero mayor a 0.' }}
+            </small>
           </div>
 
           <!-- Botón -->
@@ -83,18 +85,18 @@
               <th class="text-center">Total</th>
               <th class="text-center">Disponibles</th>
               <th class="text-center">Estado</th>
-              <th class="text-center">Acción</th>
+              <th class="text-center">Acciones</th>
             </tr>
           </thead>
           <tbody>
             <tr *ngFor="let herramienta of filteredProducts | paginate: { itemsPerPage: itemsPerPage, currentPage: p }">
               <td data-label="#" class="id-col">{{ herramienta.id }}</td>
               <td data-label="Nombre">{{ herramienta.nombre }}</td>
-              <td data-label="Total" class="text-center qty-col">{{ herramienta.cantidadTotal ?? '—' }}</td>
+              <td data-label="Total" class="text-center qty-col">{{ herramienta.cantidadTotal }}</td>
               <td data-label="Disponibles" class="text-center">
-                <span [ngClass]="(herramienta.cantidadDisponible ?? 0) > 0 ? 'status-badge active' : 'status-badge inactive'">
-                  <i [class]="(herramienta.cantidadDisponible ?? 0) > 0 ? 'bi bi-check-circle-fill' : 'bi bi-x-circle-fill'"></i>
-                  {{ herramienta.cantidadDisponible ?? 0 }}
+                <span [ngClass]="herramienta.cantidadDisponible > 0 ? 'status-badge active' : 'status-badge inactive'">
+                  <i [class]="herramienta.cantidadDisponible > 0 ? 'bi bi-check-circle-fill' : 'bi bi-x-circle-fill'"></i>
+                  {{ herramienta.cantidadDisponible }}
                 </span>
               </td>
               <td data-label="Estado" class="text-center">
@@ -102,10 +104,21 @@
                   {{ herramienta.estatus ? 'Activo' : 'Inactivo' }}
                 </span>
               </td>
-              <td data-label="Acción" class="text-center">
-                <button class="btn-edit" type="button" (click)="toggleEstatus(herramienta)" title="Cambiar estado">
-                  <i class="bi bi-pencil-square"></i>
-                </button>
+              <td data-label="Acciones" class="text-center">
+                <div class="action-buttons">
+                  <button class="btn-action btn-edit-icon" type="button"
+                    (click)="openEditModal(herramienta)" title="Editar">
+                    <i class="bi bi-pencil-square"></i>
+                  </button>
+                  <button class="btn-action btn-toggle-icon" type="button"
+                    (click)="toggleEstatus(herramienta)" title="Cambiar estado">
+                    <i class="bi bi-arrow-repeat"></i>
+                  </button>
+                  <button class="btn-action btn-delete-icon" type="button"
+                    (click)="confirmDelete(herramienta)" title="Eliminar">
+                    <i class="bi bi-trash3"></i>
+                  </button>
+                </div>
               </td>
             </tr>
           </tbody>
@@ -117,5 +130,94 @@
       </div>
     </div>
 
+  </div>
+</div>
+
+<!-- Modal de edición -->
+<div class="modal-overlay" *ngIf="showEditModal" (click)="closeEditModal()">
+  <div class="edit-modal glass-card" (click)="$event.stopPropagation()">
+
+    <div class="modal-header-custom">
+      <h6 class="section-label mb-0">
+        <i class="bi bi-pencil-square me-1"></i>Editar herramienta
+      </h6>
+      <button class="btn-close-modal" type="button" (click)="closeEditModal()" title="Cerrar">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+
+    <!-- Advertencia de capacidad -->
+    <div class="alert-warning-custom" *ngIf="showCapacityWarning">
+      <i class="bi bi-exclamation-triangle-fill me-2"></i>
+      La cantidad total es menor a los préstamos activos ({{ activeLoans }}).
+      La cantidad disponible se ajustará a 0 automáticamente.
+    </div>
+
+    <form [formGroup]="formularioEdit" (ngSubmit)="onEditSubmit()">
+      <div class="row g-3">
+
+        <!-- Nombre -->
+        <div class="col-12 col-md-6">
+          <label class="form-label-modern">Nombre</label>
+          <input
+            class="form-control form-control-modern"
+            formControlName="nombre"
+            placeholder="Nombre de la herramienta" />
+          <small class="field-error"
+            *ngIf="(formularioEdit.get('nombre')?.invalid && formularioEdit.get('nombre')?.touched) || editErrors['nombre']">
+            {{ editErrors['nombre'] || 'El nombre es requerido.' }}
+          </small>
+        </div>
+
+        <!-- Categoría -->
+        <div class="col-12 col-md-6">
+          <label class="form-label-modern">Categoría</label>
+          <input
+            class="form-control form-control-modern"
+            formControlName="categoria"
+            placeholder="Ej. GENERICO, ELECTRICO, etc." />
+          <small class="field-error"
+            *ngIf="(formularioEdit.get('categoria')?.invalid && formularioEdit.get('categoria')?.touched) || editErrors['categoria']">
+            {{ editErrors['categoria'] || 'La categoría es requerida.' }}
+          </small>
+        </div>
+
+        <!-- Cantidad Total -->
+        <div class="col-12 col-md-6">
+          <label class="form-label-modern">Cantidad total</label>
+          <input
+            type="number"
+            min="1"
+            step="1"
+            class="form-control form-control-modern"
+            formControlName="cantidadTotal"
+            placeholder="Ej. 5" />
+          <small class="field-error"
+            *ngIf="(formularioEdit.get('cantidadTotal')?.invalid && formularioEdit.get('cantidadTotal')?.touched) || editErrors['cantidadTotal']">
+            {{ editErrors['cantidadTotal'] || 'Ingresa un entero mayor a 0.' }}
+          </small>
+        </div>
+
+        <!-- Estatus -->
+        <div class="col-12 col-md-6">
+          <label class="form-label-modern">Estatus</label>
+          <select class="form-control form-control-modern" formControlName="estatus">
+            <option [ngValue]="true">Activo</option>
+            <option [ngValue]="false">Inactivo</option>
+          </select>
+        </div>
+
+        <!-- Botones -->
+        <div class="col-12 d-flex gap-2 justify-content-end mt-2">
+          <button class="btn btn-cancel" type="button" (click)="closeEditModal()">
+            Cancelar
+          </button>
+          <button class="btn btn-submit" type="submit" [disabled]="formularioEdit.invalid">
+            <i class="bi bi-check2 me-1"></i>Guardar cambios
+          </button>
+        </div>
+
+      </div>
+    </form>
   </div>
 </div>

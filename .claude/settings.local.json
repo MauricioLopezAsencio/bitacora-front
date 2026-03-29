@@ -14,7 +14,10 @@
       "Bash(./mvnw compile:*)",
       "Bash(find /d/casystems/VALIA/VALIA-CORE/src/main/java -name *Rest*.java -o -name *Api*.java)",
       "Bash(find /c/Users/mlopez/IdeaProjects/personal/bt-front -name *model* -o -name *interface*)",
-      "Bash(grep -E \"\\\\.\\(ts\\)$\")"
+      "Bash(grep -E \"\\\\.\\(ts\\)$\")",
+      "Bash(xargs grep:*)",
+      "Bash(find /c/Users/mlopez/IdeaProjects/personal/bt-front/src -type f -name *.service.ts)",
+      "Bash(find /c/Users/mlopez/IdeaProjects/personal/bt-front -maxdepth 3 -name environment* -type f)"
     ]
   }
 }
