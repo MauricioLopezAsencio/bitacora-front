@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { forkJoin } from 'rxjs';
 import { BitacoraService } from 'src/app/services/bitacora.service';
 import { HerramientaRequestDto } from 'src/app/models/herramienta.model';
+import { TurnoConfig } from 'src/app/models/turno.model';
 import Swal from 'sweetalert2';
 
 @Component({
@@ -15,6 +16,7 @@ export class DashboardComponent implements OnInit {
   kpi = { totalUnidades: 0, unidadesDisponibles: 0, unidadesPrestadas: 0 };
   prestamosActivos: any[] = [];
   loading = false;
+  turnos: TurnoConfig[] = [];
 
   // Modal bitácora
   showModalRegistro = false;
@@ -40,11 +42,17 @@ export class DashboardComponent implements OnInit {
     this.formularioRegistro = this.fb.group({
       empleadoId:    ['', Validators.required],
       herramientaId: ['', Validators.required],
-      turno:         [this.getTurnoActual(), Validators.required],
+      turno:         ['', Validators.required],
     });
     this.formularioHerramienta = this.fb.group({
       nombre:        ['', Validators.required],
       cantidadTotal: [null, [Validators.required, Validators.min(1), Validators.pattern('^[0-9]+$')]],
+    });
+    this.bitacoraService.getTurnos().subscribe({
+      next: (turnos) => {
+        this.turnos = turnos;
+        this.formularioRegistro.patchValue({ turno: this.calcularTurnoActual() });
+      }
     });
   }
 
@@ -103,7 +111,7 @@ export class DashboardComponent implements OnInit {
     return map[turno] ?? turno;
   }
 
-  private getTurnoActual(): string {
+  private calcularTurnoActual(): string {
     const hourMX = parseInt(
       new Intl.DateTimeFormat('es-MX', {
         timeZone: 'America/Mexico_City',
@@ -112,9 +120,15 @@ export class DashboardComponent implements OnInit {
       }).format(new Date()),
       10
     );
-    if (hourMX >= 6 && hourMX < 14) return 'MATUTINO';
-    if (hourMX >= 14 && hourMX < 22) return 'VESPERTINO';
-    return 'NOCTURNO';
+    for (const t of this.turnos) {
+      if (t.horaFin < t.horaInicio) {
+        // Turno nocturno: cruza medianoche
+        if (hourMX >= t.horaInicio || hourMX < t.horaFin) return t.cvTurno;
+      } else {
+        if (hourMX >= t.horaInicio && hourMX < t.horaFin) return t.cvTurno;
+      }
+    }
+    return this.turnos[0]?.cvTurno ?? 'MATUTINO';
   }
 
   // ---- Modal Registro ----
@@ -133,7 +147,7 @@ export class DashboardComponent implements OnInit {
       next: ({ empleados, herramientas }) => {
         this.registros    = empleados;
         this.herramientas = herramientas.map((h: any) => ({ herramientaId: h.id, nombre: h.nombre }));
-        this.formularioRegistro.reset({ turno: this.getTurnoActual() });
+        this.formularioRegistro.reset({ turno: this.calcularTurnoActual() });
         Swal.close();
         this.showModalRegistro = true;
       },
