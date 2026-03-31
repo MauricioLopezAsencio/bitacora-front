@@ -1,0 +1,186 @@
+<div class="page-wrapper">
+
+  <!-- Header -->
+  <div class="text-center mb-4">
+    <h1 class="page-title">
+      <i class="bi bi-gear me-2"></i>Configuración
+    </h1>
+  </div>
+
+  <!-- ============================
+       Sección: Configuración de Turnos
+       ============================ -->
+  <div class="glass-card p-0 overflow-hidden mb-4">
+
+    <div class="form-section">
+      <h6 class="section-label mb-0">
+        <i class="bi bi-clock me-1"></i>Configuración de Turnos
+      </h6>
+    </div>
+
+    <div class="table-section">
+      <div class="table-responsive">
+        <table class="modern-table">
+          <thead>
+            <tr>
+              <th>Turno</th>
+              <th>Horario</th>
+              <th class="text-center">Inicio</th>
+              <th class="text-center">Fin</th>
+              <th class="text-center">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let turno of turnos">
+
+              <td data-label="Turno">
+                <span [class]="getTurnoBadgeClass(turno.cvTurno)">{{ getTurnoLabel(turno.cvTurno) }}</span>
+              </td>
+
+              <td data-label="Horario" class="horario-col">{{ turno.dsHorario }}</td>
+
+              <td data-label="Inicio" class="text-center hora-col">{{ padHora(turno.horaInicio) }}</td>
+
+              <td data-label="Fin" class="text-center hora-col">{{ padHora(turno.horaFin) }}</td>
+
+              <td data-label="Acciones" class="text-center">
+                <button class="btn-action btn-edit-icon" type="button"
+                  (click)="openEditTurno(turno)" title="Editar turno">
+                  <i class="bi bi-pencil-square"></i>
+                </button>
+              </td>
+
+            </tr>
+
+            <tr *ngIf="turnos.length === 0">
+              <td colspan="5" class="text-center empty-row">
+                <i class="bi bi-inbox me-2"></i>Sin configuración de turnos disponible
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ============================
+       Sección: Recordatorio
+       ============================ -->
+  <div class="glass-card p-0 overflow-hidden">
+
+    <div class="form-section">
+      <h6 class="section-label mb-0">
+        <i class="bi bi-bell me-1"></i>Recordatorio de fin de turno
+      </h6>
+    </div>
+
+    <div class="recordatorio-section">
+      <form [formGroup]="recordatorioForm" (ngSubmit)="onSubmitRecordatorio()">
+
+        <div class="recordatorio-row">
+          <span class="recordatorio-label">Enviar recordatorio</span>
+          <input
+            type="number"
+            class="form-control form-control-modern recordatorio-input"
+            formControlName="minutosRecordatorio"
+            min="1"
+            max="120" />
+          <span class="recordatorio-label">minutos antes del fin de turno</span>
+          <button class="btn-submit" type="submit" [disabled]="recordatorioForm.invalid">
+            <i class="bi bi-check2 me-1"></i>Guardar
+          </button>
+        </div>
+
+        <small class="field-error"
+          *ngIf="recordatorioForm.get('minutosRecordatorio')?.invalid && recordatorioForm.get('minutosRecordatorio')?.touched">
+          El valor debe estar entre 1 y 120 minutos.
+        </small>
+
+      </form>
+    </div>
+
+  </div>
+
+</div>
+
+<!-- ============================
+     Modal: Editar Turno
+     ============================ -->
+<div class="modal-overlay" *ngIf="showModalTurno" (click)="closeModalTurno()">
+  <div class="edit-modal glass-card" (click)="$event.stopPropagation()">
+
+    <div class="modal-header-custom">
+      <h6 class="section-label mb-0">
+        <i class="bi bi-clock me-1"></i>
+        Editar turno —
+        <span [class]="getTurnoBadgeClass(editingTurno?.cvTurno ?? '')">
+          {{ getTurnoLabel(editingTurno?.cvTurno ?? '') }}
+        </span>
+      </h6>
+      <button class="btn-close-modal" type="button" (click)="closeModalTurno()" title="Cerrar">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+
+    <form [formGroup]="turnoForm" (ngSubmit)="onSubmitTurno()">
+      <div class="row g-3">
+
+        <!-- Hora Inicio -->
+        <div class="col-6">
+          <label class="form-label-modern">Hora Inicio (0–23)</label>
+          <input
+            type="number"
+            class="form-control form-control-modern"
+            formControlName="horaInicio"
+            min="0"
+            max="23"
+            placeholder="ej. 6" />
+          <small class="field-error"
+            *ngIf="turnoForm.get('horaInicio')?.invalid && turnoForm.get('horaInicio')?.touched">
+            Ingresa un valor entre 0 y 23.
+          </small>
+        </div>
+
+        <!-- Hora Fin -->
+        <div class="col-6">
+          <label class="form-label-modern">Hora Fin (0–23)</label>
+          <input
+            type="number"
+            class="form-control form-control-modern"
+            formControlName="horaFin"
+            min="0"
+            max="23"
+            placeholder="ej. 14" />
+          <small class="field-error"
+            *ngIf="turnoForm.get('horaFin')?.invalid && turnoForm.get('horaFin')?.touched">
+            Ingresa un valor entre 0 y 23.
+          </small>
+        </div>
+
+        <!-- Aviso exclusivo de NOCTURNO -->
+        <div class="col-12" *ngIf="editingTurno?.cvTurno === 'NOCTURNO'">
+          <div class="nocturno-hint">
+            <i class="bi bi-info-circle me-1"></i>
+            Para NOCTURNO la Hora Fin debe ser <strong>menor</strong> que la Hora Inicio
+            (ej. Inicio&nbsp;<strong>22</strong>, Fin&nbsp;<strong>6</strong>).
+          </div>
+          <small class="field-error" *ngIf="isNocturnoError">
+            La Hora Fin debe ser menor que la Hora Inicio en el turno NOCTURNO.
+          </small>
+        </div>
+
+        <!-- Botones -->
+        <div class="col-12 d-flex gap-2 justify-content-end mt-1">
+          <button class="btn btn-cancel" type="button" (click)="closeModalTurno()">Cancelar</button>
+          <button class="btn btn-submit" type="submit"
+            [disabled]="turnoForm.invalid || isNocturnoError">
+            <i class="bi bi-check2 me-1"></i>Guardar cambios
+          </button>
+        </div>
+
+      </div>
+    </form>
+
+  </div>
+</div>

@@ -1,0 +1,242 @@
+/* ============================================================
+   CONFIGURACION — Turnos y Recordatorio
+   ============================================================ */
+.page-wrapper {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.section-label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--color-accent);
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  margin-bottom: 1rem;
+}
+
+/* ---- Tabla ---- */
+.table-section {
+  padding: 0 0.25rem 1.25rem;
+}
+
+.horario-col {
+  font-family: monospace;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.hora-col {
+  font-family: monospace;
+  font-size: 0.9rem;
+}
+
+.empty-row {
+  color: rgba(255, 255, 255, 0.40);
+  padding: 2rem 1rem;
+  font-size: 0.9rem;
+}
+
+/* ---- Turno badges ---- */
+.turno-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.22rem 0.65rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.turno-badge.matutino {
+  background: rgba(255, 179, 0, 0.20);
+  color: #ffe082;
+  border: 1px solid rgba(255, 179, 0, 0.45);
+}
+
+.turno-badge.vespertino {
+  background: rgba(251, 100, 0, 0.22);
+  color: #ffb74d;
+  border: 1px solid rgba(251, 100, 0, 0.48);
+}
+
+.turno-badge.nocturno {
+  background: rgba(103, 58, 183, 0.22);
+  color: #ce93d8;
+  border: 1px solid rgba(103, 58, 183, 0.45);
+}
+
+/* ---- Botones de acción ---- */
+.btn-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: opacity var(--transition-fast), transform var(--transition-fast);
+}
+
+.btn-action:hover {
+  opacity: 0.80;
+  transform: translateY(-1px);
+}
+
+.btn-edit-icon {
+  background: rgba(66, 165, 245, 0.20);
+  color: #42a5f5;
+}
+
+/* ---- Sección Recordatorio ---- */
+.recordatorio-section {
+  padding: 1.25rem 1.5rem;
+}
+
+.recordatorio-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.recordatorio-label {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.80);
+  white-space: nowrap;
+}
+
+.recordatorio-input {
+  width: 90px !important;
+  text-align: center;
+  padding: 0.45rem 0.5rem !important;
+}
+
+/* ---- Input moderno ---- */
+.form-control-modern {
+  background: rgba(255, 255, 255, 0.10) !important;
+  border: 1px solid var(--glass-border) !important;
+  color: #ffffff !important;
+  border-radius: var(--radius-sm) !important;
+  padding: 0.55rem 0.85rem;
+  font-size: 0.92rem;
+  transition: border-color var(--transition-fast), background var(--transition-fast);
+}
+
+.form-control-modern::placeholder {
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.form-control-modern:focus {
+  background: rgba(255, 255, 255, 0.16) !important;
+  border-color: var(--color-accent) !important;
+  box-shadow: 0 0 0 0.2rem rgba(66, 165, 245, 0.25) !important;
+  color: #ffffff !important;
+  outline: none;
+}
+
+/* ---- Botones del form ---- */
+.btn-submit {
+  background: linear-gradient(135deg, #1565c0, #1976d2);
+  color: #ffffff;
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 0.55rem 1rem;
+  font-size: 0.88rem;
+  font-weight: 600;
+  white-space: nowrap;
+  transition: opacity var(--transition-fast), transform var(--transition-fast);
+}
+
+.btn-submit:hover:not(:disabled) {
+  opacity: 0.88;
+  transform: translateY(-1px);
+  color: #ffffff;
+}
+
+.btn-submit:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.btn-cancel {
+  background: rgba(255, 255, 255, 0.10);
+  color: rgba(255, 255, 255, 0.75);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-sm);
+  padding: 0.55rem 1rem;
+  font-size: 0.88rem;
+  font-weight: 500;
+  transition: background var(--transition-fast);
+}
+
+.btn-cancel:hover {
+  background: rgba(255, 255, 255, 0.18);
+  color: #ffffff;
+}
+
+/* ---- Hint NOCTURNO ---- */
+.nocturno-hint {
+  background: rgba(103, 58, 183, 0.15);
+  border: 1px solid rgba(103, 58, 183, 0.35);
+  border-radius: var(--radius-sm);
+  padding: 0.55rem 0.85rem;
+  font-size: 0.83rem;
+  color: #ce93d8;
+}
+
+/* ---- Modal ---- */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.60);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1050;
+  padding: 1rem;
+}
+
+.edit-modal {
+  width: 100%;
+  max-width: 460px;
+  padding: 1.5rem;
+  border-radius: var(--radius-md);
+  animation: modal-in 0.18s ease;
+}
+
+@keyframes modal-in {
+  from { opacity: 0; transform: scale(0.96) translateY(-8px); }
+  to   { opacity: 1; transform: scale(1)    translateY(0);    }
+}
+
+.modal-header-custom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.25rem;
+}
+
+.btn-close-modal {
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.60);
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 0.25rem;
+  transition: color var(--transition-fast);
+}
+
+.btn-close-modal:hover { color: #ffffff; }
+
+/* ---- Responsive ---- */
+@media (max-width: 575.98px) {
+  .page-wrapper  { padding: 0; }
+  .edit-modal    { padding: 1rem; }
+  .recordatorio-row   { flex-direction: column; align-items: flex-start; }
+  .recordatorio-input { width: 100% !important; }
+}

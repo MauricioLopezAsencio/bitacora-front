@@ -5,6 +5,7 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Constants } from '../utils/Constants';
 import { HerramientaRequestDto, HerramientaResponseDto } from '../models/herramienta.model';
+import { TurnoConfig, TurnoConfigRequest, RecordatorioConfig, RecordatorioConfigRequest } from '../models/turno.model';
 
 @Injectable({
   providedIn: 'root'
@@ -80,6 +81,28 @@ export class BitacoraService {
 
   eliminarEmpleado(id: number): Observable<any> {
     return this.http.delete(`${Constants.baseUrl}empleados/${id}`);
+  }
+
+  // ---------- Turnos ----------
+  getTurnos(): Observable<TurnoConfig[]> {
+    return this.http.get<any>(`${Constants.baseUrl}turnos`).pipe(
+      map((res: any) => Array.isArray(res) ? res : (res?.data ?? []))
+    );
+  }
+
+  updateTurno(id: number, dto: TurnoConfigRequest): Observable<any> {
+    return this.http.put<any>(`${Constants.baseUrl}turnos/${id}`, dto);
+  }
+
+  // ---------- Recordatorio ----------
+  getRecordatorio(): Observable<RecordatorioConfig> {
+    return this.http.get<any>(`${Constants.baseUrl}configuracion/recordatorio`).pipe(
+      map((res: any) => res?.data ?? res)
+    );
+  }
+
+  saveRecordatorio(dto: RecordatorioConfigRequest): Observable<any> {
+    return this.http.put<any>(`${Constants.baseUrl}configuracion/recordatorio`, dto);
   }
 }
 

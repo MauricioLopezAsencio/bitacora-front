@@ -5,6 +5,8 @@ import { HerramientaComponent } from "./components/herramienta/herramienta.compo
 import { DashboardComponent } from "./components/dashboard/dashboard.component";
 import { EmpleadoComponent } from "./components/empleado/empleado.component";
 import { LoginComponent } from "./components/login/login.component";
+import { CorreoComponent } from "./components/correo/correo.component";
+import { ConfiguracionComponent } from "./components/configuracion/configuracion.component";
 import { BrowserModule } from "@angular/platform-browser";
 import { AppRoutingModule } from "./app-routing.module";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
@@ -23,7 +25,9 @@ import { AuthInterceptor } from "./interceptors/auth.interceptor";
     HerramientaComponent,
     DashboardComponent,
     EmpleadoComponent,
-    LoginComponent
+    LoginComponent,
+    CorreoComponent,
+    ConfiguracionComponent
   ],
   imports: [
     BrowserModule,

@@ -9,76 +9,24 @@
   <!-- KPI Cards — Herramientas -->
   <div class="row g-3 justify-content-center mb-4">
     <div class="col-6 col-md-4">
-      <div class="kpi-card glass-card">
+      <div class="kpi-card glass-card kpi-card--clickable kpi-card--clickable-blue" (click)="abrirModalRegistro()" title="Agregar registro en bitácora">
         <div class="kpi-icon kpi-icon--total"><i class="bi bi-boxes"></i></div>
         <div class="kpi-value">{{ kpi.totalUnidades }}</div>
         <div class="kpi-label">Total unidades</div>
       </div>
     </div>
     <div class="col-6 col-md-4">
-      <div class="kpi-card glass-card">
+      <div class="kpi-card glass-card kpi-card--clickable kpi-card--clickable-green" (click)="abrirModalHerramienta()" title="Agregar nueva herramienta">
         <div class="kpi-icon kpi-icon--disponible"><i class="bi bi-check-circle"></i></div>
         <div class="kpi-value">{{ kpi.unidadesDisponibles }}</div>
         <div class="kpi-label">Disponibles</div>
       </div>
     </div>
     <div class="col-6 col-md-4">
-      <div class="kpi-card glass-card">
+      <div class="kpi-card glass-card kpi-card--clickable" (click)="abrirModalPrestadas()" title="Ver préstamos activos">
         <div class="kpi-icon kpi-icon--prestado"><i class="bi bi-arrow-right-circle"></i></div>
         <div class="kpi-value">{{ kpi.unidadesPrestadas }}</div>
         <div class="kpi-label">Prestadas</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Préstamos Activos -->
-  <div class="row justify-content-center mb-5" *ngIf="prestamosActivos.length > 0">
-    <div class="col-12 col-lg-10">
-      <div class="glass-card chart-card">
-        <div class="chart-header">
-          <span class="section-label"><i class="bi bi-clock-history me-1"></i>Préstamos activos</span>
-        </div>
-        <div class="table-responsive">
-          <table class="semaforo-table">
-            <thead>
-              <tr>
-                <th></th>
-                <th>Empleado</th>
-                <th>Herramienta</th>
-                <th class="text-center">Turno</th>
-                <th class="text-center">Estado turno</th>
-                <th class="text-end">Días prestado</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let p of prestamosActivos | paginate: { id: 'prestamos', itemsPerPage: 3, currentPage: pPrestamos }"
-                  [class.row-critico]="!p.turnoActivo">
-                <td data-label="">
-                  <span class="alerta-dot"
-                        [style.background-color]="alertaColor(p.alerta)"
-                        [title]="alertaTooltip(p.alerta)"></span>
-                </td>
-                <td data-label="Empleado">{{ p.nombreEmpleado }}</td>
-                <td data-label="Herramienta">{{ p.nombreHerramienta }}</td>
-                <td data-label="Turno" class="text-center">
-                  <span [ngClass]="getTurnoBadgeClass(p.turno)">
-                    {{ getTurnoLabel(p.turno) }}
-                  </span>
-                </td>
-                <td data-label="Estado turno" class="text-center">
-                  <span [ngClass]="p.turnoActivo ? 'turno-estado-chip activo' : 'turno-estado-chip finalizado'">
-                    <i [class]="p.turnoActivo ? 'bi bi-play-circle-fill' : 'bi bi-exclamation-triangle-fill'"></i>
-                    {{ p.turnoActivo ? 'Turno en curso' : 'Turno finalizado' }}
-                  </span>
-                </td>
-                <td data-label="Días" class="text-end dias-col">{{ p.diasPrestado }} día{{ p.diasPrestado !== 1 ? 's' : '' }}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        <div class="pagination-wrapper text-center">
-          <pagination-controls id="prestamos" (pageChange)="pPrestamos = $event" previousLabel="" nextLabel=""></pagination-controls>
-        </div>
       </div>
     </div>
   </div>
@@ -117,6 +65,133 @@
           <span class="dash-card-cta">Ir al módulo <i class="bi bi-arrow-right ms-1"></i></span>
         </div>
       </a>
+    </div>
+
+  </div>
+</div>
+
+<!-- Modal: nueva herramienta -->
+<div *ngIf="showModalHerramienta" class="modal-overlay" (click)="cerrarModalHerramienta()">
+  <div class="modal-registro glass-card" (click)="$event.stopPropagation()">
+
+    <div class="modal-registro-header">
+      <h6 class="modal-registro-title">
+        <i class="bi bi-wrench-adjustable me-2"></i>Nueva herramienta
+      </h6>
+      <button class="btn-modal-close" (click)="cerrarModalHerramienta()" title="Cerrar">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+
+    <div class="modal-registro-body">
+      <form [formGroup]="formularioHerramienta" (ngSubmit)="onSubmitHerramienta()">
+
+        <div class="mb-3">
+          <label class="form-label-modern">Nombre de la herramienta</label>
+          <input
+            class="form-control form-control-dash"
+            formControlName="nombre"
+            placeholder="Ej. Taladro, Martillo, etc." />
+          <small class="field-error"
+            *ngIf="(formularioHerramienta.get('nombre')?.invalid && formularioHerramienta.get('nombre')?.touched) || herramientaErrors['nombre']">
+            {{ herramientaErrors['nombre'] || 'Ingresa el nombre de la herramienta.' }}
+          </small>
+        </div>
+
+        <div class="mb-4">
+          <label class="form-label-modern">Cantidad total</label>
+          <input
+            type="number"
+            min="1"
+            step="1"
+            class="form-control form-control-dash"
+            formControlName="cantidadTotal"
+            placeholder="Ej. 5" />
+          <small class="field-error"
+            *ngIf="(formularioHerramienta.get('cantidadTotal')?.invalid && formularioHerramienta.get('cantidadTotal')?.touched) || herramientaErrors['cantidadTotal']">
+            {{ herramientaErrors['cantidadTotal'] || 'Ingresa un entero mayor a 0.' }}
+          </small>
+        </div>
+
+        <div class="d-flex gap-2 justify-content-end">
+          <button type="button" class="btn-modal-cancel" (click)="cerrarModalHerramienta()">Cancelar</button>
+          <button type="submit" class="btn-modal-submit" [disabled]="formularioHerramienta.invalid">
+            <i class="bi bi-send me-1"></i>Guardar
+          </button>
+        </div>
+
+      </form>
+    </div>
+
+  </div>
+</div>
+
+<!-- Modal: nuevo registro en bitácora -->
+<div *ngIf="showModalRegistro" class="modal-overlay" (click)="cerrarModalRegistro()">
+  <div class="modal-registro glass-card" (click)="$event.stopPropagation()">
+
+    <div class="modal-registro-header">
+      <h6 class="modal-registro-title">
+        <i class="bi bi-journal-plus me-2"></i>Nuevo registro en bitácora
+      </h6>
+      <button class="btn-modal-close" (click)="cerrarModalRegistro()" title="Cerrar">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+
+    <div class="modal-registro-body">
+      <form [formGroup]="formularioRegistro" (ngSubmit)="onSubmitRegistro()">
+
+        <div class="mb-3">
+          <label class="form-label-modern">Empleado</label>
+          <p-dropdown
+            [options]="registros"
+            optionLabel="nombre"
+            optionValue="id"
+            placeholder="Selecciona empleado"
+            formControlName="empleadoId"
+            [filter]="true"
+            filterPlaceholder="Buscar empleado"
+            styleClass="dropdown-modern"
+            [style]="{'width':'100%'}">
+          </p-dropdown>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label-modern">Herramienta</label>
+          <p-dropdown
+            [options]="herramientas"
+            optionLabel="nombre"
+            optionValue="herramientaId"
+            placeholder="Selecciona herramienta"
+            formControlName="herramientaId"
+            [filter]="true"
+            filterPlaceholder="Buscar herramienta"
+            styleClass="dropdown-modern"
+            [style]="{'width':'100%'}">
+          </p-dropdown>
+        </div>
+
+        <div class="mb-4">
+          <label class="form-label-modern">Turno</label>
+          <p-dropdown
+            [options]="turnoOptions"
+            optionLabel="label"
+            optionValue="value"
+            formControlName="turno"
+            styleClass="dropdown-modern"
+            [style]="{'width':'100%'}">
+          </p-dropdown>
+        </div>
+
+        <div class="d-flex gap-2 justify-content-end">
+          <button type="button" class="btn-modal-cancel" (click)="cerrarModalRegistro()">Cancelar</button>
+          <button type="submit" class="btn-modal-submit" [disabled]="formularioRegistro.invalid">
+            <i class="bi bi-send me-1"></i>Registrar
+          </button>
+        </div>
+
+      </form>
     </div>
 
   </div>

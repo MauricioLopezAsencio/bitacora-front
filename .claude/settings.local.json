@@ -17,7 +17,9 @@
       "Bash(grep -E \"\\\\.\\(ts\\)$\")",
       "Bash(xargs grep:*)",
       "Bash(find /c/Users/mlopez/IdeaProjects/personal/bt-front/src -type f -name *.service.ts)",
-      "Bash(find /c/Users/mlopez/IdeaProjects/personal/bt-front -maxdepth 3 -name environment* -type f)"
+      "Bash(find /c/Users/mlopez/IdeaProjects/personal/bt-front -maxdepth 3 -name environment* -type f)",
+      "Bash(grep -E \"\\\\.\\(ts|html|css|scss\\)$\")",
+      "Bash(grep -E \"\\\\.\\(ts|html|css\\)$\")"
     ]
   }
 }

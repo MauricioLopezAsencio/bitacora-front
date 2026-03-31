@@ -92,14 +92,14 @@ export class EmpleadoComponent implements OnInit {
       title: 'Editar empleado',
       html: `
         <div style="text-align:left; margin-bottom:.5rem;">
-          <label style="font-size:.85rem; color:#aaa;">Nombre</label>
+          <label style="font-size:.8rem; color:#aaa; display:block; margin-bottom:.2rem;">Nombre</label>
           <input id="swal-nombre" class="swal2-input"
                  value="${empleado.nombre}" placeholder="Nombre completo"
-                 style="margin:.25rem 0 .75rem;">
-          <label style="font-size:.85rem; color:#aaa;">Nómina</label>
+                 style="margin:.0 0 .6rem; height:2.2rem; font-size:.88rem; padding:.35rem .65rem; width:100%; box-sizing:border-box;">
+          <label style="font-size:.8rem; color:#aaa; display:block; margin-bottom:.2rem;">Nómina</label>
           <input id="swal-nomina" type="number" class="swal2-input"
                  value="${empleado.nomina}" placeholder="Número de nómina"
-                 style="margin:.25rem 0 0;">
+                 style="margin:0; height:2.2rem; font-size:.88rem; padding:.35rem .65rem; width:100%; box-sizing:border-box;">
         </div>`,
       showCancelButton: true,
       confirmButtonText: 'Guardar',

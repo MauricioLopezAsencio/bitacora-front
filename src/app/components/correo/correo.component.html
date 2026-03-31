@@ -1,0 +1,205 @@
+<div class="page-wrapper">
+
+  <!-- Header -->
+  <div class="text-center mb-4">
+    <h1 class="page-title">
+      <i class="bi bi-envelope-gear me-2"></i>Gestión de correos
+    </h1>
+  </div>
+
+  <div class="glass-card p-0 overflow-hidden">
+
+    <!-- Toolbar -->
+    <div class="form-section d-flex align-items-center justify-content-between flex-wrap gap-2">
+      <h6 class="section-label mb-0">
+        <i class="bi bi-people me-1"></i>Destinatarios de notificaciones
+      </h6>
+      <button class="btn-add" type="button" (click)="openCreate()">
+        <i class="bi bi-plus-lg me-1"></i>Agregar destinatario
+      </button>
+    </div>
+
+    <!-- Buscador -->
+    <div class="search-section">
+      <div class="search-wrapper">
+        <i class="bi bi-search search-icon"></i>
+        <input
+          type="text"
+          class="search-input"
+          [(ngModel)]="searchTerm"
+          (ngModelChange)="p = 1"
+          placeholder="Buscar por nombre o correo..." />
+        <button *ngIf="searchTerm" class="search-clear" (click)="searchTerm=''; p=1" title="Limpiar">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Tabla -->
+    <div class="table-section">
+      <div class="table-responsive">
+        <table class="modern-table">
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Correo</th>
+              <th class="text-center">Activo</th>
+              <th class="text-center">Recordatorios</th>
+              <th class="text-center">Bitácora</th>
+              <th class="text-center">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let dest of filteredDestinatarios | paginate: { itemsPerPage: itemsPerPage, currentPage: p }">
+
+              <td data-label="Nombre">{{ dest.dsNombre }}</td>
+              <td data-label="Correo" class="correo-col">{{ dest.dsCorreo }}</td>
+
+              <!-- Toggle activo -->
+              <td data-label="Activo" class="text-center">
+                <label class="toggle-switch" title="{{ dest.boActivo ? 'Desactivar' : 'Activar' }}">
+                  <input type="checkbox" [checked]="dest.boActivo" (change)="toggleActivo(dest)">
+                  <span class="toggle-slider"></span>
+                </label>
+              </td>
+
+              <!-- Recordatorios -->
+              <td data-label="Recordatorios" class="text-center">
+                <span [ngClass]="dest.boRecordatorios ? 'check-badge check-on' : 'check-badge check-off'">
+                  <i [class]="dest.boRecordatorios ? 'bi bi-check-lg' : 'bi bi-dash'"></i>
+                </span>
+              </td>
+
+              <!-- Bitácora -->
+              <td data-label="Bitácora" class="text-center">
+                <span [ngClass]="dest.boBitacora ? 'check-badge check-on' : 'check-badge check-off'">
+                  <i [class]="dest.boBitacora ? 'bi bi-check-lg' : 'bi bi-dash'"></i>
+                </span>
+              </td>
+
+              <!-- Acciones -->
+              <td data-label="Acciones" class="text-center">
+                <div class="action-buttons">
+                  <button class="btn-action btn-edit-icon" type="button"
+                    (click)="openEdit(dest)" title="Editar">
+                    <i class="bi bi-pencil-square"></i>
+                  </button>
+                  <button class="btn-action btn-delete-icon" type="button"
+                    (click)="confirmDelete(dest)" title="Eliminar">
+                    <i class="bi bi-trash3"></i>
+                  </button>
+                </div>
+              </td>
+
+            </tr>
+
+            <tr *ngIf="filteredDestinatarios.length === 0">
+              <td colspan="6" class="text-center empty-row">
+                <i class="bi bi-inbox me-2"></i>Sin destinatarios registrados
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="pagination-wrapper">
+        <pagination-controls (pageChange)="p = $event" previousLabel="" nextLabel=""></pagination-controls>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Modal crear / editar -->
+<div class="modal-overlay" *ngIf="showModal" (click)="closeModal()">
+  <div class="edit-modal glass-card" (click)="$event.stopPropagation()">
+
+    <div class="modal-header-custom">
+      <h6 class="section-label mb-0">
+        <i class="bi bi-envelope me-1"></i>{{ isEditing ? 'Editar destinatario' : 'Nuevo destinatario' }}
+      </h6>
+      <button class="btn-close-modal" type="button" (click)="closeModal()" title="Cerrar">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+
+    <form [formGroup]="formulario" (ngSubmit)="onSubmit()">
+      <div class="row g-3">
+
+        <!-- Nombre -->
+        <div class="col-12">
+          <label class="form-label-modern">Nombre</label>
+          <input
+            class="form-control form-control-modern"
+            formControlName="dsNombre"
+            placeholder="Nombre del destinatario"
+            maxlength="255" />
+          <small class="field-error"
+            *ngIf="(formulario.get('dsNombre')?.invalid && formulario.get('dsNombre')?.touched) || formErrors['dsNombre']">
+            {{ formErrors['dsNombre'] || 'El nombre es requerido (máx. 255 caracteres).' }}
+          </small>
+        </div>
+
+        <!-- Correo -->
+        <div class="col-12">
+          <label class="form-label-modern">Correo electrónico</label>
+          <input
+            type="email"
+            class="form-control form-control-modern"
+            formControlName="dsCorreo"
+            placeholder="ejemplo@correo.com"
+            maxlength="255" />
+          <small class="field-error"
+            *ngIf="(formulario.get('dsCorreo')?.invalid && formulario.get('dsCorreo')?.touched) || formErrors['dsCorreo']">
+            {{ formErrors['dsCorreo'] || 'Ingresa un correo electrónico válido (máx. 255 caracteres).' }}
+          </small>
+        </div>
+
+        <!-- Checkboxes de notificación -->
+        <div class="col-12">
+          <label class="form-label-modern mb-2">Tipo de notificaciones</label>
+          <div class="d-flex flex-column gap-2">
+
+            <label class="check-option">
+              <input type="checkbox" formControlName="boRecordatorios" class="check-input">
+              <span class="check-label">
+                <i class="bi bi-clock-history me-1 text-warning"></i>
+                Recibir recordatorios de fin de turno
+              </span>
+            </label>
+
+            <label class="check-option">
+              <input type="checkbox" formControlName="boBitacora" class="check-input">
+              <span class="check-label">
+                <i class="bi bi-card-checklist me-1 text-info"></i>
+                Recibir confirmación de préstamos
+              </span>
+            </label>
+
+          </div>
+        </div>
+
+        <!-- Activo (solo en edición) -->
+        <div class="col-12" *ngIf="isEditing">
+          <label class="check-option">
+            <input type="checkbox" formControlName="boActivo" class="check-input">
+            <span class="check-label">
+              <i class="bi bi-toggle-on me-1 text-success"></i>
+              Destinatario activo
+            </span>
+          </label>
+        </div>
+
+        <!-- Botones -->
+        <div class="col-12 d-flex gap-2 justify-content-end mt-1">
+          <button class="btn btn-cancel" type="button" (click)="closeModal()">Cancelar</button>
+          <button class="btn btn-submit" type="submit" [disabled]="formulario.invalid">
+            <i class="bi bi-check2 me-1"></i>{{ isEditing ? 'Guardar cambios' : 'Registrar' }}
+          </button>
+        </div>
+
+      </div>
+    </form>
+
+  </div>
+</div>
