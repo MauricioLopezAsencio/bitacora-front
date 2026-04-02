@@ -7,6 +7,7 @@ import { HerramientaComponent } from './components/herramienta/herramienta.compo
 import { LoginComponent } from './components/login/login.component';
 import { CorreoComponent } from './components/correo/correo.component';
 import { ConfiguracionComponent } from './components/configuracion/configuracion.component';
+import { ActividadComponent } from './components/actividad/actividad.component';
 import { authGuard } from './guards/auth.guard';
 
 const routes: Routes = [
@@ -17,6 +18,7 @@ const routes: Routes = [
   { path: 'empleado',              component: EmpleadoComponent,     canActivate: [authGuard] },
   { path: 'configuracion',         component: ConfiguracionComponent, canActivate: [authGuard] },
   { path: 'configuracion/correos', component: CorreoComponent,        canActivate: [authGuard] },
+  { path: 'actividades',           component: ActividadComponent,     canActivate: [authGuard] },
   { path: '**', redirectTo: '' }
 ];
 

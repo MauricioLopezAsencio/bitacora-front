@@ -1,0 +1,303 @@
+<div class="page-wrapper">
+
+  <!-- Header -->
+  <div class="text-center mb-4">
+    <h1 class="page-title">
+      <i class="bi bi-calendar-check me-2"></i>Actividades Microsoft
+    </h1>
+  </div>
+
+  <!-- ─── Formulario de consulta ─── -->
+  <div class="glass-card mb-4">
+
+    <div class="form-section d-flex align-items-center justify-content-between">
+      <h6 class="section-label mb-0">
+        <i class="bi bi-funnel me-1"></i>Parámetros de consulta
+      </h6>
+    </div>
+
+    <div class="form-body">
+      <form [formGroup]="formulario" (ngSubmit)="onSubmit()">
+
+        <!-- Fila 1: fechas -->
+        <div class="row g-3 mb-3">
+
+          <div class="col-md-6">
+            <label class="form-label-modern">Fecha inicio</label>
+            <input
+              type="date"
+              class="form-control form-control-modern"
+              formControlName="fechaInicio" />
+            <small class="field-error"
+              *ngIf="field('fechaInicio')?.invalid && field('fechaInicio')?.touched">
+              La fecha de inicio es requerida.
+            </small>
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label-modern">Fecha fin</label>
+            <input
+              type="date"
+              class="form-control form-control-modern"
+              formControlName="fechaFin" />
+            <small class="field-error"
+              *ngIf="field('fechaFin')?.invalid && field('fechaFin')?.touched">
+              La fecha de fin es requerida.
+            </small>
+            <small class="field-error"
+              *ngIf="!field('fechaFin')?.invalid && formulario.hasError('fechasInvalidas') && field('fechaFin')?.touched">
+              La fecha de fin no puede ser anterior a la de inicio.
+            </small>
+          </div>
+
+        </div>
+
+        <!-- Fila 2: credenciales Bitácora -->
+        <div class="row g-3 mb-3">
+
+          <div class="col-md-6">
+            <label class="form-label-modern">
+              <i class="bi bi-person me-1"></i>Usuario Bitácora
+            </label>
+            <input
+              type="text"
+              class="form-control form-control-modern"
+              formControlName="username"
+              placeholder="usuario@dominio.com"
+              autocomplete="username" />
+            <small class="field-error"
+              *ngIf="field('username')?.invalid && field('username')?.touched">
+              El usuario es requerido.
+            </small>
+          </div>
+
+          <div class="col-md-6">
+            <label class="form-label-modern">
+              <i class="bi bi-lock me-1"></i>Contraseña Bitácora
+            </label>
+            <div class="input-pass-wrapper">
+              <input
+                [type]="showPass ? 'text' : 'password'"
+                class="form-control form-control-modern"
+                formControlName="password"
+                placeholder="••••••••"
+                autocomplete="current-password" />
+              <button type="button" class="btn-pass-toggle" (click)="showPass = !showPass"
+                      title="{{ showPass ? 'Ocultar contraseña' : 'Mostrar contraseña' }}">
+                <i class="bi bi-eye{{ showPass ? '-slash' : '' }}"></i>
+              </button>
+            </div>
+            <small class="field-error"
+              *ngIf="field('password')?.invalid && field('password')?.touched">
+              La contraseña es requerida.
+            </small>
+          </div>
+
+        </div>
+
+        <!-- Fila 3: token Microsoft -->
+        <div class="row g-3 mb-4">
+          <div class="col-12">
+            <label class="form-label-modern">
+              <i class="bi bi-microsoft me-1"></i>Token Microsoft (Calendar)
+            </label>
+
+            <div class="ms-status-bar">
+              <ng-container *ngIf="msAccountName; else sinConexion">
+                <div class="ms-connected-badge">
+                  <i class="bi bi-check-circle-fill me-2 text-success"></i>
+                  <span class="ms-name">{{ msAccountName }}</span>
+                  <button type="button" class="btn-ms-disconnect" (click)="desconectarMicrosoft()">
+                    <i class="bi bi-box-arrow-right me-1"></i>Desconectar
+                  </button>
+                </div>
+              </ng-container>
+              <ng-template #sinConexion>
+                <button type="button" class="btn-ms-connect"
+                        (click)="conectarMicrosoft()" [disabled]="msLoading">
+                  <i class="bi bi-microsoft me-2"></i>Conectar con Microsoft
+                </button>
+              </ng-template>
+            </div>
+
+            <button type="button" class="btn-token-toggle mt-2"
+                    (click)="showTokenInput = !showTokenInput">
+              <i class="bi bi-chevron-{{ showTokenInput ? 'up' : 'down' }} me-1"></i>
+              {{ showTokenInput ? 'Ocultar campo de token' : 'Ingresar token manualmente' }}
+            </button>
+
+            <div *ngIf="showTokenInput" class="mt-2">
+              <textarea
+                class="form-control form-control-modern token-textarea"
+                formControlName="tokenMicrosoft"
+                rows="3"
+                placeholder="Pega aquí el Bearer token de Microsoft Graph..."></textarea>
+            </div>
+
+            <small class="field-error"
+              *ngIf="field('tokenMicrosoft')?.invalid && field('tokenMicrosoft')?.touched">
+              El token de Microsoft es requerido. Conéctate con Microsoft o ingresa el token manualmente.
+            </small>
+          </div>
+        </div>
+
+        <!-- Botón submit -->
+        <div class="d-flex justify-content-end">
+          <button type="submit" class="btn-consultar" [disabled]="formulario.invalid">
+            <i class="bi bi-search me-1"></i>Consultar actividades
+          </button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+
+  <!-- ─── Resultados ─── -->
+  <ng-container *ngIf="hasResults">
+
+    <!-- Actividades emparejadas a proyecto -->
+    <div class="glass-card mb-4">
+      <div class="form-section d-flex align-items-center justify-content-between">
+        <h6 class="section-label mb-0">
+          <i class="bi bi-check2-circle me-1"></i>Actividades emparejadas a proyecto
+        </h6>
+        <span class="result-count">{{ actividades.length }} registro{{ actividades.length !== 1 ? 's' : '' }}</span>
+      </div>
+
+      <div class="table-section">
+        <div class="table-responsive">
+          <table class="modern-table">
+            <thead>
+              <tr>
+                <th>Tipo</th>
+                <th>Proyecto</th>
+                <th>Descripción</th>
+                <th class="text-center">Fecha</th>
+                <th class="text-center">Inicio</th>
+                <th class="text-center">Fin</th>
+                <th class="text-center">Acción</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of actividades | paginate: { id: 'act', itemsPerPage: itemsPerPage, currentPage: pAct }">
+                <td>
+                  <span class="tipo-badge" [ngClass]="item.idActividad === 1 ? 'tipo-interna' : 'tipo-externa'">
+                    {{ tipoLabel(item) }}
+                  </span>
+                </td>
+                <td>{{ item.idProyecto }}</td>
+                <td class="desc-col" [title]="item.descripcion">{{ item.descripcion }}</td>
+                <td class="text-center">{{ item.fechaRegistro }}</td>
+                <td class="text-center mono">{{ item.horaInicio }}</td>
+                <td class="text-center mono">{{ item.horaFin }}</td>
+                <td class="text-center">
+                  <button class="btn-registrar"
+                          [class.btn-registrado]="item.registrado"
+                          [disabled]="!puedeRegistrar || item.registrando || item.registrado"
+                          (click)="registrarActividad(item)">
+                    <ng-container *ngIf="item.registrado">
+                      <i class="bi bi-check2-circle me-1"></i>Registrado
+                    </ng-container>
+                    <ng-container *ngIf="item.registrando">
+                      <i class="bi bi-arrow-clockwise spinning me-1"></i>Enviando...
+                    </ng-container>
+                    <ng-container *ngIf="!item.registrado && !item.registrando">
+                      <i class="bi bi-send me-1"></i>Registrar
+                    </ng-container>
+                  </button>
+                </td>
+              </tr>
+              <tr *ngIf="actividades.length === 0">
+                <td colspan="7" class="text-center empty-row">
+                  <i class="bi bi-inbox me-2"></i>Sin actividades emparejadas
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="pagination-wrapper">
+          <pagination-controls id="act" (pageChange)="pAct = $event" previousLabel="" nextLabel=""></pagination-controls>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sesiones sin proyecto -->
+    <div class="glass-card">
+      <div class="form-section d-flex align-items-center justify-content-between">
+        <h6 class="section-label mb-0">
+          <i class="bi bi-exclamation-circle me-1"></i>Sesiones sin proyecto asignado
+        </h6>
+        <span class="result-count warn" *ngIf="sesionesNoPareadas.length > 0">
+          {{ sesionesNoPareadas.length }} pendiente{{ sesionesNoPareadas.length !== 1 ? 's' : '' }}
+        </span>
+        <span class="result-count" *ngIf="sesionesNoPareadas.length === 0">0 registros</span>
+      </div>
+
+      <div class="table-section">
+        <div class="table-responsive">
+          <table class="modern-table">
+            <thead>
+              <tr>
+                <th>Tipo</th>
+                <th>Descripción</th>
+                <th class="text-center">Fecha</th>
+                <th class="text-center">Inicio</th>
+                <th class="text-center">Fin</th>
+                <th class="text-center">ID Proyecto</th>
+                <th class="text-center">Acción</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of sesionesNoPareadas | paginate: { id: 'sin', itemsPerPage: itemsPerPage, currentPage: pSin }">
+                <td>
+                  <span class="tipo-badge" [ngClass]="item.idActividad === 1 ? 'tipo-interna' : 'tipo-externa'">
+                    {{ tipoLabel(item) }}
+                  </span>
+                </td>
+                <td class="desc-col" [title]="item.descripcion">{{ item.descripcion }}</td>
+                <td class="text-center">{{ item.fechaRegistro }}</td>
+                <td class="text-center mono">{{ item.horaInicio }}</td>
+                <td class="text-center mono">{{ item.horaFin }}</td>
+                <td class="text-center">
+                  <input
+                    type="number"
+                    class="input-proyecto"
+                    [(ngModel)]="item.proyectoSeleccionado"
+                    min="1"
+                    placeholder="ID"
+                    [disabled]="!!item.registrado"
+                    title="Asigna un ID de proyecto para habilitar el registro" />
+                </td>
+                <td class="text-center">
+                  <button class="btn-registrar"
+                          [class.btn-registrado]="item.registrado"
+                          [disabled]="!puedeRegistrar || item.registrando || item.registrado || !item.proyectoSeleccionado"
+                          (click)="registrarActividad(item)">
+                    <ng-container *ngIf="item.registrado">
+                      <i class="bi bi-check2-circle me-1"></i>Registrado
+                    </ng-container>
+                    <ng-container *ngIf="item.registrando">
+                      <i class="bi bi-arrow-clockwise spinning me-1"></i>Enviando...
+                    </ng-container>
+                    <ng-container *ngIf="!item.registrado && !item.registrando">
+                      <i class="bi bi-send me-1"></i>Registrar
+                    </ng-container>
+                  </button>
+                </td>
+              </tr>
+              <tr *ngIf="sesionesNoPareadas.length === 0">
+                <td colspan="7" class="text-center empty-row">
+                  <i class="bi bi-check2 me-2"></i>Todas las sesiones fueron emparejadas
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="pagination-wrapper">
+          <pagination-controls id="sin" (pageChange)="pSin = $event" previousLabel="" nextLabel=""></pagination-controls>
+        </div>
+      </div>
+    </div>
+
+  </ng-container>
+</div>

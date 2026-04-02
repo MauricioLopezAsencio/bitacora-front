@@ -1,0 +1,341 @@
+/* ============================================================
+   ACTIVIDADES — Consulta de actividades Microsoft
+   ============================================================ */
+.page-wrapper {
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.section-label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--color-accent);
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+}
+
+/* ---- Cuerpo del formulario ---- */
+.form-body {
+  padding: 1.25rem 1.5rem 1.5rem;
+}
+
+/* ---- Input moderno ---- */
+.form-control-modern {
+  background: rgba(255, 255, 255, 0.10) !important;
+  border: 1px solid var(--glass-border) !important;
+  color: #ffffff !important;
+  border-radius: var(--radius-sm) !important;
+  padding: 0.55rem 0.85rem;
+  font-size: 0.92rem;
+  transition: border-color var(--transition-fast), background var(--transition-fast);
+}
+
+.form-control-modern::placeholder {
+  color: rgba(255, 255, 255, 0.40);
+}
+
+.form-control-modern:focus {
+  background: rgba(255, 255, 255, 0.16) !important;
+  border-color: var(--color-accent) !important;
+  box-shadow: 0 0 0 0.2rem rgba(66, 165, 245, 0.25) !important;
+  color: #ffffff !important;
+  outline: none;
+}
+
+input[type="date"].form-control-modern::-webkit-calendar-picker-indicator {
+  filter: invert(0.75) brightness(1.2);
+  cursor: pointer;
+}
+
+/* ---- Wrapper input + ojo contraseña ---- */
+.input-pass-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-pass-wrapper .form-control-modern {
+  padding-right: 2.5rem;
+}
+
+.btn-pass-toggle {
+  position: absolute;
+  right: 0.65rem;
+  background: none;
+  border: none;
+  color: rgba(255, 255, 255, 0.50);
+  font-size: 0.95rem;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+  transition: color var(--transition-fast);
+}
+
+.btn-pass-toggle:hover {
+  color: #ffffff;
+}
+
+/* ---- Sección Microsoft ---- */
+.ms-status-bar {
+  margin-bottom: 0.5rem;
+}
+
+.btn-ms-connect {
+  display: inline-flex;
+  align-items: center;
+  background: linear-gradient(135deg, #0078d4, #106ebe);
+  border: none;
+  border-radius: var(--radius-sm);
+  color: #ffffff;
+  padding: 0.5rem 1.1rem;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity var(--transition-fast), transform var(--transition-fast);
+}
+
+.btn-ms-connect:hover:not(:disabled) {
+  opacity: 0.88;
+  transform: translateY(-1px);
+}
+
+.btn-ms-connect:disabled {
+  opacity: 0.50;
+  cursor: not-allowed;
+}
+
+.ms-connected-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: rgba(67, 160, 71, 0.15);
+  border: 1px solid rgba(67, 160, 71, 0.35);
+  border-radius: var(--radius-sm);
+  padding: 0.45rem 0.9rem;
+  font-size: 0.88rem;
+}
+
+.ms-name {
+  color: rgba(255, 255, 255, 0.90);
+  font-weight: 500;
+}
+
+.btn-ms-disconnect {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.20);
+  border-radius: var(--radius-sm);
+  color: rgba(255, 255, 255, 0.65);
+  font-size: 0.80rem;
+  padding: 0.2rem 0.55rem;
+  cursor: pointer;
+  transition: background var(--transition-fast), color var(--transition-fast);
+}
+
+.btn-ms-disconnect:hover {
+  background: rgba(255, 255, 255, 0.10);
+  color: #ffffff;
+}
+
+/* ---- Toggle token manual ---- */
+.btn-token-toggle {
+  background: none;
+  border: none;
+  color: var(--color-accent);
+  font-size: 0.80rem;
+  padding: 0;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  transition: opacity var(--transition-fast);
+}
+
+.btn-token-toggle:hover {
+  opacity: 0.75;
+}
+
+.token-textarea {
+  resize: vertical;
+  font-family: monospace;
+  font-size: 0.80rem !important;
+  word-break: break-all;
+}
+
+/* ---- Botón consultar ---- */
+.btn-consultar {
+  background: linear-gradient(135deg, #1565c0, #1976d2);
+  border: none;
+  border-radius: var(--radius-sm);
+  color: #ffffff;
+  padding: 0.55rem 1.4rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity var(--transition-fast), transform var(--transition-fast);
+}
+
+.btn-consultar:hover:not(:disabled) {
+  opacity: 0.88;
+  transform: translateY(-1px);
+}
+
+.btn-consultar:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+/* ---- Resultados ---- */
+.result-count {
+  font-size: 0.80rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.60);
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 999px;
+  padding: 0.2rem 0.65rem;
+}
+
+.result-count.warn {
+  color: #ffb74d;
+  background: rgba(255, 183, 77, 0.12);
+  border-color: rgba(255, 183, 77, 0.30);
+}
+
+.table-section {
+  padding: 0 0.25rem 1.25rem;
+}
+
+.pagination-wrapper {
+  display: flex;
+  justify-content: center;
+  padding: 0 1rem;
+}
+
+.empty-row {
+  color: rgba(255, 255, 255, 0.40);
+  padding: 2rem 1rem;
+  font-size: 0.9rem;
+}
+
+/* ---- Badges de tipo ---- */
+.tipo-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  white-space: nowrap;
+}
+
+.tipo-interna {
+  background: rgba(66, 165, 245, 0.18);
+  color: #90caf9;
+  border: 1px solid rgba(66, 165, 245, 0.35);
+}
+
+.tipo-externa {
+  background: rgba(255, 183, 77, 0.18);
+  color: #ffcc80;
+  border: 1px solid rgba(255, 183, 77, 0.35);
+}
+
+/* ---- Columna descripción (recorta texto largo) ---- */
+.desc-col {
+  max-width: 280px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ---- Columna hora (monospace) ---- */
+.mono {
+  font-family: monospace;
+  font-size: 0.88rem;
+  letter-spacing: 0.02em;
+}
+
+/* ---- Botón Registrar ---- */
+.btn-registrar {
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+  background: linear-gradient(135deg, #1565c0, #1976d2);
+  border: none;
+  border-radius: var(--radius-sm);
+  color: #ffffff;
+  padding: 0.3rem 0.7rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity var(--transition-fast), transform var(--transition-fast);
+}
+
+.btn-registrar:hover:not(:disabled) {
+  opacity: 0.85;
+  transform: translateY(-1px);
+}
+
+.btn-registrar:disabled {
+  opacity: 0.40;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn-registrar.btn-registrado {
+  background: rgba(67, 160, 71, 0.25);
+  border: 1px solid rgba(67, 160, 71, 0.45);
+  color: #81c784;
+  cursor: default;
+}
+
+/* ---- Spinning icon ---- */
+.spinning {
+  animation: spin 0.75s linear infinite;
+  display: inline-block;
+}
+
+/* ---- Input ID proyecto (sesiones sin proyecto) ---- */
+.input-proyecto {
+  width: 5rem;
+  background: rgba(255, 255, 255, 0.10);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-sm);
+  color: #ffffff;
+  font-size: 0.82rem;
+  padding: 0.3rem 0.5rem;
+  text-align: center;
+  outline: none;
+  transition: border-color var(--transition-fast), background var(--transition-fast);
+}
+
+.input-proyecto::placeholder {
+  color: rgba(255, 255, 255, 0.35);
+}
+
+.input-proyecto:focus {
+  border-color: var(--color-accent);
+  background: rgba(255, 255, 255, 0.16);
+  box-shadow: 0 0 0 0.15rem rgba(66, 165, 245, 0.22);
+}
+
+.input-proyecto:disabled {
+  opacity: 0.40;
+  cursor: not-allowed;
+}
+
+/* quita flechas nativas en Chrome/Safari */
+.input-proyecto::-webkit-outer-spin-button,
+.input-proyecto::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* ---- Responsive ---- */
+@media (max-width: 575.98px) {
+  .page-wrapper  { padding: 0; }
+  .form-body     { padding: 1rem; }
+  .btn-consultar { width: 100%; justify-content: center; }
+  .desc-col      { max-width: 150px; }
+}
