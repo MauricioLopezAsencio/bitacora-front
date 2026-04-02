@@ -24,7 +24,8 @@
       "Bash(node -e \"console.log\\(require\\('./node_modules/@azure/msal-browser/package.json'\\).version\\)\")",
       "Bash(node -e \"const msal = require\\('./node_modules/@azure/msal-browser'\\); console.log\\(Object.keys\\(msal\\).filter\\(k => k.includes\\('Client'\\) || k.includes\\('create'\\) || k.includes\\('Public'\\)\\)\\)\")",
       "Bash(node -e \"const msal = require\\('./node_modules/@azure/msal-browser'\\); const keys = Object.keys\\(msal\\); console.log\\(keys.filter\\(k => k.toLowerCase\\(\\).includes\\('public'\\) || k.includes\\('createPublic'\\) || k.includes\\('Application'\\)\\)\\)\")",
-      "Bash(npx ng:*)"
+      "Bash(npx ng:*)",
+      "Bash(node -e ':*)"
     ]
   }
 }
