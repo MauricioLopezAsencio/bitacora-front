@@ -161,7 +161,20 @@
         <h6 class="section-label mb-0">
           <i class="bi bi-check2-circle me-1"></i>Actividades emparejadas a proyecto
         </h6>
-        <span class="result-count">{{ actividades.length }} registro{{ actividades.length !== 1 ? 's' : '' }}</span>
+        <div class="d-flex align-items-center gap-3">
+          <span class="result-count">{{ actividades.length }} registro{{ actividades.length !== 1 ? 's' : '' }}</span>
+          <button class="btn-registrar-todo"
+                  [disabled]="!puedeRegistrar || registrandoTodoAct || pendientesAct.length === 0"
+                  (click)="registrarTodasActividades()">
+            <ng-container *ngIf="registrandoTodoAct">
+              <i class="bi bi-arrow-clockwise spinning me-1"></i>{{ progresoAct }}/{{ totalAct }}
+            </ng-container>
+            <ng-container *ngIf="!registrandoTodoAct">
+              <i class="bi bi-send-check me-1"></i>Registrar todo
+              <span class="count-badge ms-1" *ngIf="pendientesAct.length > 0">({{ pendientesAct.length }})</span>
+            </ng-container>
+          </button>
+        </div>
       </div>
 
       <div class="table-section">
@@ -227,10 +240,23 @@
         <h6 class="section-label mb-0">
           <i class="bi bi-exclamation-circle me-1"></i>Sesiones sin proyecto asignado
         </h6>
-        <span class="result-count warn" *ngIf="sesionesNoPareadas.length > 0">
-          {{ sesionesNoPareadas.length }} pendiente{{ sesionesNoPareadas.length !== 1 ? 's' : '' }}
-        </span>
-        <span class="result-count" *ngIf="sesionesNoPareadas.length === 0">0 registros</span>
+        <div class="d-flex align-items-center gap-3">
+          <span class="result-count warn" *ngIf="sesionesNoPareadas.length > 0">
+            {{ sesionesNoPareadas.length }} pendiente{{ sesionesNoPareadas.length !== 1 ? 's' : '' }}
+          </span>
+          <span class="result-count" *ngIf="sesionesNoPareadas.length === 0">0 registros</span>
+          <button class="btn-registrar-todo"
+                  [disabled]="!puedeRegistrar || registrandoTodoSin || pendientesSin.length === 0"
+                  (click)="registrarTodasSesiones()">
+            <ng-container *ngIf="registrandoTodoSin">
+              <i class="bi bi-arrow-clockwise spinning me-1"></i>{{ progresoSin }}/{{ totalSin }}
+            </ng-container>
+            <ng-container *ngIf="!registrandoTodoSin">
+              <i class="bi bi-send-check me-1"></i>Registrar todo
+              <span class="count-badge ms-1" *ngIf="pendientesSin.length > 0">({{ pendientesSin.length }})</span>
+            </ng-container>
+          </button>
+        </div>
       </div>
 
       <div class="table-section">

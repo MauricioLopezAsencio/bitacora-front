@@ -290,6 +290,39 @@ input[type="date"].form-control-modern::-webkit-calendar-picker-indicator {
   cursor: default;
 }
 
+/* ---- Botón Registrar Todo ---- */
+.btn-registrar-todo {
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+  background: linear-gradient(135deg, #6a1b9a, #8e24aa);
+  border: none;
+  border-radius: var(--radius-sm);
+  color: #ffffff;
+  padding: 0.35rem 0.85rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity var(--transition-fast), transform var(--transition-fast);
+}
+
+.btn-registrar-todo:hover:not(:disabled) {
+  opacity: 0.85;
+  transform: translateY(-1px);
+}
+
+.btn-registrar-todo:disabled {
+  opacity: 0.40;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.count-badge {
+  font-size: 0.75rem;
+  font-weight: 700;
+  opacity: 0.85;
+}
+
 /* ---- Spinning icon ---- */
 .spinning {
   animation: spin 0.75s linear infinite;

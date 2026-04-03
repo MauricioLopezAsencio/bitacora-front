@@ -1,6 +1,8 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, ValidationErrors, Validators } from '@angular/forms';
 import Swal from 'sweetalert2';
+import { from, of } from 'rxjs';
+import { concatMap, catchError, tap } from 'rxjs/operators';
 import { ActividadService } from 'src/app/services/actividad.service';
 import { MsalAuthService } from 'src/app/services/msal-auth.service';
 import { ActividadItem, ActividadRequest } from 'src/app/models/actividad.model';
@@ -34,6 +36,13 @@ export class ActividadComponent implements OnInit, OnDestroy {
   pAct = 1;
   pSin = 1;
   readonly itemsPerPage = 10;
+
+  registrandoTodoAct = false;
+  registrandoTodoSin = false;
+  progresoAct = 0;
+  progresoSin = 0;
+  totalAct = 0;
+  totalSin = 0;
 
   // Credenciales Bitácora guardadas en memoria (nunca en localStorage)
   private credencialesSco: { username: string; password: string } | null = null;
@@ -156,16 +165,22 @@ export class ActividadComponent implements OnInit, OnDestroy {
     });
   }
 
+  // ─── Getters pendientes ────────────────────────────────────────────────────
+
+  get pendientesAct(): ActividadItem[] {
+    return this.actividades.filter(i => !i.registrado && !i.registrando);
+  }
+
+  get pendientesSin(): ActividadItem[] {
+    return this.sesionesNoPareadas.filter(i => !i.registrado && !i.registrando && !!i.proyectoSeleccionado);
+  }
+
   // ─── Registro individual ───────────────────────────────────────────────────
 
-  registrarActividad(item: ActividadItem): void {
-    if (!this.credencialesSco) return;
-
-    item.registrando = true;
-
-    const body = {
-      username:        this.credencialesSco.username,
-      password:        this.credencialesSco.password,
+  private buildBody(item: ActividadItem): object {
+    return {
+      username:        this.credencialesSco!.username,
+      password:        this.credencialesSco!.password,
       idActividad:     item.idActividad,
       idTipoActividad: item.idTipoActividad,
       idProyecto:      item.proyectoSeleccionado ?? item.idProyecto,
@@ -174,11 +189,24 @@ export class ActividadComponent implements OnInit, OnDestroy {
       horaInicio:      item.horaInicio,
       horaFin:         item.horaFin
     };
+  }
 
-    this.actividadService.registrar(body).subscribe({
+  registrarActividad(item: ActividadItem): void {
+    if (!this.credencialesSco) return;
+
+    item.registrando = true;
+
+    this.actividadService.registrar(this.buildBody(item)).subscribe({
       next: () => {
         item.registrando = false;
         item.registrado  = true;
+        Swal.fire({
+          title: '¡Actividad registrada!',
+          text: 'La actividad se registró correctamente en Bitácora.',
+          icon: 'success',
+          timer: 1800,
+          showConfirmButton: false
+        });
       },
       error: (err) => {
         item.registrando = false;
@@ -187,6 +215,90 @@ export class ActividadComponent implements OnInit, OnDestroy {
           text: err?.error?.message ?? 'Ocurrió un error inesperado.',
           icon: 'error'
         });
+      }
+    });
+  }
+
+  // ─── Registro masivo ───────────────────────────────────────────────────────
+
+  registrarTodasActividades(): void {
+    if (!this.credencialesSco || this.registrandoTodoAct) return;
+    const pendientes = [...this.pendientesAct];
+    if (pendientes.length === 0) return;
+
+    this.registrandoTodoAct = true;
+    this.progresoAct = 0;
+    this.totalAct = pendientes.length;
+    let erroresAct = 0;
+
+    from(pendientes).pipe(
+      concatMap(item => {
+        item.registrando = true;
+        return this.actividadService.registrar(this.buildBody(item)).pipe(
+          tap(() => { item.registrando = false; item.registrado = true; this.progresoAct++; }),
+          catchError(() => { item.registrando = false; erroresAct++; return of(null); })
+        );
+      })
+    ).subscribe({
+      complete: () => {
+        this.registrandoTodoAct = false;
+        if (erroresAct === 0) {
+          Swal.fire({
+            title: '¡Registro masivo completado!',
+            text: `${this.progresoAct} actividad${this.progresoAct !== 1 ? 'es registradas' : ' registrada'} exitosamente.`,
+            icon: 'success',
+            timer: 2500,
+            showConfirmButton: false
+          });
+        } else {
+          Swal.fire({
+            title: 'Registro completado con advertencias',
+            html: `<p><strong>${this.progresoAct}</strong> registrada${this.progresoAct !== 1 ? 's' : ''} correctamente.</p>
+                   <p><strong>${erroresAct}</strong> con error — revisa los registros pendientes.</p>`,
+            icon: 'warning'
+          });
+        }
+      }
+    });
+  }
+
+  registrarTodasSesiones(): void {
+    if (!this.credencialesSco || this.registrandoTodoSin) return;
+    const pendientes = [...this.pendientesSin];
+    if (pendientes.length === 0) return;
+
+    this.registrandoTodoSin = true;
+    this.progresoSin = 0;
+    this.totalSin = pendientes.length;
+    let erroresSin = 0;
+
+    from(pendientes).pipe(
+      concatMap(item => {
+        item.registrando = true;
+        return this.actividadService.registrar(this.buildBody(item)).pipe(
+          tap(() => { item.registrando = false; item.registrado = true; this.progresoSin++; }),
+          catchError(() => { item.registrando = false; erroresSin++; return of(null); })
+        );
+      })
+    ).subscribe({
+      complete: () => {
+        this.registrandoTodoSin = false;
+        if (erroresSin === 0) {
+          Swal.fire({
+            title: '¡Registro masivo completado!',
+            text: `${this.progresoSin} sesión${this.progresoSin !== 1 ? 'es registradas' : ' registrada'} exitosamente.`,
+            icon: 'success',
+            timer: 2500,
+            showConfirmButton: false
+          });
+        } else {
+          Swal.fire({
+            title: 'Registro completado con advertencias',
+            html: `<p><strong>${this.progresoSin}</strong> registrada${this.progresoSin !== 1 ? 's' : ''} correctamente.</p>
+                   <p><strong>${erroresSin}</strong> con error — revisa los registros pendientes.</p>`,
+            icon: 'warning'
+          });
+        }
       }
     });
   }
