@@ -329,40 +329,61 @@ input[type="date"].form-control-modern::-webkit-calendar-picker-indicator {
   display: inline-block;
 }
 
-/* ---- Input ID proyecto (sesiones sin proyecto) ---- */
-.input-proyecto {
-  width: 5rem;
+/* ---- Input hora (inicio / fin) ---- */
+.input-time {
+  width: 7rem;
   background: rgba(255, 255, 255, 0.10);
   border: 1px solid var(--glass-border);
   border-radius: var(--radius-sm);
   color: #ffffff;
   font-size: 0.82rem;
   padding: 0.3rem 0.5rem;
-  text-align: center;
   outline: none;
   transition: border-color var(--transition-fast), background var(--transition-fast);
+  color-scheme: dark;
 }
 
-.input-proyecto::placeholder {
-  color: rgba(255, 255, 255, 0.35);
-}
-
-.input-proyecto:focus {
+.input-time:focus {
   border-color: var(--color-accent);
   background: rgba(255, 255, 255, 0.16);
   box-shadow: 0 0 0 0.15rem rgba(66, 165, 245, 0.22);
 }
 
-.input-proyecto:disabled {
+.input-time:disabled {
   opacity: 0.40;
   cursor: not-allowed;
 }
 
-/* quita flechas nativas en Chrome/Safari */
-.input-proyecto::-webkit-outer-spin-button,
-.input-proyecto::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
+/* ---- Select proyecto (sesiones sin proyecto) ---- */
+.select-proyecto {
+  width: 100%;
+  min-width: 12rem;
+  background: rgba(255, 255, 255, 0.10);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-sm);
+  color: #ffffff;
+  font-size: 0.82rem;
+  padding: 0.3rem 0.5rem;
+  outline: none;
+  appearance: auto;
+  cursor: pointer;
+  transition: border-color var(--transition-fast), background var(--transition-fast);
+}
+
+.select-proyecto option {
+  background: #1e2a3a;
+  color: #ffffff;
+}
+
+.select-proyecto:focus {
+  border-color: var(--color-accent);
+  background: rgba(255, 255, 255, 0.16);
+  box-shadow: 0 0 0 0.15rem rgba(66, 165, 245, 0.22);
+}
+
+.select-proyecto:disabled {
+  opacity: 0.40;
+  cursor: not-allowed;
 }
 
 /* ---- Responsive ---- */

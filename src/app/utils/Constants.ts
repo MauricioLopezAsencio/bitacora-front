@@ -1,6 +1,6 @@
 export const Constants = {
-    //baseUrl: 'http://localhost:3000/api/v1/',
-    baseUrl: 'https://colored-evaluated-officially-buttons.trycloudflare.com/api/v1/',
+    baseUrl: 'http://localhost:3000/api/v1/',
+    //baseUrl: 'https://colored-evaluated-officially-buttons.trycloudflare.com/api/v1/'
 
     // ── Configuración de Azure AD para MSAL ──────────────────────────────────
     // Registra una app en https://portal.azure.com/#blade/Microsoft_AAD_RegisteredApps

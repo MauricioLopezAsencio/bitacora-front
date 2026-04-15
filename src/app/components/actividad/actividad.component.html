@@ -182,31 +182,65 @@
           <table class="modern-table">
             <thead>
               <tr>
-                <th>Tipo</th>
-                <th>Proyecto</th>
                 <th>Descripción</th>
                 <th class="text-center">Fecha</th>
-                <th class="text-center">Inicio</th>
-                <th class="text-center">Fin</th>
+                <th>Inicio</th>
+                <th>Fin</th>
+                <th>Proyecto</th>
+                <th>Tipo actividad</th>
+                <th>Actividad</th>
                 <th class="text-center">Acción</th>
               </tr>
             </thead>
             <tbody>
               <tr *ngFor="let item of actividades | paginate: { id: 'act', itemsPerPage: itemsPerPage, currentPage: pAct }">
-                <td>
-                  <span class="tipo-badge" [ngClass]="item.idActividad === 1 ? 'tipo-interna' : 'tipo-externa'">
-                    {{ tipoLabel(item) }}
-                  </span>
-                </td>
-                <td>{{ item.idProyecto }}</td>
                 <td class="desc-col" [title]="item.descripcion">{{ item.descripcion }}</td>
                 <td class="text-center">{{ item.fechaRegistro }}</td>
-                <td class="text-center mono">{{ item.horaInicio }}</td>
-                <td class="text-center mono">{{ item.horaFin }}</td>
+                <td>
+                  <input type="time" class="input-time"
+                         [(ngModel)]="item.horaInicio"
+                         [disabled]="!!item.registrado" />
+                </td>
+                <td>
+                  <input type="time" class="input-time"
+                         [(ngModel)]="item.horaFin"
+                         [disabled]="!!item.registrado" />
+                </td>
+                <td>
+                  <select class="select-proyecto"
+                          [(ngModel)]="item.proyectoSeleccionado"
+                          [disabled]="!!item.registrado">
+                    <option [ngValue]="null" disabled>— Proyecto —</option>
+                    <option *ngFor="let p of proyectosDisponibles" [ngValue]="p.id">
+                      {{ p.descripcion }}
+                    </option>
+                  </select>
+                </td>
+                <td>
+                  <select class="select-proyecto"
+                          [(ngModel)]="item.tipoActividadSeleccionado"
+                          (ngModelChange)="onTipoActividadChange(item, $event)"
+                          [disabled]="!!item.registrado">
+                    <option [ngValue]="null" disabled>— Tipo —</option>
+                    <option *ngFor="let t of tiposActividad" [ngValue]="t.id">
+                      {{ t.descripcion }}
+                    </option>
+                  </select>
+                </td>
+                <td>
+                  <select class="select-proyecto"
+                          [(ngModel)]="item.actividadSeleccionada"
+                          [disabled]="!!item.registrado">
+                    <option [ngValue]="null" disabled>— Actividad —</option>
+                    <option *ngFor="let a of item.catalogoActividades" [ngValue]="a.id">
+                      {{ a.descripcion }}
+                    </option>
+                  </select>
+                </td>
                 <td class="text-center">
                   <button class="btn-registrar"
                           [class.btn-registrado]="item.registrado"
-                          [disabled]="!puedeRegistrar || item.registrando || item.registrado"
+                          [disabled]="!puedeRegistrar || item.registrando || item.registrado || !item.tipoActividadSeleccionado || !item.actividadSeleccionada || (item.tipoActividadSeleccionado === 3 && !item.proyectoSeleccionado)"
                           (click)="registrarActividad(item)">
                     <ng-container *ngIf="item.registrado">
                       <i class="bi bi-check2-circle me-1"></i>Registrado
@@ -221,7 +255,7 @@
                 </td>
               </tr>
               <tr *ngIf="actividades.length === 0">
-                <td colspan="7" class="text-center empty-row">
+                <td colspan="8" class="text-center empty-row">
                   <i class="bi bi-inbox me-2"></i>Sin actividades emparejadas
                 </td>
               </tr>
@@ -246,7 +280,7 @@
           </span>
           <span class="result-count" *ngIf="sesionesNoPareadas.length === 0">0 registros</span>
           <button class="btn-registrar-todo"
-                  [disabled]="!puedeRegistrar || registrandoTodoSin || pendientesSin.length === 0"
+                  [disabled]="!puedeRegistrar || registrandoTodoSin || pendientesSin.length === 0 || hayIncompletas"
                   (click)="registrarTodasSesiones()">
             <ng-container *ngIf="registrandoTodoSin">
               <i class="bi bi-arrow-clockwise spinning me-1"></i>{{ progresoSin }}/{{ totalSin }}
@@ -264,40 +298,68 @@
           <table class="modern-table">
             <thead>
               <tr>
-                <th>Tipo</th>
                 <th>Descripción</th>
                 <th class="text-center">Fecha</th>
-                <th class="text-center">Inicio</th>
-                <th class="text-center">Fin</th>
-                <th class="text-center">ID Proyecto</th>
+                <th>Inicio</th>
+                <th>Fin</th>
+                <th>Proyecto</th>
+                <th>Tipo actividad</th>
+                <th>Actividad</th>
                 <th class="text-center">Acción</th>
               </tr>
             </thead>
             <tbody>
               <tr *ngFor="let item of sesionesNoPareadas | paginate: { id: 'sin', itemsPerPage: itemsPerPage, currentPage: pSin }">
-                <td>
-                  <span class="tipo-badge" [ngClass]="item.idActividad === 1 ? 'tipo-interna' : 'tipo-externa'">
-                    {{ tipoLabel(item) }}
-                  </span>
-                </td>
                 <td class="desc-col" [title]="item.descripcion">{{ item.descripcion }}</td>
                 <td class="text-center">{{ item.fechaRegistro }}</td>
-                <td class="text-center mono">{{ item.horaInicio }}</td>
-                <td class="text-center mono">{{ item.horaFin }}</td>
-                <td class="text-center">
-                  <input
-                    type="number"
-                    class="input-proyecto"
+                <td>
+                  <input type="time" class="input-time"
+                         [(ngModel)]="item.horaInicio"
+                         [disabled]="!!item.registrado" />
+                </td>
+                <td>
+                  <input type="time" class="input-time"
+                         [(ngModel)]="item.horaFin"
+                         [disabled]="!!item.registrado" />
+                </td>
+                <td>
+                  <select
+                    class="select-proyecto"
                     [(ngModel)]="item.proyectoSeleccionado"
-                    min="1"
-                    placeholder="ID"
-                    [disabled]="!!item.registrado"
-                    title="Asigna un ID de proyecto para habilitar el registro" />
+                    [disabled]="!!item.registrado">
+                    <option [ngValue]="null" disabled>— Selecciona proyecto —</option>
+                    <option *ngFor="let p of proyectosDisponibles" [ngValue]="p.id">
+                      {{ p.descripcion }}
+                    </option>
+                  </select>
+                </td>
+                <td>
+                  <select
+                    class="select-proyecto"
+                    [(ngModel)]="item.tipoActividadSeleccionado"
+                    (ngModelChange)="onTipoActividadChange(item, $event)"
+                    [disabled]="!!item.registrado">
+                    <option [ngValue]="null" disabled>— Tipo —</option>
+                    <option *ngFor="let t of tiposActividad" [ngValue]="t.id">
+                      {{ t.descripcion }}
+                    </option>
+                  </select>
+                </td>
+                <td>
+                  <select
+                    class="select-proyecto"
+                    [(ngModel)]="item.actividadSeleccionada"
+                    [disabled]="!!item.registrado">
+                    <option [ngValue]="null" disabled>— Actividad —</option>
+                    <option *ngFor="let a of item.catalogoActividades" [ngValue]="a.id">
+                      {{ a.descripcion }}
+                    </option>
+                  </select>
                 </td>
                 <td class="text-center">
                   <button class="btn-registrar"
                           [class.btn-registrado]="item.registrado"
-                          [disabled]="!puedeRegistrar || item.registrando || item.registrado || !item.proyectoSeleccionado"
+                          [disabled]="!puedeRegistrar || item.registrando || item.registrado || !item.tipoActividadSeleccionado || !item.actividadSeleccionada || (item.tipoActividadSeleccionado === 3 && !item.proyectoSeleccionado)"
                           (click)="registrarActividad(item)">
                     <ng-container *ngIf="item.registrado">
                       <i class="bi bi-check2-circle me-1"></i>Registrado
@@ -312,7 +374,7 @@
                 </td>
               </tr>
               <tr *ngIf="sesionesNoPareadas.length === 0">
-                <td colspan="7" class="text-center empty-row">
+                <td colspan="8" class="text-center empty-row">
                   <i class="bi bi-check2 me-2"></i>Todas las sesiones fueron emparejadas
                 </td>
               </tr>

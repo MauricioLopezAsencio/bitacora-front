@@ -5,7 +5,7 @@ import { from, of } from 'rxjs';
 import { concatMap, catchError, tap } from 'rxjs/operators';
 import { ActividadService } from 'src/app/services/actividad.service';
 import { MsalAuthService } from 'src/app/services/msal-auth.service';
-import { ActividadItem, ActividadRequest } from 'src/app/models/actividad.model';
+import { ActividadItem, ActividadRequest, CatalogoItem, ProyectoDisponible } from 'src/app/models/actividad.model';
 
 function fechasValidator(group: AbstractControl): ValidationErrors | null {
   const inicio = group.get('fechaInicio')?.value;
@@ -31,6 +31,8 @@ export class ActividadComponent implements OnInit, OnDestroy {
 
   actividades: ActividadItem[] = [];
   sesionesNoPareadas: ActividadItem[] = [];
+  proyectosDisponibles: ProyectoDisponible[] = [];
+  tiposActividad: CatalogoItem[] = [];
   hasResults = false;
 
   pAct = 1;
@@ -46,6 +48,9 @@ export class ActividadComponent implements OnInit, OnDestroy {
 
   // Credenciales Bitácora guardadas en memoria (nunca en localStorage)
   private credencialesSco: { username: string; password: string } | null = null;
+
+  // Proyecto solo es obligatorio cuando el tipo de actividad es SERVICIO
+  private readonly ID_TIPO_SERVICIO = 3;
 
   constructor(
     private fb: FormBuilder,
@@ -68,6 +73,7 @@ export class ActividadComponent implements OnInit, OnDestroy {
     this.msalAuth.getAccountName().then(name => {
       this.msAccountName = name;
     }).catch(() => {});
+
   }
 
   ngOnDestroy(): void {
@@ -135,16 +141,51 @@ export class ActividadComponent implements OnInit, OnDestroy {
       allowOutsideClick: false
     });
 
+    const creds = { username: raw.username, password: raw.password };
+
     this.actividadService.consultar(req).subscribe({
       next: (resp) => {
         Swal.close();
-        this.actividades        = resp?.data?.actividades                 ?? [];
-        this.sesionesNoPareadas = resp?.data?.sesionesNoPareadasAProyecto ?? [];
+        this.tiposActividad       = resp?.data?.tiposActividad?.data   ?? [];
+        this.proyectosDisponibles = resp?.data?.proyectosDisponibles   ?? [];
+
+        // Pre-poblar actividades emparejadas con campos UI
+        const actividades = (resp?.data?.actividades ?? []).map(s => ({
+          ...s,
+          tipoActividadSeleccionado: s.idTipoActividad ?? null,
+          actividadSeleccionada:     typeof s.idActividad === 'number' ? s.idActividad : null,
+          proyectoSeleccionado:      typeof s.idProyecto === 'number' ? s.idProyecto : null,
+          catalogoActividades:       [] as CatalogoItem[]
+        }));
+        this.actividades = actividades;
+
+        // Pre-poblar sesiones no pareadas con campos UI
+        const sesiones = (resp?.data?.sesionesNoPareadasAProyecto ?? []).map(s => ({
+          ...s,
+          tipoActividadSeleccionado: s.idTipoActividad ?? null,
+          actividadSeleccionada:     typeof s.idActividad === 'number' ? s.idActividad : null,
+          catalogoActividades:       [] as CatalogoItem[]
+        }));
+        this.sesionesNoPareadas = sesiones;
+
+        // Cargar catálogos de actividades para todas las filas de ambas tablas (una llamada por tipo único)
+        const todasLasFilas = [...actividades, ...sesiones];
+        const tiposUnicos = [...new Set(
+          todasLasFilas.map(s => s.tipoActividadSeleccionado).filter((t): t is number => !!t)
+        )];
+        tiposUnicos.forEach(idTipo => {
+          this.actividadService.getCatalogoActividades(idTipo, creds).subscribe({
+            next: items => todasLasFilas
+              .filter(s => s.tipoActividadSeleccionado === idTipo)
+              .forEach(s => s.catalogoActividades = items)
+          });
+        });
+
         this.hasResults = true;
         this.pAct = 1;
         this.pSin = 1;
         // Guardar credenciales en memoria para los registros posteriores
-        this.credencialesSco = { username: raw.username, password: raw.password };
+        this.credencialesSco = creds;
       },
       error: (err) => {
         const status = err?.status;
@@ -168,11 +209,35 @@ export class ActividadComponent implements OnInit, OnDestroy {
   // ─── Getters pendientes ────────────────────────────────────────────────────
 
   get pendientesAct(): ActividadItem[] {
-    return this.actividades.filter(i => !i.registrado && !i.registrando);
+    return this.actividades.filter(
+      i => !i.registrado && !i.registrando
+        && !!i.tipoActividadSeleccionado
+        && !!i.actividadSeleccionada
+        && (!this.requiereProyecto(i) || !!i.proyectoSeleccionado)
+    );
+  }
+
+  private requiereProyecto(item: ActividadItem): boolean {
+    return (item.tipoActividadSeleccionado ?? item.idTipoActividad) === this.ID_TIPO_SERVICIO;
   }
 
   get pendientesSin(): ActividadItem[] {
-    return this.sesionesNoPareadas.filter(i => !i.registrado && !i.registrando && !!i.proyectoSeleccionado);
+    return this.sesionesNoPareadas.filter(
+      i => !i.registrado && !i.registrando
+        && !!i.tipoActividadSeleccionado
+        && !!i.actividadSeleccionada
+        && (!this.requiereProyecto(i) || !!i.proyectoSeleccionado)
+    );
+  }
+
+  get hayIncompletas(): boolean {
+    return this.sesionesNoPareadas.some(
+      i => !i.registrado && (
+        !i.tipoActividadSeleccionado
+        || !i.actividadSeleccionada
+        || (this.requiereProyecto(i) && !i.proyectoSeleccionado)
+      )
+    );
   }
 
   // ─── Registro individual ───────────────────────────────────────────────────
@@ -181,9 +246,10 @@ export class ActividadComponent implements OnInit, OnDestroy {
     return {
       username:        this.credencialesSco!.username,
       password:        this.credencialesSco!.password,
-      idActividad:     item.idActividad,
-      idTipoActividad: item.idTipoActividad,
-      idProyecto:      item.proyectoSeleccionado ?? item.idProyecto,
+      idActividad:     item.actividadSeleccionada     ?? item.idActividad,
+      idTipoActividad: item.tipoActividadSeleccionado ?? item.idTipoActividad,
+      idProyecto:      item.proyectoSeleccionado
+                       ?? (typeof item.idProyecto === 'number' ? item.idProyecto : null),
       descripcion:     item.descripcion,
       fechaRegistro:   item.fechaRegistro,
       horaInicio:      item.horaInicio,
@@ -303,7 +369,24 @@ export class ActividadComponent implements OnInit, OnDestroy {
     });
   }
 
+  // ─── Catálogos ────────────────────────────────────────────────────────────
+
+  onTipoActividadChange(item: ActividadItem, idTipo: number | null): void {
+    item.actividadSeleccionada = null;
+    item.catalogoActividades   = [];
+    if (!idTipo || !this.credencialesSco) return;
+    this.actividadService.getCatalogoActividades(idTipo, this.credencialesSco).subscribe({
+      next: items => item.catalogoActividades = items,
+      error: () => item.catalogoActividades = []
+    });
+  }
+
   // ─── Helpers template ─────────────────────────────────────────────────────
+
+  getNombreProyecto(idProyecto: number | string): string {
+    const proyecto = this.proyectosDisponibles.find(p => p.id === idProyecto);
+    return proyecto ? proyecto.descripcion : String(idProyecto);
+  }
 
   tipoLabel(item: ActividadItem): string {
     return item.idActividad === 1 ? 'Interna' : 'Externa';
