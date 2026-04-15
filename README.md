@@ -1,72 +1,115 @@
-# Angular 16 example project: CRUD with Rest API
+<div align="center">
 
-Build an Angular 16 CRUD example App to consume Rest APIs, display, modify & search data.
+# 📋 Bitácora Front
 
-Tutorial Application in that:
-- Each Tutorial has id, title, description, published status.
-- We can create, retrieve, update, delete Tutorials.
-- There is a Search bar for finding Tutorials by title.
+**Plataforma interna de registro de actividades laborales**  
+integrada con Microsoft 365 y el sistema SCO.
 
-![angular-16-crud-example](angular-16-crud-example.png)
+[![Angular](https://img.shields.io/badge/Angular-17-dd0031?style=for-the-badge&logo=angular&logoColor=white)](https://angular.io)
+[![Bootstrap](https://img.shields.io/badge/Bootstrap-5-7952b3?style=for-the-badge&logo=bootstrap&logoColor=white)](https://getbootstrap.com)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.4-3178c6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org)
+[![Render](https://img.shields.io/badge/Deploy-Render-46e3b7?style=for-the-badge&logo=render&logoColor=white)](https://render.com)
 
-Run `ng serve --port 8081` for a dev server. Navigate to `http://localhost:8081/`. The app will automatically reload if you change any of the source files.
+</div>
 
-For instruction, please visit:
-> [Angular 16 CRUD example with Rest API](https://www.bezkoder.com/angular-16-crud-example/)
+---
 
-More Practice:
-> [Angular 16 Pagination example](https://www.bezkoder.com/angular-16-pagination-ngx/)
+## ✨ ¿Qué hace la aplicación?
 
-> [Angular 16 JWT Authentication & Authorization example](https://www.bezkoder.com/angular-16-jwt-auth/)
+<table>
+  <tr>
+    <td>🔐 <strong>Login</strong></td>
+    <td>Autenticación con JWT. El token se renueva automáticamente cuando quedan menos de 10 minutos de vigencia.</td>
+  </tr>
+  <tr>
+    <td>📊 <strong>Dashboard</strong></td>
+    <td>Vista principal con resumen de actividad del sistema.</td>
+  </tr>
+  <tr>
+    <td>📅 <strong>Actividades Microsoft</strong></td>
+    <td>Consulta eventos del calendario de Microsoft 365, los empareja con proyectos SCO y los registra en Bitácora desde una sola pantalla.</td>
+  </tr>
+  <tr>
+    <td>📝 <strong>Bitácora</strong></td>
+    <td>Registro manual de actividades laborales por empleado.</td>
+  </tr>
+  <tr>
+    <td>👥 <strong>Empleados</strong></td>
+    <td>Gestión del catálogo de empleados.</td>
+  </tr>
+  <tr>
+    <td>🔧 <strong>Herramientas</strong></td>
+    <td>Catálogo de herramientas asignadas por empleado.</td>
+  </tr>
+  <tr>
+    <td>✉️ <strong>Correos</strong></td>
+    <td>Configuración y envío de correos, incluye envío masivo.</td>
+  </tr>
+  <tr>
+    <td>⚙️ <strong>Configuración</strong></td>
+    <td>Ajustes generales del sistema.</td>
+  </tr>
+</table>
 
-> [Angular 16 File upload example with Progress bar](https://www.bezkoder.com/angular-16-file-upload/)
+---
 
-> [Angular 16 Form Validation example](https://www.bezkoder.com/angular-16-form-validation/)
+## 🛠️ Stack tecnológico
 
-Fullstack with Node:
+| Categoría | Tecnología |
+|-----------|-----------|
+| Framework | Angular 17 (NgModules) |
+| UI | Bootstrap 5, Bootstrap Icons, PrimeNG |
+| Gráficas | Chart.js vía PrimeNG |
+| Paginación | ngx-pagination |
+| Modales | SweetAlert2 |
+| Auth Microsoft | @azure/msal-browser |
+| HTTP | Angular HttpClient + RxJS |
 
-> [Angular 16 + Node Express + MySQL example](https://www.bezkoder.com/angular-16-node-js-express-mysql/)
+---
 
-> [Angular 16 + Node Express + PostgreSQL example](https://www.bezkoder.com/angular-16-node-js-express-postgresql/)
+## 🚀 Desarrollo local
 
-> [Angular 16 + Node Express + MongoDB example](https://www.bezkoder.com/angular-16-node-js-express-mongodb/)
+```bash
+# Instalar dependencias
+npm install
 
-> [Angular 16 + Node Express: File upload example](https://www.bezkoder.com/angular-16-node-express-file-upload/)
+# Levantar servidor de desarrollo
+npm start
+# → http://localhost:4200
+```
 
-Fullstack with Spring Boot:
+> Configura la URL del backend y las credenciales de Azure AD en:
+> `src/app/utils/Constants.ts`
 
-> [Angular 16 + Spring Boot example](https://www.bezkoder.com/spring-boot-angular-16-crud/)
+---
 
-> [Angular 16 + Spring Boot + MySQL example](https://www.bezkoder.com/spring-boot-angular-16-mysql/)
+## 📦 Build y despliegue
 
-> [Angular 16 + Spring Boot + PostgreSQL example](https://www.bezkoder.com/spring-boot-angular-16-postgresql/)
+```bash
+npm run build
+# Salida: dist/angular-16-crud/
+```
 
-> [Angular 16 + Spring Boot + MongoDB example](https://www.bezkoder.com/spring-boot-angular-16-mongodb/)
+El proyecto está alojado en **Render**.  
+Cada `git push` a `master` dispara un **redeploy automático**.
 
-> [Angular 16 + Spring Boot: File upload example](https://www.bezkoder.com/angular-16-spring-boot-file-upload/)
+---
 
-Fullstack with Django:
-> [Angular + Django example](https://www.bezkoder.com/django-angular-13-crud-rest-framework/)
+## 🗺️ Rutas de la aplicación
 
-> [Angular + Django + MySQL](https://www.bezkoder.com/django-angular-mysql/)
+| Ruta | Vista |
+|------|-------|
+| `/login` | Inicio de sesión |
+| `/` | Dashboard |
+| `/bitacora` | Registro de bitácora |
+| `/empleado` | Gestión de empleados |
+| `/herramienta` | Catálogo de herramientas |
+| `/configuracion` | Configuración general |
+| `/configuracion/correos` | Configuración de correos |
+| `/actividades` | Actividades Microsoft 365 |
 
-> [Angular + Django + PostgreSQL](https://www.bezkoder.com/django-angular-postgresql/)
+---
 
-> [Angular + Django + MongoDB](https://www.bezkoder.com/django-angular-mongodb/)
-
-Security:
-> [Angular 16 + Spring Boot: JWT Authentication and Authorization example](https://www.bezkoder.com/angular-16-spring-boot-jwt-auth/)
-
-> [Angular 16 + Node.js Express: JWT Authentication and Authorization example](https://www.bezkoder.com/node-js-angular-16-jwt-auth/)
-
-Serverless with Firebase:
-> [Angular 16 Firebase CRUD with Realtime DataBase](https://www.bezkoder.com/angular-16-firebase-crud/)
-
-> [Angular 16 Firestore CRUD example](https://www.bezkoder.com/angular-16-firestore-crud/)
-
-> [Angular 16 Firebase Storage: File Upload/Display/Delete example](https://www.bezkoder.com/angular-16-firebase-storage/)
-
-Integration (run back-end & front-end on same server/port)
-> [How to integrate Angular with Node Restful Services](https://bezkoder.com/integrate-angular-12-node-js/)
-
-> [How to Integrate Angular with Spring Boot Rest API](https://bezkoder.com/integrate-angular-12-spring-boot/)
+<div align="center">
+  <sub>Desarrollado con ❤️ · Desplegado en Render · Integrado con Microsoft 365</sub>
+</div>
