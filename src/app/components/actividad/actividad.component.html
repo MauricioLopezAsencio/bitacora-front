@@ -194,19 +194,19 @@
             </thead>
             <tbody>
               <tr *ngFor="let item of actividades | paginate: { id: 'act', itemsPerPage: itemsPerPage, currentPage: pAct }">
-                <td class="desc-col" [title]="item.descripcion">{{ item.descripcion }}</td>
-                <td class="text-center">{{ item.fechaRegistro }}</td>
-                <td>
+                <td data-label="Descripción" class="desc-col" [title]="item.descripcion">{{ item.descripcion }}</td>
+                <td data-label="Fecha" class="text-center">{{ item.fechaRegistro }}</td>
+                <td data-label="Inicio">
                   <input type="time" class="input-time"
                          [(ngModel)]="item.horaInicio"
                          [disabled]="!!item.registrado" />
                 </td>
-                <td>
+                <td data-label="Fin">
                   <input type="time" class="input-time"
                          [(ngModel)]="item.horaFin"
                          [disabled]="!!item.registrado" />
                 </td>
-                <td>
+                <td data-label="Proyecto">
                   <select class="select-proyecto"
                           [(ngModel)]="item.proyectoSeleccionado"
                           [disabled]="!!item.registrado">
@@ -216,7 +216,7 @@
                     </option>
                   </select>
                 </td>
-                <td>
+                <td data-label="Tipo actividad">
                   <select class="select-proyecto"
                           [(ngModel)]="item.tipoActividadSeleccionado"
                           (ngModelChange)="onTipoActividadChange(item, $event)"
@@ -227,7 +227,7 @@
                     </option>
                   </select>
                 </td>
-                <td>
+                <td data-label="Actividad">
                   <select class="select-proyecto"
                           [(ngModel)]="item.actividadSeleccionada"
                           [disabled]="!!item.registrado">
@@ -237,7 +237,7 @@
                     </option>
                   </select>
                 </td>
-                <td class="text-center">
+                <td data-label="Acción" class="td-accion">
                   <button class="btn-registrar"
                           [class.btn-registrado]="item.registrado"
                           [disabled]="!puedeRegistrar || item.registrando || item.registrado || !item.tipoActividadSeleccionado || !item.actividadSeleccionada || (item.tipoActividadSeleccionado === 3 && !item.proyectoSeleccionado)"
@@ -310,19 +310,19 @@
             </thead>
             <tbody>
               <tr *ngFor="let item of sesionesNoPareadas | paginate: { id: 'sin', itemsPerPage: itemsPerPage, currentPage: pSin }">
-                <td class="desc-col" [title]="item.descripcion">{{ item.descripcion }}</td>
-                <td class="text-center">{{ item.fechaRegistro }}</td>
-                <td>
+                <td data-label="Descripción" class="desc-col" [title]="item.descripcion">{{ item.descripcion }}</td>
+                <td data-label="Fecha" class="text-center">{{ item.fechaRegistro }}</td>
+                <td data-label="Inicio">
                   <input type="time" class="input-time"
                          [(ngModel)]="item.horaInicio"
                          [disabled]="!!item.registrado" />
                 </td>
-                <td>
+                <td data-label="Fin">
                   <input type="time" class="input-time"
                          [(ngModel)]="item.horaFin"
                          [disabled]="!!item.registrado" />
                 </td>
-                <td>
+                <td data-label="Proyecto">
                   <select
                     class="select-proyecto"
                     [(ngModel)]="item.proyectoSeleccionado"
@@ -333,7 +333,7 @@
                     </option>
                   </select>
                 </td>
-                <td>
+                <td data-label="Tipo actividad">
                   <select
                     class="select-proyecto"
                     [(ngModel)]="item.tipoActividadSeleccionado"
@@ -345,7 +345,7 @@
                     </option>
                   </select>
                 </td>
-                <td>
+                <td data-label="Actividad">
                   <select
                     class="select-proyecto"
                     [(ngModel)]="item.actividadSeleccionada"
@@ -356,7 +356,7 @@
                     </option>
                   </select>
                 </td>
-                <td class="text-center">
+                <td data-label="Acción" class="td-accion">
                   <button class="btn-registrar"
                           [class.btn-registrado]="item.registrado"
                           [disabled]="!puedeRegistrar || item.registrando || item.registrado || !item.tipoActividadSeleccionado || !item.actividadSeleccionada || (item.tipoActividadSeleccionado === 3 && !item.proyectoSeleccionado)"

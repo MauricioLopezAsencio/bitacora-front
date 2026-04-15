@@ -386,10 +386,98 @@ input[type="date"].form-control-modern::-webkit-calendar-picker-indicator {
   cursor: not-allowed;
 }
 
-/* ---- Responsive ---- */
-@media (max-width: 575.98px) {
-  .page-wrapper  { padding: 0; }
-  .form-body     { padding: 1rem; }
+/* ---- Responsive — card layout on mobile ---- */
+@media (max-width: 767.98px) {
+  .page-wrapper { padding: 0; }
+  .form-body    { padding: 1rem; }
+
+  /* Botón consultar full-width */
   .btn-consultar { width: 100%; justify-content: center; }
-  .desc-col      { max-width: 150px; }
+
+  /* Header de sección apilado verticalmente */
+  .form-section {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 0.75rem;
+  }
+
+  /* Botón "Registrar todo" full-width en móvil */
+  .btn-registrar-todo { width: 100%; justify-content: center; }
+
+  /* Ocultar thead — las etiquetas se muestran via ::before */
+  .modern-table thead { display: none; }
+
+  /* Cada fila → tarjeta independiente */
+  .modern-table tbody tr {
+    display: block;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-sm);
+    margin-bottom: 1rem;
+    padding: 0.6rem 0.85rem;
+  }
+
+  /* Cada celda → fila etiqueta : valor */
+  .modern-table tbody td {
+    display: grid;
+    grid-template-columns: 8rem 1fr;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.45rem 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    font-size: 0.85rem;
+    text-align: left;
+  }
+
+  .modern-table tbody td:last-child {
+    border-bottom: none;
+  }
+
+  /* Etiqueta generada por data-label */
+  .modern-table tbody td::before {
+    content: attr(data-label);
+    font-size: 0.70rem;
+    font-weight: 600;
+    color: var(--color-accent);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  /* Celda Acción centrada sin etiqueta */
+  .td-accion {
+    display: flex;
+    justify-content: center;
+    padding-top: 0.6rem;
+  }
+
+  .td-accion::before { display: none; }
+
+  /* Descripción sin truncar en tarjeta */
+  .desc-col {
+    max-width: unset;
+    white-space: normal;
+    word-break: break-word;
+  }
+
+  /* Neutralizar text-center de Bootstrap en tarjeta */
+  .modern-table tbody td.text-center {
+    text-align: left !important;
+  }
+
+  /* Inputs y selects ocupan el espacio disponible */
+  .select-proyecto {
+    min-width: unset;
+    width: 100%;
+    max-width: 11rem;
+  }
+
+  .input-time {
+    width: 8rem;
+  }
+
+  /* Badge conectado a Microsoft — permite wrap */
+  .ms-connected-badge {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
 }
