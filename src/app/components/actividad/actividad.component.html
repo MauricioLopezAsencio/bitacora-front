@@ -142,7 +142,17 @@
         </div>
 
         <!-- Botón submit -->
-        <div class="d-flex justify-content-end">
+        <div class="d-flex justify-content-end gap-2 flex-wrap">
+          <button type="button" class="btn-registros-fecha"
+                  [disabled]="!puedeRegistrar"
+                  (click)="abrirRegistros()">
+            <i class="bi bi-list-check me-1"></i>Registros del día
+          </button>
+          <button type="button" class="btn-estadisticas"
+                  [disabled]="!puedeRegistrar"
+                  (click)="abrirEstadisticas()">
+            <i class="bi bi-bar-chart-line me-1"></i>Estadísticas del mes
+          </button>
           <button type="submit" class="btn-consultar" [disabled]="formulario.invalid">
             <i class="bi bi-search me-1"></i>Consultar actividades
           </button>
@@ -388,4 +398,178 @@
     </div>
 
   </ng-container>
+</div>
+
+<!-- ─── Modal registros del día ─── -->
+<div class="stats-overlay" [class.stats-overlay--visible]="showRegistrosModal" (click)="cerrarRegistrosModal()">
+  <div class="stats-modal stats-modal--wide glass-card" (click)="$event.stopPropagation()">
+
+    <!-- Header -->
+    <div class="stats-modal-header">
+      <h6 class="section-label mb-0">
+        <i class="bi bi-list-check me-2"></i>Registros del día
+      </h6>
+      <button class="btn-modal-close" (click)="cerrarRegistrosModal()">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+
+    <!-- Selector de fecha -->
+    <div class="stats-selectors">
+      <div class="selector-group">
+        <label class="selector-label">Fecha</label>
+        <input type="date"
+               class="selector-control"
+               [(ngModel)]="fechaRegistrosSel"
+               (change)="cargarRegistrosPorFecha()"
+               [disabled]="loadingRegistros" />
+      </div>
+    </div>
+
+    <!-- Spinner -->
+    <div class="stats-loading" *ngIf="loadingRegistros">
+      <i class="bi bi-arrow-clockwise spinning me-2"></i>Cargando registros...
+    </div>
+
+    <!-- Tabla -->
+    <ng-container *ngIf="!loadingRegistros && registrosCargados">
+
+      <div class="registros-table-wrapper" *ngIf="registrosPorFecha.length > 0; else sinRegistros">
+        <table class="registros-table">
+          <thead>
+            <tr>
+              <th>Descripción</th>
+              <th class="text-center">Inicio</th>
+              <th class="text-center">Fin</th>
+              <th class="text-center">Duración</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let r of registrosPorFecha">
+              <td data-label="Descripción" class="reg-desc" [title]="r.descripcion">{{ r.descripcion }}</td>
+              <td data-label="Inicio" class="text-center reg-mono">{{ r.horaInicio }}</td>
+              <td data-label="Fin" class="text-center reg-mono">{{ r.horaFin }}</td>
+              <td data-label="Duración" class="text-center">
+                <span class="duracion-badge">{{ calcularDuracion(r.horaInicio, r.horaFin) }}</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <ng-template #sinRegistros>
+        <div class="stats-empty">
+          <i class="bi bi-inbox me-2"></i>Sin registros para la fecha seleccionada.
+        </div>
+      </ng-template>
+
+      <div class="registros-footer" *ngIf="registrosPorFecha.length > 0">
+        <span class="reg-total-badge">
+          {{ registrosPorFecha.length }} registro{{ registrosPorFecha.length !== 1 ? 's' : '' }}
+        </span>
+      </div>
+
+    </ng-container>
+
+  </div>
+</div>
+
+<!-- ─── Modal estadísticas del mes ─── -->
+<div class="stats-overlay" [class.stats-overlay--visible]="showStatsModal" (click)="cerrarModal()">
+  <div class="stats-modal glass-card" (click)="$event.stopPropagation()">
+
+    <!-- Header -->
+    <div class="stats-modal-header">
+      <h6 class="section-label mb-0">
+        <i class="bi bi-bar-chart-line me-2"></i>Estadísticas del mes
+      </h6>
+      <button class="btn-modal-close" (click)="cerrarModal()">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+
+    <!-- Selectores -->
+    <div class="stats-selectors">
+      <div class="selector-group">
+        <label class="selector-label">Mes</label>
+        <select class="selector-control"
+                [(ngModel)]="mesSel"
+                (ngModelChange)="cargarEstadisticas()"
+                [disabled]="loadingStats">
+          <option *ngFor="let m of meses; let i = index" [value]="i + 1">{{ m }}</option>
+        </select>
+      </div>
+      <div class="selector-group">
+        <label class="selector-label">Año</label>
+        <input type="number" class="selector-control selector-anio"
+               [(ngModel)]="anioSel"
+               (blur)="cargarEstadisticas()"
+               [disabled]="loadingStats"
+               min="2020" max="2099" />
+      </div>
+    </div>
+
+    <!-- Spinner -->
+    <div class="stats-loading" *ngIf="loadingStats">
+      <i class="bi bi-arrow-clockwise spinning me-2"></i>Cargando estadísticas...
+    </div>
+
+    <!-- Contenido -->
+    <ng-container *ngIf="!loadingStats && estadisticasMes">
+
+      <p class="stats-mes-titulo">{{ estadisticasMes.nombreMes }} </p>
+
+      <!-- Cards -->
+      <div class="stats-cards-grid">
+        <div class="stat-card">
+          <span class="stat-icon"><i class="bi bi-calendar3"></i></span>
+          <span class="stat-value">{{ estadisticasMes.diasHabiles }}</span>
+          <span class="stat-label">Días hábiles</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-icon"><i class="bi bi-calendar-check"></i></span>
+          <span class="stat-value">{{ estadisticasMes.diasConRegistro }}</span>
+          <span class="stat-label">Días con registro</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-icon"><i class="bi bi-clock"></i></span>
+          <span class="stat-value">{{ estadisticasMes.horasEsperadas }}</span>
+          <span class="stat-label">Horas esperadas</span>
+        </div>
+        <div class="stat-card stat-card--highlight">
+          <span class="stat-icon"><i class="bi bi-clock-fill"></i></span>
+          <span class="stat-value">{{ estadisticasMes.horasRegistradas }}</span>
+          <span class="stat-label">Horas registradas</span>
+        </div>
+      </div>
+
+      <!-- Barra de progreso -->
+      <div class="stats-progress-section">
+        <div class="progress-meta">
+          <span class="progress-title">Cumplimiento del mes</span>
+          <span class="progress-pct" [class]="'pct-' + porcentajeClass">
+            {{ estadisticasMes.porcentaje | number:'1.1-1' }}%
+          </span>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill"
+               [class]="'progress-fill--' + porcentajeClass"
+               [style.width.%]="estadisticasMes.porcentaje > 100 ? 100 : estadisticasMes.porcentaje">
+          </div>
+        </div>
+        <div class="progress-legend">
+          <span>0%</span>
+          <span>50%</span>
+          <span>100%</span>
+        </div>
+      </div>
+
+    </ng-container>
+
+    <!-- Sin datos -->
+    <div class="stats-empty" *ngIf="!loadingStats && !estadisticasMes">
+      <i class="bi bi-inbox me-2"></i>Sin datos para el período seleccionado.
+    </div>
+
+  </div>
 </div>

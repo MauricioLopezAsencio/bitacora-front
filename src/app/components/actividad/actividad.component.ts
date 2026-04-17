@@ -5,7 +5,7 @@ import { from, of } from 'rxjs';
 import { concatMap, catchError, tap } from 'rxjs/operators';
 import { ActividadService } from 'src/app/services/actividad.service';
 import { MsalAuthService } from 'src/app/services/msal-auth.service';
-import { ActividadItem, ActividadRequest, CatalogoItem, ProyectoDisponible } from 'src/app/models/actividad.model';
+import { ActividadItem, ActividadRequest, CatalogoItem, EstadisticasMes, ProyectoDisponible, RegistroScoca } from 'src/app/models/actividad.model';
 
 function fechasValidator(group: AbstractControl): ValidationErrors | null {
   const inicio = group.get('fechaInicio')?.value;
@@ -45,6 +45,22 @@ export class ActividadComponent implements OnInit, OnDestroy {
   progresoSin = 0;
   totalAct = 0;
   totalSin = 0;
+
+  // ─── Registros por fecha ──────────────────────────────────────────────────
+  showRegistrosModal = false;
+  registrosPorFecha: RegistroScoca[] = [];
+  loadingRegistros = false;
+  fechaRegistrosSel: string = new Date().toISOString().split('T')[0];
+  registrosCargados = false;
+
+  // ─── Estadísticas del mes ─────────────────────────────────────────────────
+  showStatsModal = false;
+  estadisticasMes: EstadisticasMes | null = null;
+  loadingStats = false;
+  mesSel: number = new Date().getMonth() + 1;
+  anioSel: number = new Date().getFullYear();
+  readonly meses = ['Enero','Febrero','Marzo','Abril','Mayo','Junio',
+                    'Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'];
 
   // Credenciales Bitácora guardadas en memoria (nunca en localStorage)
   private credencialesSco: { username: string; password: string } | null = null;
@@ -131,17 +147,19 @@ export class ActividadComponent implements OnInit, OnDestroy {
       this.formulario.markAllAsTouched();
       return;
     }
+    this.ejecutarConsulta();
+  }
 
+  private ejecutarConsulta(): void {
     const raw = this.formulario.value;
     const req: ActividadRequest = { ...raw };
+    const creds = { username: raw.username, password: raw.password };
 
     Swal.fire({
       html: '<i class="bi bi-gear-fill swal-gear"></i><p class="swal-loading-text">Consultando actividades...<br><small>Por favor, espere.</small></p>',
       showConfirmButton: false,
       allowOutsideClick: false
     });
-
-    const creds = { username: raw.username, password: raw.password };
 
     this.actividadService.consultar(req).subscribe({
       next: (resp) => {
@@ -184,7 +202,6 @@ export class ActividadComponent implements OnInit, OnDestroy {
         this.hasResults = true;
         this.pAct = 1;
         this.pSin = 1;
-        // Guardar credenciales en memoria para los registros posteriores
         this.credencialesSco = creds;
       },
       error: (err) => {
@@ -272,6 +289,10 @@ export class ActividadComponent implements OnInit, OnDestroy {
           icon: 'success',
           timer: 1800,
           showConfirmButton: false
+        }).then(() => {
+          this.ejecutarConsulta();
+          if (this.estadisticasMes) this.cargarEstadisticas();
+          if (this.registrosCargados) this.cargarRegistrosPorFecha();
         });
       },
       error: (err) => {
@@ -315,14 +336,14 @@ export class ActividadComponent implements OnInit, OnDestroy {
             icon: 'success',
             timer: 2500,
             showConfirmButton: false
-          });
+          }).then(() => { this.ejecutarConsulta(); if (this.estadisticasMes) this.cargarEstadisticas(); if (this.registrosCargados) this.cargarRegistrosPorFecha(); });
         } else {
           Swal.fire({
             title: 'Registro completado con advertencias',
             html: `<p><strong>${this.progresoAct}</strong> registrada${this.progresoAct !== 1 ? 's' : ''} correctamente.</p>
                    <p><strong>${erroresAct}</strong> con error — revisa los registros pendientes.</p>`,
             icon: 'warning'
-          });
+          }).then(() => { this.ejecutarConsulta(); if (this.estadisticasMes) this.cargarEstadisticas(); if (this.registrosCargados) this.cargarRegistrosPorFecha(); });
         }
       }
     });
@@ -356,17 +377,96 @@ export class ActividadComponent implements OnInit, OnDestroy {
             icon: 'success',
             timer: 2500,
             showConfirmButton: false
-          });
+          }).then(() => { this.ejecutarConsulta(); if (this.estadisticasMes) this.cargarEstadisticas(); });
         } else {
           Swal.fire({
             title: 'Registro completado con advertencias',
             html: `<p><strong>${this.progresoSin}</strong> registrada${this.progresoSin !== 1 ? 's' : ''} correctamente.</p>
                    <p><strong>${erroresSin}</strong> con error — revisa los registros pendientes.</p>`,
             icon: 'warning'
-          });
+          }).then(() => { this.ejecutarConsulta(); if (this.estadisticasMes) this.cargarEstadisticas(); });
         }
       }
     });
+  }
+
+  // ─── Registros por fecha ──────────────────────────────────────────────────
+
+  abrirRegistros(): void {
+    this.showRegistrosModal = true;
+    this.cargarRegistrosPorFecha();
+  }
+
+  cerrarRegistrosModal(): void {
+    this.showRegistrosModal = false;
+  }
+
+  cargarRegistrosPorFecha(): void {
+    if (!this.credencialesSco || !this.fechaRegistrosSel) return;
+    this.loadingRegistros = true;
+    this.actividadService.obtenerRegistrosPorFecha(
+      this.credencialesSco.username,
+      this.credencialesSco.password,
+      this.fechaRegistrosSel
+    ).subscribe({
+      next: (data) => {
+        this.registrosPorFecha = data;
+        this.loadingRegistros = false;
+        this.registrosCargados = true;
+      },
+      error: () => {
+        this.loadingRegistros = false;
+        Swal.fire({ title: 'Error al cargar registros', icon: 'error', timer: 2000, showConfirmButton: false });
+      }
+    });
+  }
+
+  calcularDuracion(horaInicio: string, horaFin: string): string {
+    if (!horaInicio || !horaFin) return '—';
+    const [hI, mI] = horaInicio.split(':').map(Number);
+    const [hF, mF] = horaFin.split(':').map(Number);
+    const totalMin = (hF * 60 + mF) - (hI * 60 + mI);
+    if (totalMin <= 0) return '—';
+    const h = Math.floor(totalMin / 60);
+    const m = totalMin % 60;
+    return h > 0 ? `${h}h ${m > 0 ? m + 'm' : ''}`.trim() : `${m}m`;
+  }
+
+  // ─── Estadísticas del mes ─────────────────────────────────────────────────
+
+  abrirEstadisticas(): void {
+    this.showStatsModal = true;
+    if (!this.estadisticasMes) {
+      this.cargarEstadisticas();
+    }
+  }
+
+  cerrarModal(): void {
+    this.showStatsModal = false;
+  }
+
+  cargarEstadisticas(): void {
+    if (!this.credencialesSco) return;
+    this.loadingStats = true;
+    this.actividadService.obtenerEstadisticasMes(
+      this.credencialesSco.username,
+      this.credencialesSco.password,
+      this.mesSel,
+      this.anioSel
+    ).subscribe({
+      next: (data) => { this.estadisticasMes = data; this.loadingStats = false; },
+      error: () => {
+        this.loadingStats = false;
+        Swal.fire({ title: 'Error al cargar estadísticas', icon: 'error', timer: 2000, showConfirmButton: false });
+      }
+    });
+  }
+
+  get porcentajeClass(): string {
+    const p = this.estadisticasMes?.porcentaje ?? 0;
+    if (p >= 80) return 'fill-green';
+    if (p >= 60) return 'fill-yellow';
+    return 'fill-red';
   }
 
   // ─── Catálogos ────────────────────────────────────────────────────────────

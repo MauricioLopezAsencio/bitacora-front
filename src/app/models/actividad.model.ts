@@ -47,3 +47,25 @@ export interface ActividadRequest {
   fechaInicio: string;
   fechaFin: string;
 }
+
+export interface RegistroScoca {
+  id: number;
+  idActividad: number;
+  idTipoActividad: number;
+  idProyecto: number;
+  descripcion: string;
+  fechaRegistro: string;
+  horaInicio: string;
+  horaFin: string;
+}
+
+export interface EstadisticasMes {
+  nombreMes: string;
+  mes: number;
+  anio: number;
+  diasHabiles: number;
+  diasConRegistro: number;
+  horasEsperadas: number;
+  horasRegistradas: number;
+  porcentaje: number;
+}
