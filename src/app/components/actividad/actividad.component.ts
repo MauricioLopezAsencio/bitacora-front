@@ -203,6 +203,8 @@ export class ActividadComponent implements OnInit, OnDestroy {
         this.pAct = 1;
         this.pSin = 1;
         this.credencialesSco = creds;
+        this.estadisticasMes = null;
+        this.cargarEstadisticas();
       },
       error: (err) => {
         const status = err?.status;
@@ -419,6 +421,20 @@ export class ActividadComponent implements OnInit, OnDestroy {
         Swal.fire({ title: 'Error al cargar registros', icon: 'error', timer: 2000, showConfirmButton: false });
       }
     });
+  }
+
+  get totalDuracionRegistros(): string {
+    const total = this.registrosPorFecha.reduce((acc, r) => {
+      if (!r.horaInicio || !r.horaFin) return acc;
+      const [hI, mI] = r.horaInicio.split(':').map(Number);
+      const [hF, mF] = r.horaFin.split(':').map(Number);
+      const min = (hF * 60 + mF) - (hI * 60 + mI);
+      return acc + (min > 0 ? min : 0);
+    }, 0);
+    if (total === 0) return '0m';
+    const h = Math.floor(total / 60);
+    const m = total % 60;
+    return h > 0 ? `${h}h${m > 0 ? ' ' + m + 'm' : ''}` : `${m}m`;
   }
 
   calcularDuracion(horaInicio: string, horaFin: string): string {

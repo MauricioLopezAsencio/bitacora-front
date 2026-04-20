@@ -117,6 +117,101 @@ input[type="date"].form-control-modern::-webkit-calendar-picker-indicator {
 .select-proyecto:focus { border-color: var(--color-accent); background: rgba(255,255,255,.16); box-shadow: 0 0 0 .15rem rgba(66,165,245,.22); }
 .select-proyecto:disabled { opacity: .40; cursor: not-allowed; }
 
+/* ─── KPI Actividades inline ──────────────────────────────────────────────── */
+.kpi-act-card { padding-bottom: 1.5rem; }
+
+.kpi-act-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  padding: 0 1.5rem;
+}
+
+.kpi-act-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 1.1rem 0.75rem 1rem;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-sm);
+  gap: 0.25rem;
+}
+
+.kpi-act-icon {
+  width: 2.6rem;
+  height: 2.6rem;
+  border-radius: 50%;
+  background: rgba(15,20,70,0.90);
+  border: 1px solid rgba(66,165,245,0.30);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  margin-bottom: 0.35rem;
+  animation: kpi-zoom 2.4s ease-in-out infinite;
+}
+
+@keyframes kpi-zoom {
+  0%, 100% { transform: scale(1); }
+  50%       { transform: scale(1.12); }
+}
+
+.kpi-act-icon--pct   { border-color: rgba(139,92,246,0.45); color: #c4b5fd; }
+.kpi-act-icon--horas { border-color: rgba(14,165,233,0.45);  color: #7dd3fc; }
+.kpi-act-icon--dias  { border-color: rgba(34,197,94,0.45);   color: #86efac; }
+
+.kpi-act-value {
+  font-size: 1.7rem;
+  font-weight: 800;
+  color: #fff;
+  line-height: 1;
+}
+
+.kpi-act-label {
+  font-size: 0.72rem;
+  color: rgba(255,255,255,0.65);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.kpi-act-sub {
+  font-size: 0.68rem;
+  color: rgba(255,255,255,0.40);
+  margin-top: 0.1rem;
+}
+
+.kpi-act-bar {
+  width: 100%;
+  height: 4px;
+  background: rgba(255,255,255,0.10);
+  border-radius: 2px;
+  margin-top: 0.45rem;
+  overflow: hidden;
+}
+
+.kpi-act-fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.6s ease;
+}
+.kpi-act-fill--fill-green  { background: linear-gradient(90deg,#16a34a,#4ade80); }
+.kpi-act-fill--fill-yellow { background: linear-gradient(90deg,#d97706,#fbbf24); }
+.kpi-act-fill--fill-red    { background: linear-gradient(90deg,#b91c1c,#f87171); }
+
+@media (max-width: 767.98px) {
+  .kpi-act-grid { grid-template-columns: repeat(3,1fr); gap: .6rem; padding: 0 1rem; }
+  .kpi-act-value { font-size: 1.3rem; }
+  .kpi-act-icon  { width: 2.1rem; height: 2.1rem; font-size: .9rem; }
+}
+
+@media (max-width: 479.98px) {
+  .kpi-act-grid { grid-template-columns: 1fr; }
+}
+
+/* ─── Estadísticas modal ──────────────────────────────────────────────────── */
 @media (max-width: 767.98px) {
   .page-wrapper { padding: 0; }
   .form-body { padding: 1rem; }

@@ -7,6 +7,61 @@
     </h1>
   </div>
 
+  <!-- ─── KPI Estadísticas del mes ─── -->
+  <div class="glass-card kpi-act-card mb-4" *ngIf="estadisticasMes || loadingStats">
+
+    <div class="form-section d-flex align-items-center justify-content-between">
+      <h6 class="section-label mb-0">
+        <i class="bi bi-bar-chart-line me-1"></i>
+        Estadísticas — {{ estadisticasMes ? estadisticasMes.nombreMes + ' ' + estadisticasMes.anio : (meses[mesSel - 1] + ' ' + anioSel) }}
+      </h6>
+      <div class="d-flex gap-2">
+        <button class="btn-registros-fecha" [disabled]="!puedeRegistrar" (click)="abrirRegistros()">
+          <i class="bi bi-list-check me-1"></i>Registros del día
+        </button>
+        <button class="btn-estadisticas" (click)="abrirEstadisticas()" [disabled]="loadingStats">
+          <i class="bi bi-arrows-angle-expand me-1"></i>Ver detalle
+        </button>
+      </div>
+    </div>
+
+    <div class="stats-loading" *ngIf="loadingStats">
+      <i class="bi bi-arrow-clockwise spinning me-2"></i>Cargando estadísticas...
+    </div>
+
+    <ng-container *ngIf="estadisticasMes && !loadingStats">
+      <div class="kpi-act-grid">
+
+        <div class="kpi-act-item">
+          <div class="kpi-act-icon kpi-act-icon--pct"><i class="bi bi-pie-chart-fill"></i></div>
+          <div class="kpi-act-value">{{ estadisticasMes.porcentaje | number:'1.0-0' }}%</div>
+          <div class="kpi-act-label">Completado</div>
+          <div class="kpi-act-bar">
+            <div class="kpi-act-fill kpi-act-fill--{{ porcentajeClass }}"
+                 [style.width.%]="estadisticasMes.porcentaje > 100 ? 100 : estadisticasMes.porcentaje">
+            </div>
+          </div>
+        </div>
+
+        <div class="kpi-act-item">
+          <div class="kpi-act-icon kpi-act-icon--horas"><i class="bi bi-clock-fill"></i></div>
+          <div class="kpi-act-value">{{ estadisticasMes.horasRegistradas | number:'1.0-1' }}</div>
+          <div class="kpi-act-label">Horas registradas</div>
+          <div class="kpi-act-sub">de {{ estadisticasMes.horasEsperadas | number:'1.0-0' }} esperadas</div>
+        </div>
+
+        <div class="kpi-act-item">
+          <div class="kpi-act-icon kpi-act-icon--dias"><i class="bi bi-calendar-check-fill"></i></div>
+          <div class="kpi-act-value">{{ estadisticasMes.diasConRegistro }}</div>
+          <div class="kpi-act-label">Días con registro</div>
+          <div class="kpi-act-sub">de {{ estadisticasMes.diasHabiles }} hábiles</div>
+        </div>
+
+      </div>
+    </ng-container>
+
+  </div>
+
   <!-- ─── Formulario de consulta ─── -->
   <div class="glass-card mb-4">
 
@@ -142,17 +197,7 @@
         </div>
 
         <!-- Botón submit -->
-        <div class="d-flex justify-content-end gap-2 flex-wrap">
-          <button type="button" class="btn-registros-fecha"
-                  [disabled]="!puedeRegistrar"
-                  (click)="abrirRegistros()">
-            <i class="bi bi-list-check me-1"></i>Registros del día
-          </button>
-          <button type="button" class="btn-estadisticas"
-                  [disabled]="!puedeRegistrar"
-                  (click)="abrirEstadisticas()">
-            <i class="bi bi-bar-chart-line me-1"></i>Estadísticas del mes
-          </button>
+        <div class="d-flex justify-content-end">
           <button type="submit" class="btn-consultar" [disabled]="formulario.invalid">
             <i class="bi bi-search me-1"></i>Consultar actividades
           </button>
@@ -466,6 +511,9 @@
       <div class="registros-footer" *ngIf="registrosPorFecha.length > 0">
         <span class="reg-total-badge">
           {{ registrosPorFecha.length }} registro{{ registrosPorFecha.length !== 1 ? 's' : '' }}
+        </span>
+        <span class="reg-total-badge reg-total-badge--hours">
+          <i class="bi bi-clock me-1"></i>Total: {{ totalDuracionRegistros }}
         </span>
       </div>
 
