@@ -96,6 +96,15 @@ input[type="date"].form-control-modern::-webkit-calendar-picker-indicator {
 .desc-col { max-width: 280px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .spinning { animation: spin .75s linear infinite; display: inline-block; }
 
+.input-desc {
+  width: 100%; min-width: 10rem; background: rgba(255,255,255,.10);
+  border: 1px solid var(--glass-border); border-radius: var(--radius-sm);
+  color: #fff; font-size: .82rem; padding: .3rem .5rem; outline: none;
+  transition: border-color var(--transition-fast), background var(--transition-fast);
+}
+.input-desc:focus { border-color: var(--color-accent); background: rgba(255,255,255,.16); box-shadow: 0 0 0 .15rem rgba(66,165,245,.22); }
+.input-desc:disabled { opacity: .40; cursor: not-allowed; }
+
 .input-time {
   width: 7rem; background: rgba(255,255,255,.10); border: 1px solid var(--glass-border);
   border-radius: var(--radius-sm); color: #fff; font-size: .82rem;

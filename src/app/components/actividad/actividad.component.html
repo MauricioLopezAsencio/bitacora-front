@@ -226,7 +226,12 @@
             </thead>
             <tbody>
               <tr *ngFor="let item of actividades | paginate: { id: 'act', itemsPerPage: itemsPerPage, currentPage: pAct }">
-                <td data-label="Descripción" class="desc-col" [title]="item.descripcion">{{ item.descripcion }}</td>
+                <td data-label="Descripción" class="desc-col">
+                  <input type="text" class="input-desc"
+                         [(ngModel)]="item.descripcion"
+                         [disabled]="!!item.registrado"
+                         [title]="item.descripcion" />
+                </td>
                 <td data-label="Fecha" class="text-center">{{ item.fechaRegistro }}</td>
                 <td data-label="Inicio">
                   <input type="time" class="input-time"
@@ -342,7 +347,12 @@
             </thead>
             <tbody>
               <tr *ngFor="let item of sesionesNoPareadas | paginate: { id: 'sin', itemsPerPage: itemsPerPage, currentPage: pSin }">
-                <td data-label="Descripción" class="desc-col" [title]="item.descripcion">{{ item.descripcion }}</td>
+                <td data-label="Descripción" class="desc-col">
+                  <input type="text" class="input-desc"
+                         [(ngModel)]="item.descripcion"
+                         [disabled]="!!item.registrado"
+                         [title]="item.descripcion" />
+                </td>
                 <td data-label="Fecha" class="text-center">{{ item.fechaRegistro }}</td>
                 <td data-label="Inicio">
                   <input type="time" class="input-time"
