@@ -4,6 +4,7 @@ import Swal from 'sweetalert2';
 import { from, of } from 'rxjs';
 import { concatMap, catchError, tap } from 'rxjs/operators';
 import { ActividadService } from 'src/app/services/actividad.service';
+import { AuthService } from 'src/app/services/auth.service';
 import { MsalAuthService } from 'src/app/services/msal-auth.service';
 import { ActividadItem, ActividadRequest, CatalogoItem, EstadisticasMes, ProyectoDisponible, RegistroScoca } from 'src/app/models/actividad.model';
 
@@ -71,6 +72,7 @@ export class ActividadComponent implements OnInit, OnDestroy {
   constructor(
     private fb: FormBuilder,
     private actividadService: ActividadService,
+    private authService: AuthService,
     private msalAuth: MsalAuthService
   ) {}
 
@@ -78,8 +80,6 @@ export class ActividadComponent implements OnInit, OnDestroy {
     this.formulario = this.fb.group(
       {
         tokenMicrosoft: ['', Validators.required],
-        username:       ['', Validators.required],
-        password:       ['', Validators.required],
         fechaInicio:    ['', Validators.required],
         fechaFin:       ['', Validators.required]
       },
@@ -152,8 +152,17 @@ export class ActividadComponent implements OnInit, OnDestroy {
 
   private ejecutarConsulta(): void {
     const raw = this.formulario.value;
-    const req: ActividadRequest = { ...raw };
-    const creds = { username: raw.username, password: raw.password };
+    const creds = {
+      username: this.authService.getUsername() ?? '',
+      password: this.authService.getPassword() ?? ''
+    };
+    const req: ActividadRequest = {
+      tokenMicrosoft: raw.tokenMicrosoft,
+      fechaInicio:    raw.fechaInicio,
+      fechaFin:       raw.fechaFin,
+      username:       creds.username,
+      password:       creds.password
+    };
 
     Swal.fire({
       html: '<i class="bi bi-gear-fill swal-gear"></i><p class="swal-loading-text">Consultando actividades...<br><small>Por favor, espere.</small></p>',
@@ -292,7 +301,7 @@ export class ActividadComponent implements OnInit, OnDestroy {
           timer: 1800,
           showConfirmButton: false
         }).then(() => {
-          this.ejecutarConsulta();
+          //this.ejecutarConsulta();
           if (this.estadisticasMes) this.cargarEstadisticas();
           if (this.registrosCargados) this.cargarRegistrosPorFecha();
         });
@@ -388,6 +397,79 @@ export class ActividadComponent implements OnInit, OnDestroy {
             icon: 'warning'
           }).then(() => { this.ejecutarConsulta(); if (this.estadisticasMes) this.cargarEstadisticas(); });
         }
+      }
+    });
+  }
+
+  // ─── Importar DevOps CSV ──────────────────────────────────────────────────
+
+  cargandoWorkItems = false;
+  fechaDevOps: string = new Date().toISOString().split('T')[0];
+
+  onArchivoSeleccionado(event: Event): void {
+    const file = (event.target as HTMLInputElement).files?.[0];
+    if (!file) return;
+
+    this.cargandoWorkItems = true;
+    Swal.fire({
+      html: '<i class="bi bi-gear-fill swal-gear"></i><p class="swal-loading-text">Procesando archivo...<br><small>Por favor, espere.</small></p>',
+      showConfirmButton: false,
+      allowOutsideClick: false
+    });
+
+    this.actividadService.prepararWorkItems(
+      file,
+      this.fechaDevOps,
+      this.authService.getUsername() ?? '',
+      this.authService.getPassword() ?? ''
+    ).subscribe({
+      next: (items) => {
+        this.cargandoWorkItems = false;
+        (event.target as HTMLInputElement).value = '';
+
+        this.credencialesSco = {
+          username: this.authService.getUsername() ?? '',
+          password: this.authService.getPassword() ?? ''
+        };
+
+        this.actividades = items.map(i => ({
+          ...i,
+          tipoActividadSeleccionado: i.idTipoActividad ?? null,
+          actividadSeleccionada:     typeof i.idActividad === 'number' ? i.idActividad : null,
+          proyectoSeleccionado:      typeof i.idProyecto  === 'number' ? i.idProyecto  : null,
+          catalogoActividades:       [] as CatalogoItem[],
+          registrando: false,
+          registrado:  false
+        }));
+        this.sesionesNoPareadas = [];
+        this.hasResults         = true;
+        this.pAct               = 1;
+
+        // Cargar catálogo de actividades por cada tipo único (igual que ejecutarConsulta)
+        const tiposUnicos = [...new Set(
+          this.actividades.map(a => a.tipoActividadSeleccionado).filter((t): t is number => !!t)
+        )];
+        tiposUnicos.forEach(idTipo => {
+          this.actividadService.getCatalogoActividades(idTipo, this.credencialesSco!).subscribe({
+            next: catalog => this.actividades
+              .filter(a => a.tipoActividadSeleccionado === idTipo)
+              .forEach(a => a.catalogoActividades = catalog)
+          });
+        });
+
+        // Recargar KPIs del mes
+        this.estadisticasMes = null;
+        this.cargarEstadisticas();
+
+        Swal.fire({
+          title: `${items.length} actividad${items.length !== 1 ? 'es' : ''} preparada${items.length !== 1 ? 's' : ''}`,
+          icon: 'success', timer: 1800, showConfirmButton: false
+        });
+      },
+      error: (err) => {
+        this.cargandoWorkItems = false;
+        (event.target as HTMLInputElement).value = '';
+        Swal.fire({ title: 'Error al preparar', text: err?.error?.message ?? 'No se pudo procesar el archivo.', icon: 'error' });
       }
     });
   }

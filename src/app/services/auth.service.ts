@@ -22,6 +22,7 @@ export class AuthService {
   private readonly TOKEN_KEY      = 'bt_token';
   private readonly USERNAME_KEY   = 'bt_username';
   private readonly EXPIRES_AT_KEY = 'bt_expires_at';
+  private readonly PASSWORD_KEY   = 'bt_pwd';
 
   constructor(private http: HttpClient, private router: Router) {}
 
@@ -38,6 +39,7 @@ export class AuthService {
           if (data.expiresAt) {
             localStorage.setItem(this.EXPIRES_AT_KEY, data.expiresAt);
           }
+          sessionStorage.setItem(this.PASSWORD_KEY, password);
         }
       })
     );
@@ -64,6 +66,7 @@ export class AuthService {
     localStorage.removeItem(this.TOKEN_KEY);
     localStorage.removeItem(this.USERNAME_KEY);
     localStorage.removeItem(this.EXPIRES_AT_KEY);
+    sessionStorage.removeItem(this.PASSWORD_KEY);
     this.router.navigate(['/login']);
   }
 
@@ -73,6 +76,10 @@ export class AuthService {
 
   getUsername(): string | null {
     return localStorage.getItem(this.USERNAME_KEY);
+  }
+
+  getPassword(): string | null {
+    return sessionStorage.getItem(this.PASSWORD_KEY);
   }
 
   isLoggedIn(): boolean {

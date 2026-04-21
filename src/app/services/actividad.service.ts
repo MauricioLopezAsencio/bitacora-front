@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Constants } from '../utils/Constants';
 import { ActividadData, ActividadRequest, CatalogoItem, EstadisticasMes, RegistroScoca } from '../models/actividad.model';
+import { WorkItemDto } from '../models/work-item.model';
 
 export interface ActividadApiResponse {
   status: number;
@@ -18,11 +19,13 @@ interface CatalogoApiResponse {
 @Injectable({ providedIn: 'root' })
 export class ActividadService {
 
-  private readonly urlConsulta      = Constants.baseUrl + 'actividades';
-  private readonly urlRegistro      = Constants.baseUrl + 'bitacora/actividades';
-  private readonly urlCatalogoActiv = Constants.baseUrl + 'bitacora/actividades';
-  private readonly urlEstadisticas  = Constants.baseUrl + 'estadisticas/mes';
-  private readonly urlRegistrosFecha = Constants.baseUrl + 'bitacora/registros/byFecha';
+  private readonly urlConsulta        = Constants.baseUrl + 'actividades';
+  private readonly urlRegistro        = Constants.baseUrl + 'bitacora/actividades';
+  private readonly urlCatalogoActiv   = Constants.baseUrl + 'bitacora/actividades';
+  private readonly urlEstadisticas    = Constants.baseUrl + 'estadisticas/mes';
+  private readonly urlRegistrosFecha  = Constants.baseUrl + 'bitacora/registros/byFecha';
+  private readonly urlWorkItemsImportar = Constants.baseUrl + 'actividades/work-items/importar';
+  private readonly urlWorkItemsPreparar = Constants.baseUrl + 'actividades/work-items/preparar';
 
   constructor(private http: HttpClient) {}
 
@@ -43,6 +46,25 @@ export class ActividadService {
   obtenerRegistrosPorFecha(username: string, password: string, fecha: string): Observable<RegistroScoca[]> {
     return this.http.post<any>(this.urlRegistrosFecha, { username, password, fecha }).pipe(
       map(res => res?.data ?? [])
+    );
+  }
+
+  importarWorkItems(file: File): Observable<WorkItemDto[]> {
+    const formData = new FormData();
+    formData.append('file', file);
+    return this.http.post<any>(this.urlWorkItemsImportar, formData).pipe(
+      map(res => res?.data ?? res)
+    );
+  }
+
+  prepararWorkItems(file: File, fecha: string, username: string, password: string): Observable<ActividadData['actividades']> {
+    const formData = new FormData();
+    formData.append('file',     file);
+    formData.append('fecha',    fecha);
+    formData.append('username', username);
+    formData.append('password', password);
+    return this.http.post<any>(this.urlWorkItemsPreparar, formData).pipe(
+      map(res => res?.data ?? res)
     );
   }
 

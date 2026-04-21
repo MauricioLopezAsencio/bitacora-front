@@ -57,20 +57,24 @@ input[type="date"].form-control-modern::-webkit-calendar-picker-indicator {
 .btn-token-toggle:hover { opacity: .75; }
 .token-textarea { resize: vertical; font-family: monospace; font-size: .80rem !important; word-break: break-all; }
 
-.btn-registros-fecha, .btn-estadisticas, .btn-consultar,
+.btn-cargar-csv, .btn-registros-fecha, .btn-estadisticas, .btn-consultar,
 .btn-registrar, .btn-registrar-todo, .btn-ms-connect {
   display: inline-flex; align-items: center; border: none;
   border-radius: var(--radius-sm); color: #fff; font-weight: 600;
   cursor: pointer; transition: opacity var(--transition-fast), transform var(--transition-fast);
 }
+.btn-cargar-csv:hover:not(:disabled),
 .btn-registros-fecha:hover:not(:disabled), .btn-estadisticas:hover:not(:disabled),
 .btn-consultar:hover:not(:disabled), .btn-registrar:hover:not(:disabled),
 .btn-registrar-todo:hover:not(:disabled), .btn-ms-connect:hover:not(:disabled) {
   opacity: .88; transform: translateY(-1px);
 }
+.btn-cargar-csv:disabled,
 .btn-registros-fecha:disabled, .btn-estadisticas:disabled, .btn-consultar:disabled,
 .btn-registrar:disabled, .btn-registrar-todo:disabled { opacity: .40; cursor: not-allowed; }
 
+.devops-fecha-input  { width: 10rem !important; flex-shrink: 0; }
+.btn-cargar-csv      { background: linear-gradient(135deg,#4a1942,#7b2d8b); padding: .55rem 1.1rem; font-size: .9rem; white-space: nowrap; }
 .btn-registros-fecha { background: linear-gradient(135deg,#1b5e20,#2e7d32); padding: .55rem 1.1rem; font-size: .9rem; white-space: nowrap; }
 .btn-estadisticas    { background: linear-gradient(135deg,#1a5276,#2471a3); padding: .55rem 1.1rem; font-size: .9rem; white-space: nowrap; }
 .btn-consultar       { background: linear-gradient(135deg,#1565c0,#1976d2); padding: .55rem 1.4rem; font-size: .9rem; }
@@ -95,6 +99,15 @@ input[type="date"].form-control-modern::-webkit-calendar-picker-indicator {
 .empty-row { color: rgba(255,255,255,.40); padding: 2rem 1rem; font-size: .9rem; }
 .desc-col { max-width: 280px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .spinning { animation: spin .75s linear infinite; display: inline-block; }
+
+.input-fecha {
+  width: 8.5rem; background: rgba(255,255,255,.10); border: 1px solid var(--glass-border);
+  border-radius: var(--radius-sm); color: #fff; font-size: .82rem;
+  padding: .3rem .5rem; outline: none; color-scheme: dark;
+  transition: border-color var(--transition-fast), background var(--transition-fast);
+}
+.input-fecha:focus { border-color: var(--color-accent); background: rgba(255,255,255,.16); box-shadow: 0 0 0 .15rem rgba(66,165,245,.22); }
+.input-fecha:disabled { opacity: .40; cursor: not-allowed; }
 
 .input-desc {
   width: 100%; min-width: 10rem; background: rgba(255,255,255,.10);
@@ -125,6 +138,24 @@ input[type="date"].form-control-modern::-webkit-calendar-picker-indicator {
 .select-proyecto option { background: #1e2a3a; color: #fff; }
 .select-proyecto:focus { border-color: var(--color-accent); background: rgba(255,255,255,.16); box-shadow: 0 0 0 .15rem rgba(66,165,245,.22); }
 .select-proyecto:disabled { opacity: .40; cursor: not-allowed; }
+
+/* ─── Work Items DevOps ──────────────────────────────────────────────────── */
+.wi-id-col     { width: 4rem; color: rgba(255,255,255,.55); font-variant-numeric: tabular-nums; }
+.wi-title-col  { max-width: 320px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.wi-sprint-col { font-size: .78rem; color: rgba(255,255,255,.60); }
+
+.wi-type-badge {
+  display: inline-block; border-radius: 999px; font-size: .70rem; font-weight: 700;
+  padding: .15rem .55rem; text-transform: uppercase; letter-spacing: .04em; white-space: nowrap;
+}
+.wi-type-badge--epic    { background: rgba(103,58,183,.25); color: #ce93d8; border: 1px solid rgba(103,58,183,.45); }
+.wi-type-badge--feature { background: rgba(14,165,233,.18); color: #7dd3fc; border: 1px solid rgba(14,165,233,.40); }
+
+.wi-state-badge {
+  display: inline-block; border-radius: 999px; font-size: .70rem; font-weight: 600;
+  padding: .15rem .55rem; background: rgba(255,255,255,.08);
+  border: 1px solid rgba(255,255,255,.18); color: rgba(255,255,255,.75); white-space: nowrap;
+}
 
 /* ─── KPI Actividades inline ──────────────────────────────────────────────── */
 .kpi-act-card { padding-bottom: 1.5rem; }

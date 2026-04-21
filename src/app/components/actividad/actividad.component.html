@@ -75,7 +75,7 @@
       <form [formGroup]="formulario" (ngSubmit)="onSubmit()">
 
         <!-- Fila 1: fechas -->
-        <div class="row g-3 mb-3">
+        <div class="row g-3 mb-4">
 
           <div class="col-md-6">
             <label class="form-label-modern">Fecha inicio</label>
@@ -107,74 +107,32 @@
 
         </div>
 
-        <!-- Fila 2: credenciales Bitácora -->
-        <div class="row g-3 mb-3">
-
-          <div class="col-md-6">
-            <label class="form-label-modern">
-              <i class="bi bi-person me-1"></i>Usuario Bitácora
-            </label>
-            <input
-              type="text"
-              class="form-control form-control-modern"
-              formControlName="username"
-              placeholder="usuario@dominio.com"
-              autocomplete="username" />
-            <small class="field-error"
-              *ngIf="field('username')?.invalid && field('username')?.touched">
-              El usuario es requerido.
-            </small>
-          </div>
-
-          <div class="col-md-6">
-            <label class="form-label-modern">
-              <i class="bi bi-lock me-1"></i>Contraseña Bitácora
-            </label>
-            <div class="input-pass-wrapper">
-              <input
-                [type]="showPass ? 'text' : 'password'"
-                class="form-control form-control-modern"
-                formControlName="password"
-                placeholder="••••••••"
-                autocomplete="current-password" />
-              <button type="button" class="btn-pass-toggle" (click)="showPass = !showPass"
-                      title="{{ showPass ? 'Ocultar contraseña' : 'Mostrar contraseña' }}">
-                <i class="bi bi-eye{{ showPass ? '-slash' : '' }}"></i>
-              </button>
-            </div>
-            <small class="field-error"
-              *ngIf="field('password')?.invalid && field('password')?.touched">
-              La contraseña es requerida.
-            </small>
-          </div>
-
-        </div>
-
-        <!-- Fila 3: token Microsoft -->
+        <!-- Token Microsoft -->
         <div class="row g-3 mb-4">
           <div class="col-12">
             <label class="form-label-modern">
               <i class="bi bi-microsoft me-1"></i>Token Microsoft (Calendar)
             </label>
-
-
-
-
-              <textarea
-                class="form-control form-control-modern token-textarea"
-                formControlName="tokenMicrosoft"
-                rows="3"
-                placeholder="Pega aquí el Bearer token de Microsoft Graph..."></textarea>
-
+            <textarea
+              class="form-control form-control-modern token-textarea"
+              formControlName="tokenMicrosoft"
+              rows="3"
+              placeholder="Pega aquí el Bearer token de Microsoft Graph..."></textarea>
             <small class="field-error"
               *ngIf="field('tokenMicrosoft')?.invalid && field('tokenMicrosoft')?.touched">
-              El token de Microsoft es requerido. Conéctate con Microsoft o ingresa el token manualmente.
+              El token de Microsoft es requerido.
             </small>
           </div>
         </div>
 
         <!-- Botón submit -->
-        <div class="d-flex justify-content-end">
+        <input #devopsInput type="file" accept=".csv,.tsv" style="display:none" (change)="onArchivoSeleccionado($event)" />
+        <div class="d-flex justify-content-end align-items-center gap-2 flex-wrap">
+          <input type="date" class="form-control form-control-modern devops-fecha-input"
+                 [(ngModel)]="fechaDevOps" [ngModelOptions]="{standalone: true}" />
+          <button type="button" class="btn-cargar-csv" (click)="devopsInput.click()" [disabled]="cargandoWorkItems">
+            <i class="bi bi-cloud-upload me-1"></i>Importar desde DevOps
+          </button>
           <button type="submit" class="btn-consultar" [disabled]="formulario.invalid">
             <i class="bi bi-search me-1"></i>Consultar actividades
           </button>
@@ -232,7 +190,11 @@
                          [disabled]="!!item.registrado"
                          [title]="item.descripcion" />
                 </td>
-                <td data-label="Fecha" class="text-center">{{ item.fechaRegistro }}</td>
+                <td data-label="Fecha" class="text-center">
+                  <input type="date" class="input-fecha"
+                         [(ngModel)]="item.fechaRegistro"
+                         [disabled]="!!item.registrado" />
+                </td>
                 <td data-label="Inicio">
                   <input type="time" class="input-time"
                          [(ngModel)]="item.horaInicio"
@@ -353,7 +315,11 @@
                          [disabled]="!!item.registrado"
                          [title]="item.descripcion" />
                 </td>
-                <td data-label="Fecha" class="text-center">{{ item.fechaRegistro }}</td>
+                <td data-label="Fecha" class="text-center">
+                  <input type="date" class="input-fecha"
+                         [(ngModel)]="item.fechaRegistro"
+                         [disabled]="!!item.registrado" />
+                </td>
                 <td data-label="Inicio">
                   <input type="time" class="input-time"
                          [(ngModel)]="item.horaInicio"
@@ -430,6 +396,8 @@
     </div>
 
   </ng-container>
+
+
 </div>
 
 <!-- ─── Modal registros del día ─── -->
