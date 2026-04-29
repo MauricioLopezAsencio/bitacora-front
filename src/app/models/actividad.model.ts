@@ -6,6 +6,12 @@ export interface CatalogoItem {
 // Alias semántico reutilizado para proyectos, tipos y actividades
 export type ProyectoDisponible = CatalogoItem;
 
+// Fase de Scoca — solo aplica a tipo de actividad "Servicio"
+export interface Fase {
+  id: number;
+  nombre: string;
+}
+
 export interface ActividadItem {
   idEmpleado: number;
   idActividad: number;
@@ -15,6 +21,7 @@ export interface ActividadItem {
   fechaRegistro: string;   // yyyy-MM-dd
   horaInicio: string;      // HH:mm
   horaFin: string;         // HH:mm
+  fase?: string | null;    // resuelta por backend; solo aplica para tipo "Servicio"
 
   // Estado UI — añadido en cliente, nunca enviado al servidor
   registrando?: boolean;
@@ -22,6 +29,7 @@ export interface ActividadItem {
   proyectoSeleccionado?:       number | null;      // usado solo en sesionesNoPareadasAProyecto
   tipoActividadSeleccionado?:  number | null;      // sobreescribe idTipoActividad al registrar
   actividadSeleccionada?:      number | null;      // sobreescribe idActividad al registrar
+  faseSeleccionada?:           string | null;      // sobreescribe fase al registrar
   catalogoActividades?:        CatalogoItem[];     // catálogo dinámico cargado por fila
 }
 
@@ -57,6 +65,7 @@ export interface RegistroScoca {
   fechaRegistro: string;
   horaInicio: string;
   horaFin: string;
+  fase?: string | null;
 }
 
 export interface EstadisticasMes {

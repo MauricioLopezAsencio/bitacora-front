@@ -6,7 +6,45 @@ import { concatMap, catchError, tap } from 'rxjs/operators';
 import { ActividadService } from 'src/app/services/actividad.service';
 import { AuthService } from 'src/app/services/auth.service';
 import { MsalAuthService } from 'src/app/services/msal-auth.service';
-import { ActividadItem, ActividadRequest, CatalogoItem, EstadisticasMes, ProyectoDisponible, RegistroScoca } from 'src/app/models/actividad.model';
+import { ActividadItem, ActividadRequest, CatalogoItem, EstadisticasMes, Fase, ProyectoDisponible, RegistroScoca } from 'src/app/models/actividad.model';
+
+// Mapeo nombre de tipo de actividad -> fase por defecto (clave normalizada: lowercase + sin acentos)
+const MAPEO_TIPO_FASE: Record<string, string> = {
+  'analisis':                     'Análisis y Diseño',
+  'arquitectura':                 'Desarrollo y Construcción',
+  'atencion de defecto':          'Pruebas',
+  'bases de datos':               'Desarrollo y Construcción',
+  'capacitacion':                 'Despliegue',
+  'capacitacion al usuario':      'Despliegue',
+  'codificacion':                 'Desarrollo y Construcción',
+  'desarrollo':                   'Desarrollo y Construcción',
+  'despliegue':                   'Despliegue',
+  'diseno':                       'Análisis y Diseño',
+  'diversos':                     'Garantía',
+  'elaboracion de documentos':    'Análisis y Diseño',
+  'entregables':                  'Despliegue',
+  'implementacion':               'Despliegue',
+  'investigacion':                'Análisis y Diseño',
+  'legales y tramites':           'Garantía',
+  'plan de trabajo':              'Análisis y Diseño',
+  'pruebas':                      'Pruebas',
+  'reportes':                     'Garantía',
+  'seguimiento a cumplimiento':   'Garantía',
+  'seguridad de la informacion':  'Desarrollo y Construcción',
+  'sesion externa':               'Garantía',
+  'sesion interna':                'Garantía',
+  'soporte':                      'Garantía',
+  'tableros':                     'Desarrollo y Construcción',
+  'ventas/comercial':             'Garantía'
+};
+
+function normalizar(texto: string): string {
+  return texto
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .trim();
+}
 
 function fechasValidator(group: AbstractControl): ValidationErrors | null {
   const inicio = group.get('fechaInicio')?.value;
@@ -34,6 +72,7 @@ export class ActividadComponent implements OnInit, OnDestroy {
   sesionesNoPareadas: ActividadItem[] = [];
   proyectosDisponibles: ProyectoDisponible[] = [];
   tiposActividad: CatalogoItem[] = [];
+  catalogoFases: Fase[] = [];
   hasResults = false;
 
   pAct = 1;
@@ -90,6 +129,14 @@ export class ActividadComponent implements OnInit, OnDestroy {
       this.msAccountName = name;
     }).catch(() => {});
 
+    this.cargarCatalogoFases();
+  }
+
+  private cargarCatalogoFases(): void {
+    this.actividadService.getCatalogoFases().subscribe({
+      next: (fases) => this.catalogoFases = fases ?? [],
+      error: () => this.catalogoFases = []
+    });
   }
 
   ngOnDestroy(): void {
@@ -182,6 +229,7 @@ export class ActividadComponent implements OnInit, OnDestroy {
           tipoActividadSeleccionado: s.idTipoActividad ?? null,
           actividadSeleccionada:     typeof s.idActividad === 'number' ? s.idActividad : null,
           proyectoSeleccionado:      typeof s.idProyecto === 'number' ? s.idProyecto : null,
+          faseSeleccionada:          s.fase ?? this.resolverFasePorTipo(s.idTipoActividad),
           catalogoActividades:       [] as CatalogoItem[]
         }));
         this.actividades = actividades;
@@ -191,6 +239,7 @@ export class ActividadComponent implements OnInit, OnDestroy {
           ...s,
           tipoActividadSeleccionado: s.idTipoActividad ?? null,
           actividadSeleccionada:     typeof s.idActividad === 'number' ? s.idActividad : null,
+          faseSeleccionada:          s.fase ?? this.resolverFasePorTipo(s.idTipoActividad),
           catalogoActividades:       [] as CatalogoItem[]
         }));
         this.sesionesNoPareadas = sesiones;
@@ -202,9 +251,21 @@ export class ActividadComponent implements OnInit, OnDestroy {
         )];
         tiposUnicos.forEach(idTipo => {
           this.actividadService.getCatalogoActividades(idTipo, creds).subscribe({
-            next: items => todasLasFilas
-              .filter(s => s.tipoActividadSeleccionado === idTipo)
-              .forEach(s => s.catalogoActividades = items)
+            next: items => {
+              todasLasFilas
+                .filter(s => s.tipoActividadSeleccionado === idTipo)
+                .forEach(s => {
+                  s.catalogoActividades = items;
+
+                  // 🔥 AQUÍ ESTÁ LA MAGIA
+                  if (!s.faseSeleccionada) {
+                    s.faseSeleccionada = this.resolverFasePorActividad(
+                      s,
+                      s.actividadSeleccionada ?? s.idActividad
+                    );
+                  }
+                });
+            }
           });
         });
 
@@ -242,10 +303,16 @@ export class ActividadComponent implements OnInit, OnDestroy {
         && !!i.tipoActividadSeleccionado
         && !!i.actividadSeleccionada
         && (!this.requiereProyecto(i) || !!i.proyectoSeleccionado)
+        && (!this.requiereFase(i) || !!i.faseSeleccionada)
     );
   }
 
   private requiereProyecto(item: ActividadItem): boolean {
+    return (item.tipoActividadSeleccionado ?? item.idTipoActividad) === this.ID_TIPO_SERVICIO;
+  }
+
+  // La fase es obligatoria solo cuando el tipo de actividad es "Servicio"
+  requiereFase(item: ActividadItem): boolean {
     return (item.tipoActividadSeleccionado ?? item.idTipoActividad) === this.ID_TIPO_SERVICIO;
   }
 
@@ -255,6 +322,7 @@ export class ActividadComponent implements OnInit, OnDestroy {
         && !!i.tipoActividadSeleccionado
         && !!i.actividadSeleccionada
         && (!this.requiereProyecto(i) || !!i.proyectoSeleccionado)
+        && (!this.requiereFase(i) || !!i.faseSeleccionada)
     );
   }
 
@@ -264,6 +332,7 @@ export class ActividadComponent implements OnInit, OnDestroy {
         !i.tipoActividadSeleccionado
         || !i.actividadSeleccionada
         || (this.requiereProyecto(i) && !i.proyectoSeleccionado)
+        || (this.requiereFase(i) && !i.faseSeleccionada)
       )
     );
   }
@@ -281,7 +350,8 @@ export class ActividadComponent implements OnInit, OnDestroy {
       descripcion:     item.descripcion,
       fechaRegistro:   item.fechaRegistro,
       horaInicio:      item.horaInicio,
-      horaFin:         item.horaFin
+      horaFin:         item.horaFin,
+      fase:            this.requiereFase(item) ? (item.faseSeleccionada ?? null) : null
     };
   }
 
@@ -437,6 +507,7 @@ export class ActividadComponent implements OnInit, OnDestroy {
           tipoActividadSeleccionado: i.idTipoActividad ?? null,
           actividadSeleccionada:     typeof i.idActividad === 'number' ? i.idActividad : null,
           proyectoSeleccionado:      typeof i.idProyecto  === 'number' ? i.idProyecto  : null,
+          faseSeleccionada:          i.fase ?? this.resolverFasePorTipo(i.idTipoActividad),
           catalogoActividades:       [] as CatalogoItem[],
           registrando: false,
           registrado:  false
@@ -572,11 +643,37 @@ export class ActividadComponent implements OnInit, OnDestroy {
   onTipoActividadChange(item: ActividadItem, idTipo: number | null): void {
     item.actividadSeleccionada = null;
     item.catalogoActividades   = [];
+    // Al cambiar el tipo se limpia la actividad y por ende la fase. Se resolverá al elegir la nueva actividad.
+    item.faseSeleccionada      = null;
     if (!idTipo || !this.credencialesSco) return;
     this.actividadService.getCatalogoActividades(idTipo, this.credencialesSco).subscribe({
       next: items => item.catalogoActividades = items,
       error: () => item.catalogoActividades = []
     });
+  }
+
+  onActividadChange(item: ActividadItem, idActividad: number | null): void {
+    item.faseSeleccionada = this.resolverFasePorActividad(item, idActividad);
+  }
+
+  // Pre-pobla el campo fase a partir del idActividad inicial venido del backend / DevOps,
+  // cuando el backend no envió el valor ya resuelto.
+  private resolverFasePorTipo(idTipo: number | null | undefined): string | null {
+    // Si no es tipo Servicio, no aplica fase.
+    if (!idTipo || idTipo !== this.ID_TIPO_SERVICIO) return null;
+    return null;
+  }
+
+  // Resuelve la fase por defecto a partir de la actividad seleccionada.
+  // Solo aplica cuando el tipo de actividad es "Servicio".
+  private resolverFasePorActividad(item: ActividadItem, idActividad: number | null | undefined): string | null {
+    const idTipo = item.tipoActividadSeleccionado ?? item.idTipoActividad;
+    if (idTipo !== this.ID_TIPO_SERVICIO) return null;
+    if (!idActividad) return null;
+    const actividad = (item.catalogoActividades ?? []).find(a => a.id === idActividad);
+    if (!actividad) return 'No Aplica';
+    const clave = normalizar(actividad.descripcion);
+    return MAPEO_TIPO_FASE[clave] ?? 'No Aplica';
   }
 
   // ─── Helpers template ─────────────────────────────────────────────────────

@@ -3,7 +3,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Constants } from '../utils/Constants';
-import { ActividadData, ActividadRequest, CatalogoItem, EstadisticasMes, RegistroScoca } from '../models/actividad.model';
+import { ActividadData, ActividadRequest, CatalogoItem, EstadisticasMes, Fase, RegistroScoca } from '../models/actividad.model';
 import { WorkItemDto } from '../models/work-item.model';
 
 export interface ActividadApiResponse {
@@ -26,6 +26,7 @@ export class ActividadService {
   private readonly urlRegistrosFecha  = Constants.baseUrl + 'bitacora/registros/byFecha';
   private readonly urlWorkItemsImportar = Constants.baseUrl + 'actividades/work-items/importar';
   private readonly urlWorkItemsPreparar = Constants.baseUrl + 'actividades/work-items/preparar';
+  private readonly urlFases             = Constants.baseUrl + 'actividades/fases';
 
   constructor(private http: HttpClient) {}
 
@@ -65,6 +66,12 @@ export class ActividadService {
     formData.append('password', password);
     return this.http.post<any>(this.urlWorkItemsPreparar, formData).pipe(
       map(res => res?.data ?? res)
+    );
+  }
+
+  getCatalogoFases(): Observable<Fase[]> {
+    return this.http.get<any>(this.urlFases).pipe(
+      map(res => res?.data ?? [])
     );
   }
 

@@ -139,6 +139,18 @@ input[type="date"].form-control-modern::-webkit-calendar-picker-indicator {
 .select-proyecto:focus { border-color: var(--color-accent); background: rgba(255,255,255,.16); box-shadow: 0 0 0 .15rem rgba(66,165,245,.22); }
 .select-proyecto:disabled { opacity: .40; cursor: not-allowed; }
 
+/* ─── Fase ────────────────────────────────────────────────────────────────── */
+.select-fase { min-width: 10.5rem; }
+.select-fase.is-invalid {
+  border-color: rgba(239, 83, 80, .65) !important;
+  background: rgba(239, 83, 80, .10) !important;
+}
+.fase-na {
+  display: inline-block; color: rgba(255,255,255,.45); font-size: .85rem;
+  font-style: italic;
+}
+.reg-fase { font-size: .82rem; color: rgba(255,255,255,.85); }
+
 /* ─── Work Items DevOps ──────────────────────────────────────────────────── */
 .wi-id-col     { width: 4rem; color: rgba(255,255,255,.55); font-variant-numeric: tabular-nums; }
 .wi-title-col  { max-width: 320px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }

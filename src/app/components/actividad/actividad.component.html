@@ -179,6 +179,7 @@
                 <th>Proyecto</th>
                 <th>Tipo actividad</th>
                 <th>Actividad</th>
+                <th>Fase</th>
                 <th class="text-center">Acción</th>
               </tr>
             </thead>
@@ -229,6 +230,7 @@
                 <td data-label="Actividad">
                   <select class="select-proyecto"
                           [(ngModel)]="item.actividadSeleccionada"
+                          (ngModelChange)="onActividadChange(item, $event)"
                           [disabled]="!!item.registrado">
                     <option [ngValue]="null" disabled>— Actividad —</option>
                     <option *ngFor="let a of item.catalogoActividades" [ngValue]="a.id">
@@ -236,10 +238,29 @@
                     </option>
                   </select>
                 </td>
+                <td data-label="Fase">
+                  <ng-container *ngIf="requiereFase(item); else faseNoAplicaAct">
+                    <select class="select-proyecto select-fase"
+                            [class.is-invalid]="!item.faseSeleccionada"
+                            [(ngModel)]="item.faseSeleccionada"
+                            [disabled]="!!item.registrado">
+                      <option [ngValue]="null" disabled>— Fase —</option>
+                      <option *ngFor="let f of catalogoFases" [ngValue]="f.nombre">
+                        {{ f.nombre }}
+                      </option>
+                    </select>
+                    <small class="field-error" *ngIf="!item.faseSeleccionada && !item.registrado">
+                      Fase obligatoria.
+                    </small>
+                  </ng-container>
+                  <ng-template #faseNoAplicaAct>
+                    <span class="fase-na">—</span>
+                  </ng-template>
+                </td>
                 <td data-label="Acción" class="td-accion">
                   <button class="btn-registrar"
                           [class.btn-registrado]="item.registrado"
-                          [disabled]="!puedeRegistrar || item.registrando || item.registrado || !item.tipoActividadSeleccionado || !item.actividadSeleccionada || (item.tipoActividadSeleccionado === 3 && !item.proyectoSeleccionado)"
+                          [disabled]="!puedeRegistrar || item.registrando || item.registrado || !item.tipoActividadSeleccionado || !item.actividadSeleccionada || (item.tipoActividadSeleccionado === 3 && !item.proyectoSeleccionado) || (requiereFase(item) && !item.faseSeleccionada)"
                           (click)="registrarActividad(item)">
                     <ng-container *ngIf="item.registrado">
                       <i class="bi bi-check2-circle me-1"></i>Registrado
@@ -254,7 +275,7 @@
                 </td>
               </tr>
               <tr *ngIf="actividades.length === 0">
-                <td colspan="8" class="text-center empty-row">
+                <td colspan="9" class="text-center empty-row">
                   <i class="bi bi-inbox me-2"></i>Sin actividades emparejadas
                 </td>
               </tr>
@@ -304,6 +325,7 @@
                 <th>Proyecto</th>
                 <th>Tipo actividad</th>
                 <th>Actividad</th>
+                <th>Fase</th>
                 <th class="text-center">Acción</th>
               </tr>
             </thead>
@@ -357,6 +379,7 @@
                   <select
                     class="select-proyecto"
                     [(ngModel)]="item.actividadSeleccionada"
+                    (ngModelChange)="onActividadChange(item, $event)"
                     [disabled]="!!item.registrado">
                     <option [ngValue]="null" disabled>— Actividad —</option>
                     <option *ngFor="let a of item.catalogoActividades" [ngValue]="a.id">
@@ -364,10 +387,29 @@
                     </option>
                   </select>
                 </td>
+                <td data-label="Fase">
+                  <ng-container *ngIf="requiereFase(item); else faseNoAplicaSin">
+                    <select class="select-proyecto select-fase"
+                            [class.is-invalid]="!item.faseSeleccionada"
+                            [(ngModel)]="item.faseSeleccionada"
+                            [disabled]="!!item.registrado">
+                      <option [ngValue]="null" disabled>— Fase —</option>
+                      <option *ngFor="let f of catalogoFases" [ngValue]="f.nombre">
+                        {{ f.nombre }}
+                      </option>
+                    </select>
+                    <small class="field-error" *ngIf="!item.faseSeleccionada && !item.registrado">
+                      Fase obligatoria.
+                    </small>
+                  </ng-container>
+                  <ng-template #faseNoAplicaSin>
+                    <span class="fase-na">—</span>
+                  </ng-template>
+                </td>
                 <td data-label="Acción" class="td-accion">
                   <button class="btn-registrar"
                           [class.btn-registrado]="item.registrado"
-                          [disabled]="!puedeRegistrar || item.registrando || item.registrado || !item.tipoActividadSeleccionado || !item.actividadSeleccionada || (item.tipoActividadSeleccionado === 3 && !item.proyectoSeleccionado)"
+                          [disabled]="!puedeRegistrar || item.registrando || item.registrado || !item.tipoActividadSeleccionado || !item.actividadSeleccionada || (item.tipoActividadSeleccionado === 3 && !item.proyectoSeleccionado) || (requiereFase(item) && !item.faseSeleccionada)"
                           (click)="registrarActividad(item)">
                     <ng-container *ngIf="item.registrado">
                       <i class="bi bi-check2-circle me-1"></i>Registrado
@@ -382,7 +424,7 @@
                 </td>
               </tr>
               <tr *ngIf="sesionesNoPareadas.length === 0">
-                <td colspan="8" class="text-center empty-row">
+                <td colspan="9" class="text-center empty-row">
                   <i class="bi bi-check2 me-2"></i>Todas las sesiones fueron emparejadas
                 </td>
               </tr>
@@ -442,6 +484,7 @@
               <th class="text-center">Inicio</th>
               <th class="text-center">Fin</th>
               <th class="text-center">Duración</th>
+              <th class="text-center">Fase</th>
             </tr>
           </thead>
           <tbody>
@@ -451,6 +494,10 @@
               <td data-label="Fin" class="text-center reg-mono">{{ r.horaFin }}</td>
               <td data-label="Duración" class="text-center">
                 <span class="duracion-badge">{{ calcularDuracion(r.horaInicio, r.horaFin) }}</span>
+              </td>
+              <td data-label="Fase" class="text-center reg-fase">
+                <span *ngIf="r.fase">{{ r.fase }}</span>
+                <span class="fase-na" *ngIf="!r.fase">—</span>
               </td>
             </tr>
           </tbody>
